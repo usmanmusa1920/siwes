@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="{% static 'media/favicon.ico' %}" type="image/x-icon">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  {% block css %}
+    <!-- page css here -->
+  {% endblock css %}
+
+  <script src="{% static 'js/base.js' %}"></script>
+  {% block js %}
+    <!-- page js here -->
+  {% endblock js %}
+  
+  {% block title %}
+    <!-- page title here -->
+  {% endblock title %}
+</head>
+
+<body>
+  <div class="container">
+    <div class="left">
+      <div class="d_links">
+        <h1 class="dash">
+          <span>Fugus SIWES</span>
+        </h1>
+        <span class="close" onclick="setTimeout(hideMenu, 300)">
+          <span>&times;</span>
+        </span>
+        <span class="logo_wrapper">
+          <div class="logo">
+            <div>
+              <img src="{% static 'media/logo.png' %}" alt="" srcset="">
+            </div>
+          </div>
+          <a href="#">Usman Musa</a>
+        </span>
+        
+        <h3 class="category">200/300 level</h3>
+        <a href="#">Student SIWES</a>
+
+        <span class="link_ref">Fees</span>
+        <a href="#">Pay Fees</a>
+        <a href="#">Payment history</a>
+        
+        <span class="link_ref">Forms</span>
+        <a href="#">Medical Form</a>
+        <a href="#">Particulars Form</a>
+        
+        <span class="link_ref">Hostel</span>
+        <a href="#">Apply</a>
+        <a href="#">Status</a>
+        
+        <span class="link_ref">Course Registeration</span>
+        <a href="#">Register Courses</a>
+        <a href="#">Add Electives Courses</a>
+        <a href="#">ViewCourses</a>
+        
+        <span class="link_ref">Exams and Result</span>
+        <a href="#">Exam Card</a>
+        <a href="#">View Result</a>
+        <a href="#">Senate Approved Result</a>
+        <br>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="header">
+        <div class="header_column">
+
+          <div class="header_left">
+            <a onclick="setTimeout(showMenu, 300)">
+              <h1 class="showmenu">
+                <img src="{% static 'media/show_menu.png' %}" alt="">
+              </h1>
+            </a>
+            <a href="#">
+              <h1 class="fugus">
+                Fugus
+              </h1>
+            </a>
+          </div>
+
+          <div class="header_right">
+            <a href="#"><h4>Profile</h4></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main_column">
+          
+          <div class="main_top">
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert_success">{{message}}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+          {% block main %}
+            <!-- content of main block -->
+          {% endblock main %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
