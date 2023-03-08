@@ -69,7 +69,7 @@ body{
   }
 }
 
-.d_links{
+.dash_side{
   width: 90%;
   display: flex;
   flex-direction: column;
@@ -77,7 +77,7 @@ body{
 }
 
 @media only screen and (max-width: 700px){
-  .d_links{
+  .dash_side{
     width: 100%;
     margin-right: 10px;
   }
@@ -198,7 +198,7 @@ body{
   border-radius: 50%;
 }
 
-.d_links a{
+.dash_link{
   color: white;
   margin: 10px 0 7px 0;
   transition-delay: 0.5s;
@@ -206,11 +206,11 @@ body{
   text-decoration: wavy;
 }
 
-.d_links a:hover{
+.dash_link:hover{
   text-decoration: underline;
 }
 
-/* we put this below so that it will overide the one we did for all anchor tag of `d_links` */
+/* we put this below so that it will overide the one we did for all anchor tag of `dash_side` */
 .logo_wrapper a{
   border-bottom: solid white 3px;
   font-size: larger;
@@ -256,6 +256,7 @@ body{
 
 .header{
   background-color: grey;
+  /* background: rgb(3, 3, 45); */
   position: fixed;
   top: 0;
   height: 11vh;
@@ -266,7 +267,7 @@ body{
 }
 
 .header_column{
-  width: 80%;
+  width: 75%;
   display: flex;
   justify-content: space-between;
 }
@@ -346,13 +347,13 @@ body{
 }
 
 .main_column{
-  width: 82%;
+  width: 75%;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: white;
-  border-radius: 9px;
+  /* border-radius: 9px; */
   overflow: auto;
 }
 

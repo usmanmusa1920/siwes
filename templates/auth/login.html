@@ -1,0 +1,44 @@
+<!-- extending from base.html file -->
+{% extends "auth/base.html" %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <!-- <link rel="stylesheet" href="{% static '.css' %}"> -->
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  login
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main_left %}
+  <br>
+  <h1>Federal university gusau</h1>
+  <p class="p_note">
+    Along Zaria - Sokoto Road, P.M.B 1001, Gusau, Zamfara State, Nigeria</p>
+  <img src="{% static 'media/logo.png' %}" alt="">
+  <p class="p_sub">Students skills training programme designed to expose and prepare students of universities and other tertiary institutions for the Industrial Work situation they are likely to meet after graduation.</p>
+  <br>
+{% endblock main_left %}
+
+
+{% block main_right %}
+  <div class="summary">
+    <h1>Federal university gusau</h1>
+    <p class="p_note">
+    Along Zaria - Sokoto Road, P.M.B 1001, Gusau, Zamfara State, Nigeria</p>
+    <img src="{% static 'media/logo.png' %}" alt="">
+  </div>
+  <h1 class="title">Student training (IT & TP) portal</h1>
+  <span class="title_p">Student training (IT & TP) portal</span>
+  <form action="#" method="post">
+    <h2>Login to portal</h2>
+    <input type="text" name="" placeholder="Matrix number or ID number">
+    <input type="password" name="" placeholder="Password" minlength="8">
+    <button type="submit">Login</button>
+    <p>Don't have an account? <a href="#">Sign Up</a></p>
+    <span class="down_info">Students skills training programme designed to expose and prepare students of universities and other tertiary institutions for the Industrial Work situation they are likely to meet after graduation.</span>
+  </form>
+{% endblock main_right %}

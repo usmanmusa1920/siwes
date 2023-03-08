@@ -1,0 +1,118 @@
+.main{
+  background: lightgrey;
+}
+
+.main_column{
+  background: transparent;
+}
+/* the above are override from the base.html */
+
+.wrapper{
+  width: 100%;
+}
+
+.wrapp_head{
+  width: 100%;
+  height: 40px;
+  padding-left: 10px;
+  background: whitesmoke;
+  display: flex;
+  align-items: center;
+}
+
+.wrapp_head h1{
+  font-weight: lighter;
+}
+
+@media only screen and (max-width: 700px){
+  .wrapp_head h1{
+    font-size: 20px;
+  }
+}
+
+.wrapp_main{
+  width: 100%;
+  margin-top: 10px;
+  padding-bottom: 10px;
+  background: white;
+}
+
+.wrapp_pink{
+  background: rgb(231, 224, 224);
+  color: red;
+  min-height: 30px;
+  padding: 10px;
+  width: 100%;
+}
+
+.wrapp_form{
+  border: solid lightgrey 1px;
+  background: whitesmoke;
+  padding: 10px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapp_form h2{
+  font-weight: lighter;
+}
+
+@media only screen and (max-width: 700px){
+  .wrapp_form h2{
+    font-size: 20px;
+  }
+}
+
+.wrapp_info{
+  background: lightgreen;
+  min-height: 30px;
+  margin: 7px 0;
+  padding: 10px;
+  width: 100%;
+}
+
+.wrapp_input{
+  outline: none;
+  width: fit-content;
+  height: 30px;
+  border: none;
+  padding: 7px;
+  margin-bottom: 15px;
+  background: lightgrey;
+}
+
+.wrapp_select{
+  outline: none;
+  width: fit-content;
+  height: 30px;
+  border: none;
+  padding: 7px;
+  margin-bottom: 15px;
+  background: lightgrey;
+}
+
+.wrapp_radio{
+  display: flex;
+  align-items: center;
+}
+
+.wrapp_radio input{
+  margin-right: 3px;
+}
+
+.wrapp_danger{
+  background: pink;
+  min-height: 30px;
+  margin: 7px 0;
+  padding: 10px;
+  width: 100%;
+}
+
+.wrapp_form button{
+  width: 70px;
+  height: 30px;
+  color: white;
+  background: green;
+  border: none;
+}

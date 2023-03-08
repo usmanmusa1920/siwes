@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/auth/base.css' %}">
+  <link rel="shortcut icon" href="{% static 'media/favicon.ico' %}" type="image/x-icon">
+  <title>
+    Fugus student training - {% block title %} {% endblock title %} page
+  </title>
+</head>
+<body>
+  <div class="container">
+
+    <div class="head">
+      <div class="head_column">
+        <div class="head_left">
+          <h2>
+            <a href="/">Fugus</a>
+          </h2>
+        </div>
+        <div class="head_right">
+          <a href="#">Privacy</a>
+          <a href="#">About Us</a>
+          <a href="#">Policy</a>
+          <a href="login.html" id="sign">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="main_column">
+        <div class="main_left">
+          {% block main_left %} {% endblock main_left %}
+        </div>
+        <div class="main_right">
+          {% block main_right %} {% endblock main_right %}
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div class="foot_column">
+        <div class="foot_left">
+          <p>Knowledge, Innovation and Service</p>
+          <p><a href="http://www.fugusau.edu.ng">Home</a></p>
+          <p><a href="https://www.fugusau.edu.ng/history">About</a></p>
+          <p><a href="https://pdeg.fugusau.edu.ng">Pre-degree</a></p>
+          <p><a href="https://putme.fugusau.edu.ng">Post UTME</a></p>
+          <p><a href="https://ugs.fugusau.edu.ng">Undergraduate</a></p>
+        </div>
+        
+        <div class="foot_right">
+          <form action="https://www.fugusau.edu.ng" method="get">
+            <input type="search" name="s" placeholder="Search here" required>
+            <button type="submit">search</button>
+          </form>
+          <button><a href="#">Back to top</a></button>
+          <p>Copyright &copy; 2023 Federal University Gusau.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

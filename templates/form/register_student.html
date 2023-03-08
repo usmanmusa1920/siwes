@@ -1,0 +1,69 @@
+<!-- extending from base.html file -->
+{% extends "base.html" %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/form/register_student.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>Student registration page</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="wrapper">
+    <div class="wrapp_head">
+      <h1>Register your IT student</h1>
+    </div>
+    <div class="wrapp_main">
+      <div class="wrapp_pink">
+        <small>Lorem ipsum dolor, sit amet consectetur adipisicing elit.</small>
+      </div>
+      <form action="#" method="post">
+        <div class="wrapp_form">
+          <h2>Fill in student information</h2>
+          <div class="wrapp_info">
+            <p>Students skills training programme designed to expose and prepare students of universities and other tertiary institutions for the Industrial Work situation they are likely to meet after graduation.</p>
+          </div>
+          <input type="text" name="" class="wrapp_input" placeholder="First name">
+          <input type="text" name="" class="wrapp_input" placeholder="Last name">
+          <input type="text" name="" class="wrapp_input" placeholder="Matrix number or ID number">
+        </div>
+        <div class="wrapp_form">
+          <p><b>Select visibility:</b></p>
+          <select name="" class="wrapp_select">
+            <option value="">Private</option>
+            <option value="">Team</option>
+            <option value="">Organisation</option>
+          </select>
+          <br>
+          <p><b>Student level:</b></p>
+          <span class="wrapp_radio">
+            <input type="radio" value="" name="rad"> 200
+          </span>
+          <span class="wrapp_radio">
+            <input type="radio" value="" name="rad"> 300
+          </span>
+          <div class="wrapp_danger">
+            <p>The below check box, should be tick only if the student carry over the training.</p>
+          </div>
+          <span class="wrapp_radio">
+            <input type="checkbox" name="" id=""> Is carry over
+          </span>
+        </div>
+        <div class="wrapp_form">
+          <p><b>Security:</b></p>
+          <input type="text" name="" class="wrapp_input" placeholder="Email addres">
+          <input type="password" name="" class="wrapp_input" placeholder="Enter your password" minlength="8">
+          <input type="password" name="" class="wrapp_input" placeholder="Verify your password" minlength="8">
+        </div>
+        <div class="wrapp_form">
+          <button type="submit">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock main %}

@@ -26,11 +26,26 @@ from django.urls import path, include
 
 from django.shortcuts import render
 def index(request):
-    return render(request, "letter/physics.html")
+    return render(request, "landing.html")
+def register_student(request):
+    return render(request, "form/register_student.html")
+def it_letter(request):
+    return render(request, "department/physics/student_it_letter.html")
+def login(request):
+    return render(request, "auth/login.html")
+def signup(request):
+    return render(request, "auth/signup.html")
+def change_password(request):
+    return render(request, "auth/change_password.html")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", index),
+    path("register_student/", register_student),
+    path("login/", login),
+    path("signup/", signup),
+    path("it_letter/", it_letter),
+    path("change_password/", change_password),
     path("", include('siwes.urls')),
     path("", include('faculty.urls')),
     path("", include('department.urls')),
