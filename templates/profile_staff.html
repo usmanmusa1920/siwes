@@ -1,0 +1,109 @@
+<!-- extending from base.html file -->
+{% extends "base.html" %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>landing page</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="main_wrapp_head">
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+  </div>
+
+  <div class="main_wrapp">
+    <div class="wrapp_img">
+      <img src="{% static 'media/user.png' %}" alt="">
+    </div>
+
+    <form action="#" method="get" class="search">
+      <input type="search" name="" placeholder="Search">
+      <button type="submit">search</button>
+    </form>
+
+    <div class="wrapp_list">
+      <a href="login">login</a>
+      <a href="register_student">register_student</a>
+      <a href="it_letter">it_letter</a>
+      <a href="signup">signup</a>
+      <a href="change_password">change_password</a>
+    </div>
+
+    <div class="wrapp_list">
+      <a href="#">Usman Musa</a>
+      <small>200 level student</small>
+      <form action="#" method="post">
+        <button type="submit">ADD</button>
+      </form>
+    </div>
+
+    <div class="wrapp_pages">
+      <div class="wrapp_pages_column">
+        <a href="" class="surf">previous</a>
+        <a href="" class="page_link">9</a>
+        <a href="" class="page_link">10</a>
+        <a href="" class="current">11</a>
+        <a href="" class="page_link">12</a>
+        <a href="" class="page_link">13</a>
+        <a href="" class="surf">next</a>
+      </div>
+    </div>
+
+    <div class="wrapp_info">
+      <div class="wrapp_info_left">
+        <p>
+          <b>Name:</b> Usman Musa
+        </p>
+        <p>
+          <b>Matrix no:</b> 2010310013
+        </p>
+        <p>
+          <b>Faculty:</b> Science
+        </p>
+        <p>
+          <b>Department:</b> B.Sc Physics
+        </p>
+      </div>
+
+      <div class="wrapp_info_right">
+        <input type="file" name="" id="">
+        <br>
+        <br>
+        <a href="#">Edit profile</a>
+      </div>
+    </div>
+
+    <div class="wrapp_level">
+      <div>
+        Your 200 level training
+      </div>
+      <div>
+        Your 300 level training
+      </div>
+    </div>
+
+    <div class="wrapp_null">
+      <div class="wrapp_in_null">
+        <div class="main_wrapp_null">
+          <p>We can't find trusted user with that data</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="main_wrapp_what">
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+    </div>
+
+    <div class="main_wrapp_head">
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+    </div>
+
+  </div>
+{% endblock main %}
