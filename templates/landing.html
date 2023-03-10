@@ -1,23 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Landing</title>
-</head>
-<body>
+<!-- extending from base.html file -->
+{% extends "base.html" %}
+{% load static %}
 
-  <a href="login">login</a>
-  <br>
-  <a href="register_student">register_student</a>
-  <br>
-  <a href="it_letter">it_letter</a>
-  <br>
-  <a href="signup">signup</a>
-  <br>
-  <a href="change_password">change_password</a>
-  <br>
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock css %}
 
-</body>
-</html>
+<!-- page title -->
+{% block title %}
+  <title>Dash board</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="main_wrapp_head">
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
+  </div>
+
+  <div class="wrapp_all">
+    <div class="wrapp_left">
+      <div class="wrapp_top_left">
+        <div class="round">
+          <div class="round_in">
+            <div>
+              <h2>3:11pm</h2>
+            </div>
+          </div>
+        </div>
+        <div class="straight">
+          <a href="#">Account</a>
+          <a href="#">Training center</a>
+          <a href="#">Result</a>
+          <a href="#">Profile</a>
+        </div>
+      </div>
+      <div class="wrapp_bot_left">
+        <h2>Student training (IT & TP) dashboard</h2>
+        <p>Students skills training programme designed to expose and prepare students of universities and other tertiary institutions for the Industrial Work situation they are likely to meet after graduation.</p>
+      </div>
+    </div>
+
+    <div class="wrapp_right">
+      <a href="login">login</a>
+      <a href="register_student">register_student</a>
+      <a href="it_letter">it_letter</a>
+      <a href="signup">signup</a>
+      <a href="change_password">change_password</a>
+      <a href="profile_student">profile_student.html</a>
+      <a href="profile_staff">profile_staff.html</a>
+    </div>
+  </div>
+{% endblock main %}
