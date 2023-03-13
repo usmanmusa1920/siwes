@@ -255,8 +255,7 @@ body{
 }
 
 .header{
-  background-color: grey;
-  /* background: rgb(3, 3, 45); */
+  background: rgb(79, 79, 102);
   position: fixed;
   top: 0;
   height: 11vh;
@@ -343,7 +342,7 @@ body{
   justify-content: center;
   align-items: center;
   width: 100%;
-  background-color: rgb(231, 224, 224);
+  background: rgb(231, 224, 224);
 }
 
 .main_column{
@@ -352,7 +351,7 @@ body{
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: white;
+  background: white;
   /* border-radius: 9px; */
   overflow: auto;
 }
@@ -365,7 +364,6 @@ body{
 
 .main_top{
   width: 90%;
-  margin-top: 10px;
   margin-bottom: 10px;
   display: flex;
   flex-direction: column;
@@ -382,4 +380,29 @@ body{
   align-items: center;
   justify-content: center;
   text-align: center;
+  margin-top: 10px;
+}
+
+.alert_danger{
+  background: pink;
+  border-radius: 9px;
+  width: 90%;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.alert_warn{
+  background: rgb(245, 238, 136);;
+  border-radius: 9px;
+  width: 90%;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-top: 10px;
 }

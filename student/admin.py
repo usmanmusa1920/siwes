@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import StudentLetterRequest, AcceptanceLetter
 
-# Register your models here.
+admin.site.register(StudentLetterRequest)
+admin.site.register(AcceptanceLetter)

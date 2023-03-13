@@ -38,8 +38,7 @@
 }
 
 .wrapp_top_left{
-  background: lightgrey;
-  background: url(intern.jpg) no-repeat center center/cover;
+  background: url(dash_img_2.jpg) no-repeat center center/cover;
   width: 100%;
   min-height: 200px;
   border-radius: 20px;
@@ -67,13 +66,13 @@
 @media only screen and (max-width: 700px){
   .round{
     width: 100%;
+    margin-bottom: 10px;
   }
 }
 
 .round_in{
   width: 150px;
   height: 150px;
-  border-radius: 50%;
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -88,13 +87,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgb(6, 6, 58);
   background: conic-gradient(
-    #903c56 0%,
-    pink 50%,
-    #903c56 60%,
-    /* #06063c 60%, */
-    pink 100%
+    #5483b9 0%,
+    rgb(192, 214, 255) 50%,
+    #69bcc7 60%,
+    rgb(110, 113, 247) 100%
   );
   color: white;
 }
@@ -103,7 +100,6 @@
   width: 50%;
   height: 150px;
   border-radius: 10px;
-  background: whitesmoke;
   background: rgb(6, 6, 58);
   display: flex;
   padding: 0 10px;
@@ -118,7 +114,6 @@
 }
 
 .straight a{
-  /* border: navy solid 1px; */
   background: white;
   color: rgb(6, 6, 58);
   text-decoration: none;
@@ -128,9 +123,7 @@
 .wrapp_bot_left{
   width: 100%;
   min-height: 250px;
-  background: rgb(202, 241, 202);
-  background: url(it.jpg) no-repeat center center/cover;
-  /* background: url(it.jpg) no-repeat center center/cover; */
+  background: url(dash_img_1.jpg) no-repeat center center/cover;
   border-radius: 20px;
   padding: 10px;
   margin: 3px 0;
@@ -157,7 +150,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  background: darkgrey;
   background: rgb(202, 241, 202);
   border: solid lightgreen 1px;
   border-radius: 20px;
@@ -172,9 +164,7 @@
 }
 
 .wrapp_right a{
-  color: grey;
   color: rgb(6, 6, 58);
-  background: whitesmoke;
   background: white;
   border-radius: 5px;
   padding: 3px 5px;
@@ -189,4 +179,15 @@
     padding: 5px 7px;
     font-size: large;
   }
+}
+
+.img{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.img img{
+  width: 90%;
 }

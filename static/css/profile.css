@@ -17,8 +17,7 @@
 .main_wrapp{
   width: 100%;
   border: solid lightgrey 1px;
-  border-radius: 5px;
-  background: whitesmoke;
+  background: white;
   padding: 5px;
 }
 
@@ -36,17 +35,21 @@
   background:  darkgrey;
   width: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 3px 0;
+  padding: 7px;
+}
+
+@media only screen and (max-width: 700px){
+  .search{
+    padding: 3px 0;
+    justify-content: center;
+  }
 }
 
 .search input{
   border: none;
   padding: 3px;
   height: 30px;
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
 }
 
 .search button{
@@ -66,6 +69,7 @@
   align-items: center;
   padding: 3px 10px;
   margin: 5px 0;
+  background: whitesmoke;
 }
 
 .wrapp_list a{
@@ -153,11 +157,16 @@
   .wrapp_info_left{
     width: 100%;
     margin: 5px;
+    padding: 10px;
   }
 }
 
 .wrapp_info_left p{
   margin: 3px 0;
+}
+
+.delete_me{
+  color: red;
 }
 
 .wrapp_info_right{
@@ -171,6 +180,7 @@
   .wrapp_info_right{
     width: 100%;
     margin: 5px;
+    padding: 10px;
   }
 }
 
@@ -232,7 +242,7 @@
 .main_wrapp_null{
   min-width: 200px;
   min-height: 50px;
-  padding: 5px;
+  padding: 7px;
   background: pink;
   display: flex;
   justify-content: center;
@@ -243,4 +253,5 @@
   width: 100%;
   background: wheat;
   padding: 10px;
+  margin: 7px 0;
 }

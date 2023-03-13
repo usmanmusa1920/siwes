@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     
     # my apps
-    "siwes.apps.SiwesConfig",
+    "account.apps.AccountConfig",
+    "training.apps.TrainingConfig",
     "faculty.apps.FacultyConfig",
     "department.apps.DepartmentConfig",
     "student.apps.StudentConfig",
@@ -105,6 +106,8 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
+
+AUTH_USER_MODEL = "account.UserAccount"
 
 
 # Internationalization

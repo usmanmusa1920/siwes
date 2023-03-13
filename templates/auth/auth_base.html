@@ -5,13 +5,15 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'css/auth/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+  <script src="{% static 'js/base.js' %}"></script>
   <link rel="shortcut icon" href="{% static 'media/favicon.ico' %}" type="image/x-icon">
   <title>
     Fugus student training - {% block title %} {% endblock title %} page
   </title>
 </head>
-<body>
+
+<body onload="this_year()" onmouseover="this_year()">
   <div class="container">
 
     <div class="head">
@@ -22,10 +24,9 @@
           </h2>
         </div>
         <div class="head_right">
-          <a href="#">Privacy</a>
-          <a href="#">About Us</a>
-          <a href="#">Policy</a>
-          <a href="login.html" id="sign">Login</a>
+          <a href="https://pdeg.fugusau.edu.ng">Pre-degree</a>
+          <a href="https://ugs.fugusau.edu.ng">Undergraduate</a>
+          {% block access_link %} {% endblock access_link %}
         </div>
       </div>
     </div>
@@ -58,8 +59,9 @@
             <button type="submit">search</button>
           </form>
           <button><a href="#">Back to top</a></button>
-          <p>Copyright &copy; 2023 Federal University Gusau.</p>
+          <p>Copyright &copy; <span id="this_year"></span> Federal University Gusau.</p>
         </div>
+
       </div>
     </div>
   </div>

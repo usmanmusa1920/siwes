@@ -1,3 +1,5 @@
+/* this css file is for login and signup page */
+
 *{
   margin: 0;
   padding: 0;
@@ -40,7 +42,7 @@ body{
 .head{
   width: 100%;
   height: 12vh;
-  background: navy;
+  background: rgb(79, 79, 102);
   position: fixed;
   top: 0;
   display: flex;
@@ -84,7 +86,7 @@ body{
     display: none;
   }
 
-  #sign{
+  #access_link{
     display: block;
   }
 }
@@ -92,6 +94,7 @@ body{
 .main{
   margin-top: 13vh;
   width: 100%;
+  min-height: 50vh;
   display: flex;
   justify-content: center;
 }
@@ -138,14 +141,14 @@ body{
   margin-top: 7px;
   margin-bottom: 7px;
   border-radius: 9px;
-  box-shadow: 0 0px 7px dodgerblue, 0 0px 7px dodgerblue;
-  color: dodgerblue;
+  box-shadow: 0 0px 7px rgb(79, 79, 102), 0 0px 7px rgb(79, 79, 102);
+  color: rgb(79, 79, 102);
   display: flex;
   flex-direction: column;
   justify-content: space-around;
 }
 
-.p_note{
+.txt_info{
   font-size: large;
   font-style: oblique;
   text-align: center;
@@ -221,7 +224,7 @@ body{
   }
 }
 
-.main_right h1{
+.main_right h1, .main_right h2{
   text-align: center;
   padding: 5px;
   margin-top: 7px;
@@ -280,34 +283,30 @@ body{
   color: white;
 }
 
-.main_right form p a{
-  color: darkgreen;
+.links{
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 5px;
+  border-top: dotted grey 1px;
+}
+
+.links a{
+  color: rgb(14, 122, 113);
   font-weight: bold;
+  margin: 10px 0;
   text-decoration: underline;
 }
 
-.main_right form p a:hover{
+.links a:hover{
   color: dodgerblue;
   font-weight: bold;
   text-decoration: underline;
 }
 
-.down_info{
-  display: none;
-}
-
-@media only screen and (max-width: 700px){
-  .down_info{
-    display: block;
-    margin-top: 10px;
-    font-style: oblique;
-    text-align: center;
-    color: black;
-  }
-}
-
 .foot{
-  background: rgb(43, 39, 54);
+  background: rgb(77, 71, 94);
   color: white;
   margin-top: 5px;
   width: 100%;
@@ -365,10 +364,11 @@ body{
 }
 
 .foot_left p a{
-  color: darkorange;
+  color: white;
   font-size: large;
   font-style: normal;
   font-family: 'Times New Roman', Times, serif;
+  text-decoration: underline;
 }
 
 .foot_left p a:hover{
