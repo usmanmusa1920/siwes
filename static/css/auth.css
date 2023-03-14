@@ -121,6 +121,18 @@ body{
   }
 }
 
+.err_div{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: lightgrey;
+}
+
+.err_txt{
+  text-align: center;
+}
+
 .main_left{
   width: 50%;
   display: flex;

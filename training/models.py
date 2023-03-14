@@ -8,8 +8,6 @@ User = get_user_model()
 
 class TrainingUnitRequest(models.Model):
   """e.g siwes unit send request for list of student that will carry out training in that session"""
-  training_sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="training_sender") # director
-  training_receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="training_receiver") # dept coordinator
   training_category = [('siwes', 'Student industrial work experience (SIWES)'), ('tp', 'Teaching practice (TP)')]
   training = models.CharField(max_length=100, default='siwes', choices=training_category)
   title = models.CharField(max_length=300, blank=True, null=True)
@@ -26,7 +24,7 @@ class TrainingUnitRequest(models.Model):
   viewers = models.ManyToManyField(User, blank=True, related_name='coordinators_training')
   
   def __str__(self):
-    return f'We request for student list that will carry out {self.training} to {self.receiver} on {self.timestamp} ({self.message})'
+    return f'We request for student list that will carry out {self.training} to {self.training_receiver} on {self.timestamp} ({self.message})'
 
     
 class TrainingDirector(models.Model):
@@ -37,10 +35,12 @@ class TrainingDirector(models.Model):
   gender = models.CharField(max_length=100, default='male', choices=gender_choices)
   date_of_birth = models.DateField(max_length=100, blank=True, null=True)
   id_no = models.CharField(max_length=255, unique=True)
-  email = models.EmailField(max_length=255, unique=False)
+  email = models.EmailField(max_length=255, unique=True)
   phone_number = PhoneNumberField(max_length=100, unique=True)
   date_joined = models.DateTimeField(default=timezone.now)
   date_leave = models.DateTimeField(auto_now=True)
+  is_active = models.BooleanField(default=False)
+  description = models.TextField(blank=True, null=True)
 
   def __str__(self):
     return f"Training director"

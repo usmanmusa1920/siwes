@@ -98,7 +98,7 @@ class UserAccount(AbstractBaseUser):
   date_of_birth = models.DateField(max_length=100, blank=True, null=True)
   identification_num = models.CharField(max_length=255, unique=True)
   email = models.EmailField(max_length=255, unique=False)
-  phone_number = PhoneNumberField(max_length=100, unique=True)
+  phone_number = PhoneNumberField(max_length=100, unique=False)
   country = CountryField(max_length=100, blank_label='Select your country',)
   date_joined = models.DateTimeField(default=timezone.now)
 

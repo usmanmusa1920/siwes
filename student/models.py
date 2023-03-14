@@ -1,10 +1,28 @@
 from django.db import models
 from django.utils import timezone
+from phonenumber_field.modelfields import PhoneNumberField
 from department.models import DepartmentTrainingCoordinator
 
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
+
+
+class TrainingStudent(models.Model):
+  student = models.ForeignKey(User, on_delete=models.CASCADE)
+  student_training_coordinator = models.ForeignKey(DepartmentTrainingCoordinator, on_delete=models.CASCADE)
+  first_name = models.CharField(max_length=100, unique=False)
+  middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
+  last_name = models.CharField(max_length=100, unique=False)
+  gender_choices = [('female', 'Female'), ('male', 'Male'),]
+  gender = models.CharField(max_length=100, default='male', choices=gender_choices)
+  date_of_birth = models.DateField(max_length=100, blank=True, null=True)
+  matrix_no = models.CharField(max_length=255, unique=True)
+  email = models.EmailField(max_length=255, unique=True)
+  phone_number = PhoneNumberField(max_length=100, unique=True)
+  date_joined = models.DateTimeField(default=timezone.now)
+  date_leave = models.DateTimeField(auto_now=True)
+  is_in_school = models.BooleanField(default=False)
 
 
 class StudentLetterRequest(models.Model):

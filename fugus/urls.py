@@ -43,6 +43,10 @@ def signup(request):
     return render(request, "auth/signup.html")
 def change_password(request):
     return render(request, "auth/change_password.html")
+def confirm(request):
+    return render(request, "confirm.html")
+def error_404(request):
+    return render(request, "error/404.html")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -50,11 +54,13 @@ urlpatterns = [
     path("profile_student/", profile_student),
     path("profile_staff/", profile_staff),
     path("register_student/", register_student),
+    path("confirm/", confirm),
     path("login/", login),
     path("signup/", signup),
     path("placement_letter/", placement_letter),
     path("acceptance_letter/", acceptance_letter),
     path("change_password/", change_password),
+    path("error/", error_404),
     path("", include('training.urls')),
     path("", include('faculty.urls')),
     path("", include('department.urls')),
