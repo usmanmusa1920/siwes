@@ -34,4 +34,4 @@ class FacultyDean(models.Model):
   is_active = models.BooleanField(default=False)
 
   def __str__(self):
-    return f"Faculty dean"
+    return f"Dean faculty of {self.faculty}"

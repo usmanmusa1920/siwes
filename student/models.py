@@ -24,20 +24,24 @@ class TrainingStudent(models.Model):
   date_leave = models.DateTimeField(auto_now=True)
   is_in_school = models.BooleanField(default=False)
 
+  def __str__(self):
+    return f"Training student with matrix number of {self.matrix_no}"
+
 
 class StudentLetterRequest(models.Model):
   """if he didn't see training letter, he/she should make request"""
-  sender_req = models.ForeignKey(User, related_name='sender_req', on_delete=models.CASCADE)
-  receiver_req = models.ForeignKey(User, related_name='receiver_req', on_delete=models.CASCADE)
+  sender_req = models.ForeignKey(TrainingStudent, related_name='sender_req', on_delete=models.CASCADE)
+  receiver_req = models.ForeignKey(DepartmentTrainingCoordinator, related_name='receiver_req', on_delete=models.CASCADE)
   timestamp = models.DateTimeField(default=timezone.now)
+  in_seen = models.BooleanField(default=False)
 
   def __str__(self):
-    return f'{self.sender} send request for training letter'
+    return f'{self.sender_req} sent letter request for training'
 
 
 class AcceptanceLetter(models.Model):
-  sender_acept = models.ForeignKey(User, related_name='sender_acept', on_delete=models.CASCADE)
-  receiver_acept = models.ForeignKey(User, related_name='receiver_acept', on_delete=models.CASCADE)
+  sender_acept = models.ForeignKey(TrainingStudent, related_name='sender_acept', on_delete=models.CASCADE)
+  receiver_acept = models.ForeignKey(DepartmentTrainingCoordinator, related_name='receiver_acept', on_delete=models.CASCADE)
   timestamp = models.DateTimeField(default=timezone.now)
   title = models.CharField(max_length=255, blank=True, null=True)
   image = models.ImageField(blank=True, null=True, upload_to='acceptance_letter')
@@ -45,4 +49,4 @@ class AcceptanceLetter(models.Model):
   is_reviewed = models.BooleanField(default=False)
   
   def __str__(self):
-    return f"Student acceptance letter (approved)"
+    return f"Student ({self.sender_acept.matrix_no}) acceptance letter (approved)"

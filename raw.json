@@ -1,6 +1,6 @@
 [
   {
-    "faculty": "Faculty of Science",
+    "faculty": "Science",
     "dept": [
       "Chemistry",
       "Biochemistry",
@@ -15,7 +15,7 @@
     ]
   },
   {
-    "faculty": "Faculty of Humanities",
+    "faculty": "Humanities",
     "dept": [
       "Arabic Language",
       "English Language",
@@ -26,7 +26,7 @@
     ]
   },
   {
-    "faculty": "Faculty of Education",
+    "faculty": "Education",
     "dept": [
       "Education Arabic",
       "Education Biology",
@@ -41,7 +41,7 @@
     ]
   },
   {
-    "faculty": "Faculty of Management & Social science",
+    "faculty": "Management & Social science",
     "dept": [
       "Accounting",
       "Business Administration",

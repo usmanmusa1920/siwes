@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import TrainingUnitRequest, TrainingDirector
+from .models import TrainingDirector
 
-admin.site.register(TrainingUnitRequest)
 admin.site.register(TrainingDirector)

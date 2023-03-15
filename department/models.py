@@ -16,7 +16,6 @@ class Department(models.Model):
   website = models.CharField(max_length=300, blank=True, null=True)
   phone_number = PhoneNumberField(max_length=100, unique=True)
   description = models.TextField(blank=True, null=True)
-  training_students = models.ManyToManyField(User, blank=True, related_name='training_students')
   
   def __str__(self):
     return f"Department of {self.name}"
@@ -38,7 +37,7 @@ class DepartmentHOD(models.Model):
   is_active = models.BooleanField(default=False)
 
   def __str__(self):
-    return f"Department h.o.d"
+    return f"H.O.D of {self.department} department"
 
 
 class DepartmentTrainingCoordinator(models.Model):
@@ -55,9 +54,10 @@ class DepartmentTrainingCoordinator(models.Model):
   date_joined = models.DateTimeField(default=timezone.now)
   date_leave = models.DateTimeField(auto_now=True)
   is_active = models.BooleanField(default=False)
+  training_students = models.ManyToManyField(User, blank=True, related_name='training_students')
 
   def __str__(self):
-    return f"Department coordinators"
+    return f"{self.dept_hod.department} {self.dept_hod.department.faculty.training} coordinator"
 
 
 class Letter(models.Model):
@@ -66,9 +66,9 @@ class Letter(models.Model):
   last_modified = models.DateTimeField(auto_now=True)
   letter_type = [('placement letter', 'Placement letter'), ('acceptance letter', 'Acceptance letter'),]
   letter = models.CharField(max_length=100, default='placement letter', choices=letter_type)
-  text = models.TextField(blank=True, null=True,)
+  text = models.TextField(blank=True, null=True)
   viewers = models.ManyToManyField(User, blank=True, related_name='viewers')
   session = models.CharField(max_length=255, blank=False, null=False)
   
   def __str__(self):
-    return f"Training letter ({self.title})"
+    return f"Letter of ({self.letter})"
