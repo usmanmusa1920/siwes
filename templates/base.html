@@ -65,6 +65,11 @@
         <a href="#"  class="dash_link">Exam Card</a>
         <a href="#"  class="dash_link">View Result</a>
         <a href="#"  class="dash_link">Senate Approved Result</a>
+        
+        <span class="link_ref">Authentication</span>
+        <a href="admin"  class="dash_link">Admin</a>
+        <a href="{% url 'auth:change_password' %}"  class="dash_link">Change password</a>
+        <a href="{% url 'auth:logout' %}"  class="dash_link">Logout</a>
         <br>
       </div>
     </div>
@@ -88,9 +93,6 @@
 
           <div class="header_right">
             <a href="#"><h4>Profile</h4></a>
-            {% if request.user.is_authenticated %}
-              &nbsp; &nbsp; <a href="#"><h4>{{request.user}}</h4></a>
-            {% endif %}
           </div>
         </div>
       </div>

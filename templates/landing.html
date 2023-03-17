@@ -43,19 +43,17 @@
 
     <div class="wrapp_right">
       <div class="img">
-        <img src="{% static 'media/user.png' %}" alt="">
+        <img src="{{request.user.profile.image.url}}" alt="">
       </div>
+      {% if request.user.is_authenticated %}
+        <a href="#"><h4>{{request.user}}</h4></a>
+      {% endif %}
       <a href="{% url 'student:profile' %}">Student profile</a>
       <a href="{% url 'student:placement_letter' %}">Placement letter</a>
       <a href="{% url 'student:acceptance_letter' %}">Acceptance letter</a>
-      <a href="{% url 'auth:change_password' %}">Change password</a>
       <a href="{% url 'faculty:profile' %}">Faculty profile</a>
       <a href="{% url 'auth:signup' %}">signup</a>
       <a href="{% url 'auth:login' %}">Login</a>
-      <a href="{% url 'auth:logout' %}">Logout</a>
-      <a href="{% url 'auth:change_password' %}">Change password</a>
-      <a href="error">error</a>
-      <a href="admin">admin</a>
     </div>
   </div>
 {% endblock main %}

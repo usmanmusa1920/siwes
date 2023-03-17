@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from django.conf.urls.static import static
 
 """
     there are 4 already defined handler
@@ -27,17 +30,18 @@ handler404 = "account.views.error_404"
 handler500 = "account.views.error_500"
 
 
+@login_required
 def index(request):
     return render(request, "landing.html")
-def error_404(request):
-    return render(request, "error/404.html")
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", index, name="landing"),
-    path("error/", error_404),
     path("", include("account.urls")),
     path("", include("training.urls")),
     path("", include("faculty.urls")),
     path("", include("department.urls")),
     path("", include("student.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

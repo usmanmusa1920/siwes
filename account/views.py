@@ -1,6 +1,7 @@
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -41,6 +42,7 @@ class LogoutCustom(LoginRequiredMixin ,LogoutView):
     return context
 
 
+@login_required
 def changePassword(request):
   """change password view"""
   if request.user.is_authenticated:
@@ -60,11 +62,11 @@ def changePassword(request):
 
   
 def signup(request):
+  all_dept = DepartmentTrainingCoordinator.objects.filter(is_active=True)
+  """
+    we use `DepartmentTrainingCoordinator` table to grab departments name, because at some case, some department they will not register their siwes coordinator on time, if so happen and student of that department trying to register, he will get an error even though his department name will show up in the drop down menu of the signup page.
+  """
   if request.method == 'POST':
-    all_dept = DepartmentTrainingCoordinator.objects.all()
-    """
-      we use `DepartmentTrainingCoordinator` table to grab departments name, because at some case, some department they will not register their siwes coordinator on time, if so happen and student of that department trying to register, he will get an error even though his department name will show up in the drop down menu of the signup page.
-    """
     form = SignupForm(request.POST)
     if form.is_valid():
       form.save()
@@ -83,7 +85,6 @@ def signup(request):
       
       return redirect('auth:login')
   else:
-    all_dept = DepartmentTrainingCoordinator.objects.all()
     form = SignupForm()
   context = {
     "all_dept": all_dept,

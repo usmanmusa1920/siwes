@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
@@ -127,8 +128,8 @@ class UserAccount(AbstractBaseUser):
 
 class Profile(models.Model):
   user = models.OneToOneField(User, on_delete=models.CASCADE)
-  session = models.CharField(max_length=255)
-  image = models.ImageField(default='user.png', upload_to='users_profile_pics')
+  session = models.CharField(max_length=255, default=datetime.today().year)
+  image = models.ImageField(default='default_pic.png', upload_to=f'users_profile_pics')
   
   def __str__(self):
     return f'{self.user.identification_num}\'s profile'

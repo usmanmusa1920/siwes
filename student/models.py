@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
@@ -18,8 +19,10 @@ class TrainingStudent(models.Model):
   gender = models.CharField(max_length=100, default='male', choices=gender_choices)
   date_of_birth = models.DateField(max_length=100, blank=True, null=True)
   matrix_no = models.CharField(max_length=255, unique=True)
-  email = models.EmailField(max_length=255, unique=True)
-  phone_number = PhoneNumberField(max_length=100, unique=True)
+  level_choices = [('200', '200 level'), ('300', '300 level'),]
+  level = models.CharField(max_length=100, default="200", choices=level_choices)
+  email = models.EmailField(max_length=255, unique=False)
+  phone_number = PhoneNumberField(max_length=100, unique=False)
   date_joined = models.DateTimeField(default=timezone.now)
   date_leave = models.DateTimeField(auto_now=True)
   is_in_school = models.BooleanField(default=False)
@@ -44,9 +47,15 @@ class AcceptanceLetter(models.Model):
   receiver_acept = models.ForeignKey(DepartmentTrainingCoordinator, related_name='receiver_acept', on_delete=models.CASCADE)
   timestamp = models.DateTimeField(default=timezone.now)
   title = models.CharField(max_length=255, blank=True, null=True)
-  image = models.ImageField(blank=True, null=True, upload_to='acceptance_letter')
+  image = models.ImageField(blank=True, null=True, upload_to=f'{datetime.today().year}-acceptance_letter')
   text = models.TextField(blank=True, null=True,)
   is_reviewed = models.BooleanField(default=False)
   
   def __str__(self):
+    # yr = datetime.today().year
+    # trnng = self.receiver_acept.dept_hod.department.faculty.training
+    # fclty = self.receiver_acept.dept_hod.department.faculty.name
+    # dprtmnt = self.receiver_acept.dept_hod.department.name
+    # lvl = self.sender_acept.level
+    # gg = f"{yr}-acceptance_letter/{trnng}/{fclty}/{dprtmnt}/{lvl}"
     return f"Student ({self.sender_acept.matrix_no}) acceptance letter (approved)"
