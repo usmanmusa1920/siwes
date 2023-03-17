@@ -130,8 +130,8 @@ STATIC_URL = "static/"
 # STATIC_ROOT = os.path.join(BASE_DIR, "static") # for deployment
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
-# LOGIN_URL = "auth:login"
-# LOGIN_REDIRECT_URL = "landing"
+LOGIN_URL = "auth:login"
+LOGIN_REDIRECT_URL = "landing"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

@@ -8,7 +8,7 @@
 {% endblock title %}
 
 {% block access_link %}
-  <a href="#" id="access_link">Login</a>
+  <a href="{% url 'auth:login' %}" id="access_link">Login</a>
 {% endblock access_link %}
 
 <!-- content of the page -->
@@ -36,17 +36,65 @@
   <span class="title_p">
     Student training (IT & TP) portal
   </span>
-  <form action="#" method="post">
+
+  <form method="post">
+    {% csrf_token %}
     <h2>Create an account</h2>
-    <input type="text" name="" placeholder="First name">
-    <input type="text" name="" placeholder="Last name">
-    <input type="text" name="" placeholder="Matrix number (reg number)">
-    <input type="text" name="" placeholder="Email addres">
-    <input type="password" name="" placeholder="Enter password" minlength="8">
-    <input type="password" name="" placeholder="Confirm password" minlength="8">
+    <input type="text" name="first_name" placeholder="First name" class="input" required>
+    <input type="text" name="last_name" placeholder="Last name" class="input" required>
+    <input type="text" name="identification_num" placeholder="Matrix number (reg number)" class="input" required>
+    {% if form.identification_num.errors %}
+      <p><i><strong><small>{{form.identification_num.errors}}</small></strong></i></p>
+    {% endif %}
+
+    <div class="radio">
+      <input type="radio" name="gender" value="female" required> Female
+      <input type="radio" name="gender" value="male" required> Male
+    </div>
+    <div class="calender">
+      <input type="date" name="date_of_birth" class="input" required>
+    </div>
+    {% if form.date_of_birth.errors %}
+      <div class="alert-warning">
+        <small>{{form.date_of_birth.errors}}</small>
+      </div>
+    {% endif %}
+
+    <input type="tel" name="phone_number" placeholder="Phone number (e.g +12125552368)" class="input" required>
+    {% if form.phone_number.errors %}
+      <p><i><strong><small>{{form.phone_number.errors}}</small></strong></i></p>
+    {% endif %}
+
+    <div class="selection">
+      {{form.country}}
+    </div>
+    <div class="selection">
+      <select name="all_department" class="wrapp_select" required>
+        <option value="" selected="">Select your department</option>
+        {% for dept in all_dept %}
+          <option value="{{dept.dept_hod.department.name}}">{{dept.dept_hod.department}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <input type="text" name="email" placeholder="Email addres" class="input" required>
+    {% if form.email.errors %}
+      <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
+    {% endif %}
+
+    <input type="password" name="password1" placeholder="Enter password" class="input" minlength="8" required>
+    {% if form.password1.errors %}
+      <p><i><strong><small>{{form.new_password2.errors}}</small></strong></i></p>
+    {% endif %}
+    <input type="password" name="password2" placeholder="Confirm password" class="input" minlength="8" required>
+    {% if form.password2.errors %}
+      <p><i><strong><small>{{form.password2.errors}}</small></strong></i></p>
+      <p><i><strong><small>Password should not be similar to your account information, with a min-length of 8 character and avoid using numeric password entirely. Include symbols to make it strong like (?/@.^*) etc.</small></strong></i></p>
+    {% endif %}
+    
     <button type="submit">Sign Up</button>
     <div class="links">
-      <a href="#">Login</a>
+      <a href="{% url 'auth:login' %}">Login</a>
       <a href="#">Forgot password</a>
     </div>
   </form>

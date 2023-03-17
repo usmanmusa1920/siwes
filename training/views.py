@@ -1,3 +1,8 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def trainingDirectorProfile(request):
+  context = {
+    "None": None,
+  }
+  return render(request, "training/training_director_profile.html", context=context)

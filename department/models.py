@@ -8,6 +8,7 @@ User = get_user_model()
 
 
 class Department(models.Model):
+  """This is department database table"""
   faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
   date_joined = models.DateTimeField(default=timezone.now)
   last_modified = models.DateTimeField(auto_now=True)
@@ -22,6 +23,7 @@ class Department(models.Model):
 
 
 class DepartmentHOD(models.Model):
+  """This is departmental h.o.d database table"""
   department = models.ForeignKey(Department, on_delete=models.CASCADE)
   first_name = models.CharField(max_length=100, unique=False)
   middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
@@ -41,6 +43,7 @@ class DepartmentHOD(models.Model):
 
 
 class DepartmentTrainingCoordinator(models.Model):
+  """This is departmental training (siwes/tp) coordinator database table"""
   dept_hod = models.ForeignKey(DepartmentHOD, on_delete=models.CASCADE)
   first_name = models.CharField(max_length=100, unique=False)
   middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
@@ -61,6 +64,7 @@ class DepartmentTrainingCoordinator(models.Model):
 
 
 class Letter(models.Model):
+  """This is departmental training (siwes/tp) letter database table"""
   coordinator = models.ForeignKey(DepartmentTrainingCoordinator, on_delete=models.CASCADE)
   release_date = models.DateTimeField(default=timezone.now)
   last_modified = models.DateTimeField(auto_now=True)

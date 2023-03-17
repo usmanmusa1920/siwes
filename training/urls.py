@@ -1,10 +1,9 @@
 from django.urls import path, include
-# from .views import Blog
+from .views import trainingDirectorProfile as tdp
 
+
+app_name = "training"
 
 urlpatterns = [
-    # path("blog/", Blog.blogs, name='blogs'),
-    # path("", include('blog.article.urls')),
-    # path("", include('blog.post.urls')),
-    # path("", include('blog.comment.urls')),
+  path("training/director/profile", tdp, name="training_director_profile"),
 ]

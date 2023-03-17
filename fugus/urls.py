@@ -15,54 +15,29 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import render
 
 """
     there are 4 already defined handler
     methods in `django.urls` functions.
 """
-# handler403 = 'account.views.error_403'
-# handler404 = 'account.views.error_404'
-# handler500 = 'account.views.error_500'
+handler400 = "account.views.error_400"
+handler403 = "account.views.error_403"
+handler404 = "account.views.error_404"
+handler500 = "account.views.error_500"
 
-from django.shortcuts import render
+
 def index(request):
     return render(request, "landing.html")
-def profile_student(request):
-    return render(request, "profile_student.html")
-def profile_staff(request):
-    return render(request, "profile_staff.html")
-def register_student(request):
-    return render(request, "register_student.html")
-def acceptance_letter(request):
-    return render(request, "acceptance_letter.html")
-def placement_letter(request):
-    return render(request, "placement_letter.html")
-def login(request):
-    return render(request, "auth/login.html")
-def signup(request):
-    return render(request, "auth/signup.html")
-def change_password(request):
-    return render(request, "auth/change_password.html")
-def confirm(request):
-    return render(request, "confirm.html")
 def error_404(request):
     return render(request, "error/404.html")
-
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", index),
-    path("profile_student/", profile_student),
-    path("profile_staff/", profile_staff),
-    path("register_student/", register_student),
-    path("confirm/", confirm),
-    path("login/", login),
-    path("signup/", signup),
-    path("placement_letter/", placement_letter),
-    path("acceptance_letter/", acceptance_letter),
-    path("change_password/", change_password),
+    path("", index, name="landing"),
     path("error/", error_404),
-    path("", include('training.urls')),
-    path("", include('faculty.urls')),
-    path("", include('department.urls')),
-    path("", include('student.urls')),
+    path("", include("account.urls")),
+    path("", include("training.urls")),
+    path("", include("faculty.urls")),
+    path("", include("department.urls")),
+    path("", include("student.urls")),
 ]

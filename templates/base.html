@@ -88,6 +88,9 @@
 
           <div class="header_right">
             <a href="#"><h4>Profile</h4></a>
+            {% if request.user.is_authenticated %}
+              &nbsp; &nbsp; <a href="#"><h4>{{request.user}}</h4></a>
+            {% endif %}
           </div>
         </div>
       </div>

@@ -1,10 +1,11 @@
 from django.urls import path, include
-# from .views import Blog
+from .views import (trainingCoordinatorProfile as tcp, registerTrainingCoordinator as rtc, confirmRegisterTrainingCoordinator as crtc)
 
+
+app_name = "department"
 
 urlpatterns = [
-    # path("blog/", Blog.blogs, name='blogs'),
-    # path("", include('blog.article.urls')),
-    # path("", include('blog.post.urls')),
-    # path("", include('blog.comment.urls')),
+  path("training/coordinator/profile/", tcp, name="training_coordinator_profile"),
+  path("register/training/coordinator/", rtc, name="register_training_coordinator"),
+  path("confirm/register/training/coordinator/", crtc, name="confirm_register_training_coordinator"),
 ]

@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from phonenumber_field.modelfields import PhoneNumberField
 from django_countries.fields import CountryField
-# from PIL import Image
 
 from django.conf import settings
 User = settings.AUTH_USER_MODEL
@@ -32,7 +31,7 @@ class UserAccountManager(BaseUserManager):
     user.set_password(password)
     user.save(using=self._db)
     return user
-  
+    
   def account_verified(self, first_name, last_name, identification_num, email, password):
     user = self.create_user(
       first_name = first_name,
@@ -44,7 +43,7 @@ class UserAccountManager(BaseUserManager):
     
     user.save(using=self._db)
     return user
-  
+    
   def create_staffuser(self, first_name, last_name, identification_num, email, password):
     user = self.create_user(
       first_name = first_name,
@@ -57,7 +56,7 @@ class UserAccountManager(BaseUserManager):
     user.is_staff = True
     user.save(using=self._db)
     return user
-  
+    
   def create_adminuser(self, first_name, last_name, identification_num, email, password=None):
     user = self.create_user(
       first_name = first_name,
@@ -71,7 +70,7 @@ class UserAccountManager(BaseUserManager):
     user.is_admin = True
     user.save(using=self._db)
     return user
-  
+    
   def create_superuser(self, first_name, last_name, identification_num, email, password=None):
     user = self.create_user(
       first_name = first_name,
@@ -86,9 +85,8 @@ class UserAccountManager(BaseUserManager):
     user.is_superuser = True
     user.save(using=self._db)
     return user
-  
-  
-  
+    
+
 class UserAccount(AbstractBaseUser):
   first_name = models.CharField(max_length=100, unique=False)
   middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
@@ -101,10 +99,7 @@ class UserAccount(AbstractBaseUser):
   phone_number = PhoneNumberField(max_length=100, unique=False)
   country = CountryField(max_length=100, blank_label='Select your country',)
   date_joined = models.DateTimeField(default=timezone.now)
-
-  faculty = models.CharField(max_length=100)
-  dept = models.CharField(max_length=100)
-
+  
   is_active = models.BooleanField(default=True)
   is_verified = models.BooleanField(default=False)
   is_staff = models.BooleanField(default=False)
@@ -118,18 +113,18 @@ class UserAccount(AbstractBaseUser):
   
   def __str__(self):
     return self.identification_num
-  
+    
   def has_perm(self, perm, obj=None):
     return True
-  
+    
   def has_module_perms(self, app_label):
     return True
-  
-  
-  
+    
+
 """
   Whenever you use blank=True and null=True in a models.py field, make sure you replace it with required=False in forms.py field or in html file.
 """
+
 class Profile(models.Model):
   user = models.OneToOneField(User, on_delete=models.CASCADE)
   session = models.CharField(max_length=255)

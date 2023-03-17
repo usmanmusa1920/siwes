@@ -4,7 +4,7 @@
 
 <!-- page title -->
 {% block title %}
-  login
+  logout
 {% endblock title %}
 
 {% block access_link %}
@@ -40,9 +40,9 @@
   <span class="title_p">
     Student training (IT & TP) portal
   </span>
-  <form method="post">
+  <form action="{% url 'auth:login' %}" method="post">
     {% csrf_token %}
-    <h2>Login to portal</h2>
+    <h2>You logged out</h2>
     <input type="text" name="username" placeholder="Matrix number (reg number)" class="input" required>
     <input type="password" name="password" placeholder="Password" minlength="8" class="input" required>
     {% if form.errors %}

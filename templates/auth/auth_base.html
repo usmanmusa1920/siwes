@@ -37,6 +37,13 @@
           {% block main_left %} {% endblock main_left %}
         </div>
         <div class="main_right">
+          <div class="main_top">
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert_success">{{message}}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
           {% block main_right %} {% endblock main_right %}
         </div>
       </div>

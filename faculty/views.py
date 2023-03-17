@@ -1,3 +1,8 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def facultyProfile(request):
+  context = {
+    "None": None,
+  }
+  return render(request, "faculty/profile.html", context=context)

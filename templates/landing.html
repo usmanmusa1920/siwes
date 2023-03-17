@@ -30,10 +30,10 @@
           </div>
         </div>
         <div class="straight">
-          <a href="#">Account</a>
-          <a href="#">Training center</a>
-          <a href="#">Result</a>
-          <a href="#">Profile</a>
+          <a href="{% url 'department:training_coordinator_profile' %}">Training Coordinator</a>
+          <a href="{% url 'department:register_training_coordinator' %}">Register training Coordinator</a>
+          <a href="{% url 'department:confirm_register_training_coordinator' %}">Confirm register training Coordinator</a>
+          <a href="{% url 'training:training_director_profile' %}">Training Director</a>
         </div>
       </div>
       <div class="wrapp_bot_left">
@@ -45,17 +45,17 @@
       <div class="img">
         <img src="{% static 'media/user.png' %}" alt="">
       </div>
-      <a href="admin">admin</a>
-      <a href="login">login</a>
+      <a href="{% url 'student:profile' %}">Student profile</a>
+      <a href="{% url 'student:placement_letter' %}">Placement letter</a>
+      <a href="{% url 'student:acceptance_letter' %}">Acceptance letter</a>
+      <a href="{% url 'auth:change_password' %}">Change password</a>
+      <a href="{% url 'faculty:profile' %}">Faculty profile</a>
+      <a href="{% url 'auth:signup' %}">signup</a>
+      <a href="{% url 'auth:login' %}">Login</a>
+      <a href="{% url 'auth:logout' %}">Logout</a>
+      <a href="{% url 'auth:change_password' %}">Change password</a>
       <a href="error">error</a>
-      <a href="register_student">register_student</a>
-      <a href="placement_letter">placement_letter</a>
-      <a href="acceptance_letter">acceptance_letter</a>
-      <a href="signup">signup</a>
-      <a href="change_password">change_password</a>
-      <a href="profile_student">profile_student</a>
-      <a href="profile_staff">profile_staff</a>
-      <a href="confirm">confirm</a>
+      <a href="admin">admin</a>
     </div>
   </div>
 {% endblock main %}
