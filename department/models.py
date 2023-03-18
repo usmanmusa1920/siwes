@@ -44,6 +44,7 @@ class DepartmentHOD(models.Model):
 
 class DepartmentTrainingCoordinator(models.Model):
   """This is departmental training (siwes/tp) coordinator database table"""
+  coordinator = models.ForeignKey(User, on_delete=models.CASCADE)
   dept_hod = models.ForeignKey(DepartmentHOD, on_delete=models.CASCADE)
   first_name = models.CharField(max_length=100, unique=False)
   middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)

@@ -82,27 +82,43 @@
       </div>
     </div>
 
-    <div class="wrapp_list">
-      <a href="#">Usman Musa</a>
-      <small>200 level student</small>
-      <form action="#" method="post">
-        <button type="button">viewed</button>
-      </form>
-    </div>
+    {% if coord_student %}
+      {%  for student in coord_student %}
+        <div class="wrapp_list">
+          <a href="#">{{student.first_name}} {{student.last_name}}</a>
+          <small>{{student.level}} level student</small>
+          {% if student.student in training_tutor.training_students.all %}
+            <form action="#" method="post">
+              <button type="button">viewed</button>
+            </form>
+          {% else %}
+            <form action="#" method="post">
+              <button type="button">add</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endif %}
 
     <div class="wrapp_info">
       <div class="wrapp_info_left">
         <p>
-          <b>Name:</b> Usman Musa
+          <b>Name:</b> {{training_tutor.first_name}} {{training_tutor.middle_name}} {{training_tutor.last_name}}
         </p>
         <p>
-          <b>Matrix no:</b> 2010310013
+          <b>Matrix no:</b> {{training_tutor.id_no}}
         </p>
         <p>
-          <b>Faculty:</b> Science
+          <b>Faculty:</b> {{training_tutor.dept_hod.department.faculty.name}}
         </p>
         <p>
-          <b>Department:</b> B.Sc Physics
+          {% if training_tutor.dept_hod.department.faculty.name == "Science" %}
+            <b>Department:</b> B.Sc {{training_tutor.dept_hod.department.name}}
+          {% elif training_tutor.dept_hod.department.faculty.name == "Education" %}
+            <b>Department:</b> B.Ed {{training_tutor.dept_hod.department.name}}
+          {% else %}
+            <b>Department:</b> {{training_tutor.dept_hod.department.name}}
+          {% endif %}
         </p>
       </div>
 

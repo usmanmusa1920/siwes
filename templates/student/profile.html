@@ -29,8 +29,8 @@
     </form>
 
     <div class="wrapp_list">
-      <a href="#">Usman Musa</a>
-      <small>200 level student</small>
+      <a href="#">{{usr.student.first_name}} {{usr.student.last_name}}</a>
+      <small>{{usr.level}} level student</small>
       <form action="#" method="post">
         <button type="submit">ADD</button>
       </form>
@@ -51,16 +51,22 @@
     <div class="wrapp_info">
       <div class="wrapp_info_left">
         <p>
-          <b>Name:</b> Usman Musa
+          <b>Name:</b> {{usr.student.first_name}} {{usr.student.last_name}}
         </p>
         <p>
-          <b>Matrix no:</b> 2010310013
+          <b>Matrix no:</b> {{usr.matrix_no}}
         </p>
         <p>
-          <b>Faculty:</b> Science
+          <b>Faculty:</b> {{usr.student_training_coordinator.dept_hod.department.faculty.name}}
         </p>
         <p>
-          <b>Department:</b> B.Sc Physics
+          {% if usr.student_training_coordinator.dept_hod.department.faculty.name == "Science" %}
+            <b>Department:</b> B.Sc {{usr.student_training_coordinator.dept_hod.department.name}}
+          {% elif usr.student_training_coordinator.dept_hod.department.faculty.name == "Education" %}
+            <b>Department:</b> B.Ed {{usr.student_training_coordinator.dept_hod.department.name}}
+          {% else %}
+            <b>Department:</b> {{usr.student_training_coordinator.dept_hod.department.name}}
+          {% endif %}
         </p>
         <br>
         <a href="#" class="delete_me">Delete me</a>

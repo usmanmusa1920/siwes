@@ -4,7 +4,7 @@
   (from django.contrib.auth.models import User)
   use the below tricks
 
-pmake && pmigrate && python manage.py createsuperuser --email usmanmusa1920@gmail.com --first_name Usman --last_name Musa --identification_num 2010310013 && pm
+pmake && pmigrate && python manage.py createsuperuser --email usmanmusa1920@gmail.com --first_name Usman --last_name Musa --identification_num 2010310013 && python manage.py createsuperuser --email uokoyeikechukwu@yahoo.com --first_name Okoye --last_name Francis --identification_num 20232000 && pm
 
 export DJANGO_SETTINGS_MODULE=fugus.settings
 
@@ -26,15 +26,25 @@ User = get_user_model()
 # USERS
 
 u1 = User.objects.get(id=1)
+u6 = User.objects.filter(identification_num="20232000").first()
+u6.middle_name = "Ikechukwu"
+u6.phone_number = "+2348135632603"
+u6.save()
+
 u2 = User(first_name="Shehu", last_name="Musa", identification_num="201031002", email="usmanmusa2019@gmail.com", phone_number="+2348144807260")
 u3 = User(first_name="Benjamin", last_name="Omoniyi", identification_num="201031003", email="benjamin@gmail.com", phone_number="+2348144807211")
 u4 = User(first_name="Abdulhakeem", last_name="Odoi", identification_num="201031004", email="odoi@gmail.com", phone_number="+2348144807222")
 u5 = User(first_name="Muhammad", last_name="Amin", identification_num="201031005", email="moh'd@mail.com", phone_number="+2348144807233")
+u6 = User(first_name="", ="", last_name="", identification_num="", email="", phone_number")
+u7 = User(first_name="Nasir", last_name="Sanusi", identification_num="20232021", email="nasirsanusai@yahoo.com", phone_number="+2348135632605")
+u8 = User(first_name="Ema", last_name="Okonjo", identification_num="20232033", email="emaokonjo@yahoo.com", phone_number="+2348135632633")
 
 u2.save()
 u3.save()
 u4.save()
 u5.save()
+u7.save()
+u8.save()
 
 # __________________
 # TRAINING DIRECTORS
@@ -112,9 +122,9 @@ my_hod3 = DepartmentHOD.objects.filter(department=my_dept1).first()
 # ____________________
 # TRAINING COORDINATOR
 
-dtc1 = DepartmentTrainingCoordinator(dept_hod=my_hod1, first_name="Nasir", last_name="Sanusi", email="nasirsanusai@yahoo.com", phone_number="+2348135632605", id_no="20232021")
-dtc2 = DepartmentTrainingCoordinator(dept_hod=my_hod2, first_name="Ema", last_name="Okonjo", email="emaokonjo@yahoo.com", phone_number="+2348135632633", id_no="20232033")
-dtc3 = DepartmentTrainingCoordinator(dept_hod=my_hod3, first_name="Okoye", last_name="Ikechukwu", email="okoyeikechukwu@yahoo.com", phone_number="+2348135632603", id_no="20232000")
+dtc1 = DepartmentTrainingCoordinator(dept_hod=my_hod1, first_name=u7.first_name, last_name=u7.last_name, email=u7.email, phone_number=u7.phone_number, id_no=u7.identification_num, coordinator=u7)
+dtc2 = DepartmentTrainingCoordinator(dept_hod=my_hod2, first_name=u8.first_name, last_name=u8.last_name, email=u8.email, phone_number=u8.phone_number, id_no=u8.identification_num, coordinator=u8)
+dtc3 = DepartmentTrainingCoordinator(dept_hod=my_hod3, first_name=u6.first_name, middle_name=u6.middle_name, last_name=u6.last_name, email=u6.email, phone_number=u6.phone_number, id_no=u6.identification_num, coordinator=u6)
 
 dtc1.save()
 dtc2.save()
