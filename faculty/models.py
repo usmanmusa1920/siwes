@@ -2,6 +2,9 @@ from django.db import models
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
 
 class Faculty(models.Model):
   date_joined = models.DateTimeField(default=timezone.now)
@@ -19,6 +22,7 @@ class Faculty(models.Model):
 
 
 class FacultyDean(models.Model):
+  dean = models.ForeignKey(User, on_delete=models.CASCADE)
   faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
   first_name = models.CharField(max_length=100, unique=False)
   middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)

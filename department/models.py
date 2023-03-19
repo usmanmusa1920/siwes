@@ -24,6 +24,7 @@ class Department(models.Model):
 
 class DepartmentHOD(models.Model):
   """This is departmental h.o.d database table"""
+  hod = models.ForeignKey(User, on_delete=models.CASCADE)
   department = models.ForeignKey(Department, on_delete=models.CASCADE)
   first_name = models.CharField(max_length=100, unique=False)
   middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)

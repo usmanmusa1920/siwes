@@ -7,6 +7,7 @@ User = get_user_model()
 
 
 class TrainingDirector(models.Model):
+  director = models.ForeignKey(User, on_delete=models.CASCADE)
   first_name = models.CharField(max_length=100, unique=False)
   middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
   last_name = models.CharField(max_length=100, unique=False)
