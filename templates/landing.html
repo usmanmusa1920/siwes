@@ -52,8 +52,10 @@
       <a href="{% url 'student:placement_letter' %}">Placement letter</a>
       <a href="{% url 'student:acceptance_letter' %}">Acceptance letter</a>
       <a href="{% url 'faculty:profile' %}">Faculty profile</a>
-      <a href="{% url 'auth:signup' %}">signup</a>
-      <a href="{% url 'auth:login' %}">Login</a>
+      <a href="{% url 'auth:logout' %}">Logout</a>
+      {% if request.user.is_superuser %}
+        <a href="admin">Admin</a>
+      {% endif %}
     </div>
   </div>
 {% endblock main %}
