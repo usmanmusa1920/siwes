@@ -12,8 +12,8 @@
   <div class="wrapp_letter">
     <div class="wrapp_head">
       <img src="{% static 'media/logo.png' %}" alt="">
-      <h1>DEPARTMENT OF PHYSICS</h1>
-      <h4>FACULTY OF SCIENCE</h4>
+      <h1>{{usr.student_training_coordinator.dept_hod.department|upper}}</h1>
+      <h4>{{usr.student_training_coordinator.dept_hod.department.faculty|upper}}</h4>
       <h4 class="uni">FEDERAL UNIVERSITY GUSAU</h4>
       <p>Along Zaria - Sokoto Road, P.M.B 1001, Gusau, Zamfara State, Nigeria</p>
 
@@ -73,13 +73,19 @@
     </div>
 
     <div class="letter_body">
-      <p class="letter_date">3rd January 2023</p>
+      <p class="letter_date">
+        {% if letter %}
+          {{letter.release_date|date:'d F, Y'}}
+        {% else %}
+          3rd January 2023
+        {% endif %}
+      </p>
 
       <h3 class="letter_to_sir">The Personal Manger/Managing Director/Director</h3>
 
       <p>Dear Sir</p>
 
-      <h1 class="letter_title">SIWES PLACEMENT REQUEST</h1>
+      <h1 class="letter_title">{{usr.student_training_coordinator.dept_hod.department.faculty.training|upper}} PLACEMENT REQUEST</h1>
 
       <p class="letter_p">SIWES is a mandatory training prescribed by the Nigerian Universities Commision (NUC) and duly recognised by the ITF for all university student undergoing science and related course. In view of its importance, and in accordance with the demands of the programme, it will be greatly appreciated if you would provide a place for our student(s) to gain experience.</p>
 
@@ -93,10 +99,24 @@
         </div>
         <br>
         <div class="values">
-          <span>SIWES</span>
-          <span>2010310013</span>
-          <span>Usman Musa</span>
-          <span>B. Sc. Physics</span>
+          <span>{{usr.student_training_coordinator.dept_hod.department.faculty.training|upper}}</span>
+          <span>{{usr.matrix_no}}</span>
+          <span>
+            {{usr.first_name}}
+            {% if usr.middle_name %}
+              {{usr.middle_name}}
+            {% endif %}
+            {{usr.last_name}}
+          </span>
+          <span>
+            {% if usr.student_training_coordinator.dept_hod.department.faculty.name == "Science" %}
+              B.Sc {{usr.student_training_coordinator.dept_hod.department.name}}
+            {% elif usr.student_training_coordinator.dept_hod.department.faculty.name == "Education" %}
+              B.Ed {{usr.student_training_coordinator.dept_hod.department.name}}
+            {% else %}
+              {{usr.student_training_coordinator.dept_hod.department.name}}
+            {% endif %}
+          </span>
           <span>3 months</span>
         </div>
       </div>
@@ -105,12 +125,18 @@
 
       <p class="letter_p">However, if you are satisfied with the student(s) involvement in the training, any assistance rendered will be highly appreciated.</p>
 
-      <p class="letter_p">Please indicate your acceptance of the student by filling the attached form and mail it to the Departmental SIWES Coordinator.</p>
+      <p class="letter_p">Please indicate your acceptance of the student by filling the attached form and mail it to the Departmental {{usr.student_training_coordinator.dept_hod.department.faculty.training|upper}} Coordinator.</p>
 
       <p class="letter_p">Thank you.</p>
 
-      <h3 class="sign_1">OKOYE IKECHUKWU FRANCIS</h3>
-      <p class="sign_2">Departmental SIWES Coordinator</p>
+      <h3 class="sign_1">
+        {{usr.student_training_coordinator.first_name|upper}}
+        {% if usr.student_training_coordinator.middle_name %}
+          {{usr.student_training_coordinator.middle_name|upper}}
+        {% endif %}
+        {{usr.student_training_coordinator.last_name|upper}}
+      </h3>
+      <p class="sign_2">Departmental {{usr.student_training_coordinator.dept_hod.department.faculty.training|upper}} Coordinator</p>
     </div>
 
     <div class="letter_footer">

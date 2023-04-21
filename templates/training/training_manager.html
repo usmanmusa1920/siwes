@@ -1,0 +1,157 @@
+<!-- extending from base.html file -->
+{% extends "base.html" %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>Training manager page</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="main_wrapp_head">
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+  </div>
+
+  <div class="main_wrapp">
+    <div class="wrapp_img">
+      <img src="{% static 'media/user.png' %}" alt="">
+    </div>
+
+    <div class="section">
+      {% for faculty in faculties %}
+        {% if faculty.name == "Science" %}
+          <a href="#" class="sec_current">{{faculty}}</a>
+        {% else %}
+          <a href="#" class="sec_link">{{faculty}}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="wrapp_form">
+      <p><b>Select department:</b></p>
+      <select name="" class="wrapp_select">
+        {% for department in departments %}
+          <option value="">{{department.name}}</option>
+        {% endfor %}
+      </select>
+      <form action="#" method="post" class="form_peace">
+        <button type="submit">Filter</button>
+      </form>
+    </div>
+
+    <div class="main_wrapp_head">
+      <p>Student request for IT letter</p>
+    </div>
+    <div class="request">
+      <a href="#">Usman Musa</a>
+      <small>25, March 2019</small>
+      <form action="#" method="post" class="form_peace">
+        <button type="submit">Accept</button>
+      </form>
+      <form action="#" method="post" class="form_danger">
+        <button type="submit">Decline</button>
+      </form>
+    </div>
+
+    <form action="#" method="get" class="search">
+      <input type="search" name="" placeholder="Search">
+      <button type="submit">search</button>
+    </form>
+
+    {% for coordinator in all_dept_coord %}
+      <div class="wrapp_list">
+        <a href="#">{{coordinator}}</a>
+        <small>Student training coordinator</small>
+        <form action="#" method="post">
+          {% if coordinator.is_active %}
+            <button type="submit">is_active</button>
+          {% else %}
+            <button type="button">not_active</button>
+          {% endif %}
+        </form>
+      </div>
+    {% endfor %}
+
+    <div class="wrapp_pages">
+      <div class="wrapp_pages_column">
+        <a href="" class="surf">previous</a>
+        <a href="" class="page_link">9</a>
+        <a href="" class="page_link">10</a>
+        <a href="" class="current">11</a>
+        <a href="" class="page_link">12</a>
+        <a href="" class="page_link">13</a>
+        <a href="" class="surf">next</a>
+      </div>
+    </div>
+
+    <div class="wrapp_info">
+      <div class="wrapp_info_left">
+        <p>
+          <b>Name:</b>
+          {{request.user.first_name}}
+          {% if request.user.middle_name %}
+            {{request.user.middle_name}}
+          {% endif %}
+          {{request.user.last_name}}
+        </p>
+        <p>
+          <b>Matrix no:</b> {{request.user.identification_num}}
+        </p>
+        <p>
+          <b>Faculty:</b> {{fclty.name}}
+        </p>
+
+        <p>
+          {% if fclty.name == "Science" %}
+            <b>Department:</b> B.Sc {{dept.name}}
+          {% elif fclty.name == "Education" %}
+            <b>Department:</b> B.Ed {{dept.name}}
+          {% else %}
+            <b>Department:</b> {{dept.name}}
+          {% endif %}
+        </p>
+      </div>
+
+      <div class="wrapp_info_right">
+        <input type="file" name="" id="">
+        <br>
+        <br>
+        <a href="#">Edit profile</a>
+        <br>
+        <a href="#">Request for IT letter</a>
+      </div>
+    </div>
+
+    <div class="wrapp_level">
+      <div>
+        Your 200 level training
+      </div>
+      <div>
+        Your 300 level training
+      </div>
+    </div>
+
+    <div class="wrapp_null">
+      <div class="wrapp_in_null">
+        <div class="main_wrapp_null">
+          <p>We can't find trusted user with that data</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="main_wrapp_what">
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+    </div>
+
+    <div class="main_wrapp_head">
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+    </div>
+
+  </div>
+{% endblock main %}

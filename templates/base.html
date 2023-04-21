@@ -38,10 +38,20 @@
               <img src="{% static 'media/logo.png' %}" alt="" srcset="">
             </div>
           </div>
-          <a href="#" class="dash_link">Usman Musa</a>
+          <a href="#" class="dash_link">
+            {{request.user.first_name}}
+            {% if request.user.middle_name %}
+              {{request.user.middle_name}}
+            {% endif %}
+            {{request.user.last_name}}
+          </a>
         </span>
         
-        <h3 class="category">200/300 level</h3>
+        {% if request.user.is_staff %}
+          <h3 class="category">Campus Staff</h3>
+        {% else %}
+          <h3 class="category">200/300 level</h3>
+        {% endif %}
         <a href="#" class="dash_link">Student SIWES</a>
 
         <span class="link_ref">Fees</span>
@@ -92,7 +102,11 @@
           </div>
 
           <div class="header_right">
-            <a href="#"><h4>Profile</h4></a>
+            {% if request.user.is_staff %}
+              <a href="{% url 'training:training_manager' %}"><h4>Profile</h4></a>
+            {% else %}
+              <a href="{% url 'student:profile' %}"><h4>Profile</h4></a>
+            {% endif %}
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@
 pmake && pmigrate && python manage.py createsuperuser --email usmanmusa1920@gmail.com --first_name Usman --last_name Musa --identification_num 2010310013 && python manage.py createsuperuser --email okoyeikechukwu@yahoo.com --first_name Okoye --last_name Francis --identification_num 20232024 && pm
 
 export DJANGO_SETTINGS_MODULE=fugus.settings
+python
 
 import django
 django.setup()
@@ -138,7 +139,7 @@ dtc2.save()
 dtc3.save()
 
 
-lett = Letter(coordinator=dtc3, session="2022/2023", text="This is our students letter")
+lett = Letter(coordinator=dtc3, session="2023", text="This is our students letter")
 lett.save()
 
 # _________________

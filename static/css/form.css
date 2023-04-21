@@ -7,6 +7,16 @@
 }
 /* the above are override from the base.html */
 
+.danger_me{
+  color: red;
+  text-decoration: underline;
+}
+
+.good_me{
+  color: dodgerblue;
+  text-decoration: underline;
+}
+
 .wrapper{
   width: 100%;
 }
@@ -28,6 +38,43 @@
   .wrapp_head h1{
     font-size: 20px;
   }
+}
+
+.wrapp_body{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wrapp_null{
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 5px;
+  margin: 50px 0;
+  background: lightgray;
+  border-radius: 10px;
+}
+
+.wrapp_in_null{
+  border: solid grey 1px;
+  background: whitesmoke;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main_wrapp_null{
+  min-width: 200px;
+  min-height: 50px;
+  padding: 7px;
+  background: pink;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .wrapp_main{
@@ -90,6 +137,22 @@
   background: lightgrey;
 }
 
+.wrapp_text{
+  outline: none;
+  width: 300px;
+  height: 70px;
+  border: none;
+  padding: 7px;
+  margin-bottom: 15px;
+  background: lightgrey;
+}
+
+@media only screen and (max-width: 700px){
+  .wrapp_text{
+    width: 100%;
+  }
+}
+
 .wrapp_select{
   outline: none;
   width: fit-content;
@@ -123,4 +186,21 @@
   color: white;
   background: green;
   border: none;
+}
+
+.accept_let_img{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.accept_let_img img{
+  width: 50%;
+}
+
+@media only screen and (max-width: 700px){
+  .accept_let_img img{
+    width: 100%;
+  }
 }

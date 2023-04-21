@@ -3,9 +3,8 @@ from django.db import models
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
 from department.models import DepartmentTrainingCoordinator
-
-
 from django.contrib.auth import get_user_model
+
 User = get_user_model()
 
 
@@ -47,15 +46,23 @@ class AcceptanceLetter(models.Model):
   receiver_acept = models.ForeignKey(DepartmentTrainingCoordinator, related_name='receiver_acept', on_delete=models.CASCADE)
   timestamp = models.DateTimeField(default=timezone.now)
   title = models.CharField(max_length=255, blank=True, null=True)
+  level = models.CharField(max_length=255, blank=False, null=False)
   image = models.ImageField(blank=True, null=True, upload_to=f'{datetime.today().year}-acceptance_letter')
   text = models.TextField(blank=True, null=True,)
   is_reviewed = models.BooleanField(default=False)
   
   def __str__(self):
-    # yr = datetime.today().year
-    # trnng = self.receiver_acept.dept_hod.department.faculty.training
-    # fclty = self.receiver_acept.dept_hod.department.faculty.name
-    # dprtmnt = self.receiver_acept.dept_hod.department.name
-    # lvl = self.sender_acept.level
-    # gg = f"{yr}-acceptance_letter/{trnng}/{fclty}/{dprtmnt}/{lvl}"
     return f"Student ({self.sender_acept.matrix_no}) acceptance letter (approved)"
+
+    
+class UpdateAcceptanceLetter(models.Model):
+  sender_acept = models.ForeignKey(TrainingStudent, related_name='sender_update_letter', on_delete=models.CASCADE)
+  receiver_acept = models.ForeignKey(DepartmentTrainingCoordinator, related_name='receiver_update_letter', on_delete=models.CASCADE)
+  letter = models.ForeignKey(AcceptanceLetter, related_name='acept_letter', on_delete=models.CASCADE)
+  timestamp = models.DateTimeField(default=timezone.now)
+  text = models.TextField(blank=True, null=True,)
+  level = models.CharField(max_length=255, blank=False, null=False, default="200")
+  is_reviewed = models.BooleanField(default=False)
+  
+  def __str__(self):
+    return f"{self.sender_acept.matrix_no} make a request to change acceptance letter on ({self.timestamp})"
