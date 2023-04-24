@@ -85,7 +85,13 @@
     {% if coord_student %}
       {%  for student in coord_student %}
         <div class="wrapp_list">
-          <a href="#">{{student.first_name}} {{student.last_name}}</a>
+          <a href="#">
+            {{student.first_name}}
+            {% if usr.middle_name %}
+              {{student.middle_name}}
+            {% endif %}
+            {{student.last_name}}
+          </a>
           <small>{{student.level}} level student</small>
           {% if student.student in training_tutor.training_students.all %}
             <form action="#" method="post">
@@ -152,10 +158,5 @@
     <div class="main_wrapp_what">
       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
     </div>
-
-    <div class="main_wrapp_head">
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-    </div>
-
   </div>
 {% endblock main %}

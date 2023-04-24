@@ -1,5 +1,22 @@
 
 """
+Datetime format:
+  d = '01' to '31'
+  j = '1' to '31'
+  m = '01' to '12'
+  n = '1' to '12'
+  M = 'Jan'
+  b = 'jan'
+  F = 'May'
+  y = '99'
+  Y = '1999'
+  
+--------------------
+KEYS:
+std          =   training student
+stu_usr      =   user who make request
+
+
   If any issue when using the default user model
   (from django.contrib.auth.models import User)
   use the below tricks
@@ -22,6 +39,16 @@ from django.contrib.auth import get_user_model
 
 
 User = get_user_model()
+
+#  ----------------------
+#  3    Training director
+#  *    faculty
+#  *    department
+#  *    Dean
+#  5    Hod
+#  5    Coordinators
+#  7    Students
+#  ----------------------
 
 
 # __________________
@@ -119,7 +146,7 @@ ud3.save()
 ud4.save()
 ud5.save()
 
-dh1 = DepartmentHOD(hod=ud1, department=my_dept1, first_name=ud1.first_name, last_name=ud1.last_name, email=ud1.email, phone_number=ud1.phone_number, id_no=ud1.identification_num)
+dh1 = DepartmentHOD(hod=ud1, department=my_dept1, first_name=ud1.first_name, last_name=ud1.last_name, email=ud1.email, phone_number=ud1.phone_number, id_no=ud1.identification_num, universities="B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO", ranks="Ph.D")
 dh2 = DepartmentHOD(hod=ud2, department=my_dept2, first_name=ud2.first_name, last_name=ud2.last_name, email=ud2.email, phone_number=ud2.phone_number, id_no=ud2.identification_num)
 dh3 = DepartmentHOD(hod=ud3, department=my_dept3, first_name=ud3.first_name, last_name=ud3.last_name, email=ud3.email, phone_number=ud3.phone_number, id_no=ud3.identification_num)
 
@@ -139,8 +166,10 @@ dtc2.save()
 dtc3.save()
 
 
-lett = Letter(coordinator=dtc3, session="2023", text="This is our students letter")
-lett.save()
+placement_lett = Letter(coordinator=dtc3, session="2023", text="This is our students placement letter")
+acceptance_lett = Letter(coordinator=dtc3, session="2023", text="This is our students acceptance letter", letter="acceptance letter")
+placement_lett.save()
+acceptance_lett.save()
 
 # _________________
 # TRAINING STUDENTS

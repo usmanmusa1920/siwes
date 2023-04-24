@@ -18,13 +18,13 @@
     </div>
 
     <div class="address_from">
-      <p>The {{usr.student_training_coordinator.dept_hod.department.faculty.training|upper}} Coordinator</p>
-      <p>{{usr.student_training_coordinator.dept_hod.department}}</p>
+      <p>The {{dean.faculty.training|upper}} Coordinator</p>
+      <p>{{hod.department}}</p>
       <p>Federal University Gusau</p>
       <p>Zamfara State</p>
     </div>
     <p class="salute">Dear Sir</p>
-    <h1 class="title">RE: {{usr.student_training_coordinator.dept_hod.department.faculty.training|upper}} PLACEMENT REQUEST</h1>
+    <h1 class="title">RE: {{dean.faculty.training|upper}} PLACEMENT REQUEST</h1>
 
     <p class="text">Your request letter dated {{letter.release_date|date:'d F, Y'}} refers.</p>
     <p class="text">
@@ -35,7 +35,7 @@
       with registration number <span class="dash">Nothing is here. Nothing is here. Nothing is here. </span> has been provided a place 
     </p>
     <p class="text">
-      in my Organization/Institution/Company for the three month {{usr.student_training_coordinator.dept_hod.department.faculty.training|upper}} programme to gain the requisite
+      in my Organization/Institution/Company for the three month {{dean.faculty.training|upper}} programme to gain the requisite
     </p>
     <p class="text">
       experience.

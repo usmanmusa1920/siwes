@@ -12,8 +12,8 @@
   <div class="wrapp_letter">
     <div class="wrapp_head">
       <img src="{% static 'media/logo.png' %}" alt="">
-      <h1>{{usr.student_training_coordinator.dept_hod.department|upper}}</h1>
-      <h4>{{usr.student_training_coordinator.dept_hod.department.faculty|upper}}</h4>
+      <h1>{{hod.department|upper}}</h1>
+      <h4>{{dean.faculty|upper}}</h4>
       <h4 class="uni">FEDERAL UNIVERSITY GUSAU</h4>
       <p>Along Zaria - Sokoto Road, P.M.B 1001, Gusau, Zamfara State, Nigeria</p>
 
@@ -50,23 +50,41 @@
           <div class="wrapp_in_column">
             <div class="wrapp_div">
               <h4>
-                LAWAL SA'AD, <i>Ph.D.</i>
+                {{hod.first_name|upper}}
+                {% if hod.middle_name %}
+                  {{hod.middle_name|upper}}
+                {% endif %}
+                {{hod.last_name|upper}}
+                {% if hod.ranks != None %}
+                  , <i>{{hod.ranks}}.</i>
+                {% endif %}
               </h4>
-              <span>
-                <small class="danger">B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.);</small>
-                <small class="danger">Msc, PhD (USIM Malaysia); CFTO</small>
-              </span>
+
+              {% if hod.universities %}
+                <span>
+                  <small class="danger">{{hod.universities}}</small>
+                  <!-- <small class="danger">B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.);</small>
+                  <small class="danger">Msc, PhD (USIM Malaysia); CFTO</small> -->
+                </span>
+              {% endif %}
             </div>
             <h4 class="danger">HEAD OF DEPARTMENT</h4>
-            <p>
-              <span class="danger">Email:</span>
-              lawalsaad@yahoo.com, lawalsaad@fugusau.edu.ng
-              <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; magusau@hotmail.com
-            </p>
-            <p>
-              <span class="danger">Tel: </span>
-              +2349036632603, +2348097750488
-            </p>
+            {% if hod.email %}
+              <p>
+                <span class="danger">Email:</span>
+                {{hod.email}}
+                <!-- lawalsaad@yahoo.com, lawalsaad@fugusau.edu.ng -->
+                <!-- <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; magusau@hotmail.com -->
+              </p>
+            {% endif %}
+            
+            {% if hod.phone_number %}
+              <p>
+                <span class="danger">Tel: </span>
+                {{hod.phone_number}}
+                <!-- +2349036632603, +2348097750488 -->
+              </p>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -76,8 +94,6 @@
       <p class="letter_date">
         {% if letter %}
           {{letter.release_date|date:'d F, Y'}}
-        {% else %}
-          3rd January 2023
         {% endif %}
       </p>
 
@@ -85,7 +101,7 @@
 
       <p>Dear Sir</p>
 
-      <h1 class="letter_title">{{usr.student_training_coordinator.dept_hod.department.faculty.training|upper}} PLACEMENT REQUEST</h1>
+      <h1 class="letter_title">{{dean.faculty.training|upper}} PLACEMENT REQUEST</h1>
 
       <p class="letter_p">SIWES is a mandatory training prescribed by the Nigerian Universities Commision (NUC) and duly recognised by the ITF for all university student undergoing science and related course. In view of its importance, and in accordance with the demands of the programme, it will be greatly appreciated if you would provide a place for our student(s) to gain experience.</p>
 
@@ -99,22 +115,22 @@
         </div>
         <br>
         <div class="values">
-          <span>{{usr.student_training_coordinator.dept_hod.department.faculty.training|upper}}</span>
-          <span>{{usr.matrix_no}}</span>
+          <span>{{dean.faculty.training|upper}}</span>
+          <span>{{std.matrix_no}}</span>
           <span>
-            {{usr.first_name}}
-            {% if usr.middle_name %}
-              {{usr.middle_name}}
+            {{std.first_name}}
+            {% if std.middle_name %}
+              {{std.middle_name}}
             {% endif %}
-            {{usr.last_name}}
+            {{std.last_name}}
           </span>
           <span>
-            {% if usr.student_training_coordinator.dept_hod.department.faculty.name == "Science" %}
-              B.Sc {{usr.student_training_coordinator.dept_hod.department.name}}
-            {% elif usr.student_training_coordinator.dept_hod.department.faculty.name == "Education" %}
-              B.Ed {{usr.student_training_coordinator.dept_hod.department.name}}
+            {% if hod.department.faculty.name == "Science" %}
+              B.Sc {{hod.department.name}}
+            {% elif hod.department.faculty.name == "Education" %}
+              B.Ed {{hod.department.name}}
             {% else %}
-              {{usr.student_training_coordinator.dept_hod.department.name}}
+              {{hod.department.name}}
             {% endif %}
           </span>
           <span>3 months</span>
@@ -125,18 +141,18 @@
 
       <p class="letter_p">However, if you are satisfied with the student(s) involvement in the training, any assistance rendered will be highly appreciated.</p>
 
-      <p class="letter_p">Please indicate your acceptance of the student by filling the attached form and mail it to the Departmental {{usr.student_training_coordinator.dept_hod.department.faculty.training|upper}} Coordinator.</p>
+      <p class="letter_p">Please indicate your acceptance of the student by filling the attached form and mail it to the Departmental {{hod.department.faculty.training|upper}} Coordinator.</p>
 
       <p class="letter_p">Thank you.</p>
 
       <h3 class="sign_1">
-        {{usr.student_training_coordinator.first_name|upper}}
-        {% if usr.student_training_coordinator.middle_name %}
-          {{usr.student_training_coordinator.middle_name|upper}}
+        {{std.student_training_coordinator.first_name|upper}}
+        {% if std.student_training_coordinator.middle_name %}
+          {{std.student_training_coordinator.middle_name|upper}}
         {% endif %}
-        {{usr.student_training_coordinator.last_name|upper}}
+        {{std.student_training_coordinator.last_name|upper}}
       </h3>
-      <p class="sign_2">Departmental {{usr.student_training_coordinator.dept_hod.department.faculty.training|upper}} Coordinator</p>
+      <p class="sign_2">Departmental {{hod.department.faculty.training|upper}} Coordinator</p>
     </div>
 
     <div class="letter_footer">

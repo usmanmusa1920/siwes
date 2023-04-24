@@ -15,7 +15,7 @@
 <!-- content of the page -->
 {% block main %}
   <div class="main_wrapp_head">
-    <p>Student {{usr.student_training_coordinator.dept_hod.department.faculty.training}} profile</p>
+    <p>Student {{dean.faculty.training}} profile</p>
   </div>
 
   <div class="main_wrapp">
@@ -28,8 +28,14 @@
     </form>
 
     <div class="wrapp_list">
-      <a href="#">{{usr.student.first_name}} {{usr.student.last_name}}</a>
-      <small>{{usr.level}} level student</small>
+      <a href="#">
+        {{std.student.first_name}}
+        {% if std.student.middle_name %}
+          {{std.student.middle_name}}
+        {% endif %}
+        {{std.student.last_name}}
+      </a>
+      <small>{{std.level}} level student</small>
       <form action="#" method="post">
         <button type="submit">ADD</button>
       </form>
@@ -49,25 +55,25 @@
     <div class="wrapp_info">
       <div class="wrapp_info_left">
         <p>
-          <b>Name:</b> {{usr.student.first_name}}
-          {% if usr.middle_name %}
-            {{usr.student.middle_name}}
+          <b>Name:</b> {{std.student.first_name}}
+          {% if std.middle_name %}
+            {{std.student.middle_name}}
           {% endif %}
-          {{usr.student.last_name}}
+          {{std.student.last_name}}
         </p>
         <p>
-          <b>Matrix no:</b> {{usr.matrix_no}}
+          <b>Matrix no:</b> {{std.matrix_no}}
         </p>
         <p>
-          <b>Faculty:</b> {{usr.student_training_coordinator.dept_hod.department.faculty.name}}
+          <b>Faculty:</b> {{dean.faculty.name}}
         </p>
         <p>
-          {% if usr.student_training_coordinator.dept_hod.department.faculty.name == "Science" %}
-            <b>Department:</b> B.Sc {{usr.student_training_coordinator.dept_hod.department.name}}
-          {% elif usr.student_training_coordinator.dept_hod.department.faculty.name == "Education" %}
-            <b>Department:</b> B.Ed {{usr.student_training_coordinator.dept_hod.department.name}}
+          {% if dean.faculty.name == "Science" %}
+            <b>Department:</b> B.Sc {{hod.department.name}}
+          {% elif hod.department.faculty.name == "Education" %}
+            <b>Department:</b> B.Ed {{hod.department.name}}
           {% else %}
-            <b>Department:</b> {{usr.student_training_coordinator.dept_hod.department.name}}
+            <b>Department:</b> {{hod.department.name}}
           {% endif %}
         </p>
         <br>
@@ -92,7 +98,7 @@
       <div>
         Your 200 level training
       </div>
-      {% if usr.level == "300" %}
+      {% if std.level == "300" %}
         <div>
           Your 300 level training
         </div>
