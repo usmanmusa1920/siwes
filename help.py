@@ -1,3 +1,4 @@
+# This script is, ease writing code in python interpreter
 
 """
 Datetime format:
@@ -10,12 +11,7 @@ Datetime format:
   F = 'May'
   y = '99'
   Y = '1999'
-  
 --------------------
-KEYS:
-std          =   training student
-stu_usr      =   user who make request
-
 
   If any issue when using the default user model
   (from django.contrib.auth.models import User)
@@ -40,27 +36,18 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-#  ----------------------
-#  3    Training director
-#  *    faculty
-#  *    department
-#  *    Dean
-#  5    Hod
-#  5    Coordinators
-#  7    Students
-#  ----------------------
-
 
 # __________________
 # TRAINING DIRECTORS
 
-du1 = User(first_name="Olagoke", last_name="Abdul", identification_num="20151888", email="olagokeabdul@yahoo.com", phone_number="+23497772601")
-du2 = User(first_name="Ahmad", last_name="Aminu", identification_num="20151889", email="ahmadaminu@yahoo.com", phone_number="+23497772602")
-du3 = User(first_name="Ashiru", last_name="Lamido", identification_num="20151890", email="ashirulamido@yahoo.com", phone_number="+23497772603")
+du1 = User(first_name="Olagoke", last_name="Abdul", identification_num="20151888", email="olagokeabdul@yahoo.com", phone_number="+2348144807200")
+du2 = User(first_name="Ahmad", last_name="Aminu", identification_num="20151889", email="ahmadaminu@yahoo.com", phone_number="+2348144807201")
+du3 = User(first_name="Ashiru", last_name="Lamido", identification_num="20151890", email="ashirulamido@yahoo.com", phone_number="+2348144807202")
 
 du1.save()
 du2.save()
 du3.save()
+
 
 td1 = TrainingDirector(director=du1, first_name=du1.first_name, last_name=du1.last_name, email=du1.email, phone_number=du1.phone_number, id_no=du1.identification_num)
 td2 = TrainingDirector(director=du2, first_name=du2.first_name, last_name=du2.last_name, email=du2.email, phone_number=du2.phone_number, id_no=du2.identification_num)
@@ -79,27 +66,29 @@ with open("raw.json") as f:
 
 for i in r:
   rr = random.randrange(100, 1000)
-  ff = Faculty(name=i["faculty"], email=i["faculty"]+"@mail.com", phone_number="+234"+str(rr))
+  rn = random.randrange(10, 99)
+  ff = Faculty(name=i["faculty"], email=i["faculty"]+"@mail.com", phone_number="+23481448072"+str(rn))
   ff.save()
-
 
 my_fty1 = Faculty.objects.filter(name="Science").first()
 my_fty2 = Faculty.objects.filter(name="Humanities").first()
 my_fty3 = Faculty.objects.filter(name="Education").first()
 my_fty4 = Faculty.objects.filter(name="Management & Social science").first()
 
+
 # ____________
 # FACULTY DEAN
 
-fcd1 = User(first_name="Muhammad", last_name="Ahmad", identification_num="20161666", email="muhammadahmad@yahoo.com", phone_number="+2349098732603")
-fcd2 = User(first_name="Sani", last_name="Aliyu", identification_num="20161667", email="sanialiyu@yahoo.com", phone_number="+2349098732604")
-fcd3 = User(first_name="Alameen", last_name="Sambo", identification_num="20161668", email="alameensambo@yahoo.com", phone_number="+2349098732605")
-fcd4 = User(first_name="Suraj", last_name="Haqil", identification_num="20161669", email="surajhaqil@yahoo.com", phone_number="+2349098732606")
+fcd1 = User(first_name="Muhammad", last_name="Ahmad", identification_num="20161666", email="muhammadahmad@yahoo.com", phone_number="+2348144807203")
+fcd2 = User(first_name="Sani", last_name="Aliyu", identification_num="20161667", email="sanialiyu@yahoo.com", phone_number="+2348144807204")
+fcd3 = User(first_name="Alameen", last_name="Sambo", identification_num="20161668", email="alameensambo@yahoo.com", phone_number="+2348144807205")
+fcd4 = User(first_name="Suraj", last_name="Haqil", identification_num="20161669", email="surajhaqil@yahoo.com", phone_number="+2348144807206")
 
 fcd1.save()
 fcd2.save()
 fcd3.save()
 fcd4.save()
+
 
 fd1 = FacultyDean(dean=fcd1, faculty=my_fty1, first_name=fcd1.first_name, last_name=fcd1.last_name, email=fcd1.email, phone_number=fcd1.phone_number, id_no=fcd1.identification_num)
 fd2 = FacultyDean(dean=fcd1, faculty=my_fty2, first_name=fcd2.first_name, last_name=fcd2.last_name, email=fcd2.email, phone_number=fcd2.phone_number, id_no=fcd2.identification_num)
@@ -121,7 +110,6 @@ for idx, i in enumerate(r):
     dd = Department(name=g, email=g+"@mail.com", phone_number="+234"+str(rr)+g, faculty=gf)
     dd.save()
 
-
 my_dept1 = Department.objects.filter(name="Physics").first()
 my_dept2 = Department.objects.filter(name="Computer Science").first()
 my_dept3 = Department.objects.filter(name="Mathematics").first()
@@ -135,16 +123,17 @@ ud3 = User(first_name="Tanim", last_name="Mubarak", identification_num="20191921
 ud4 = User(first_name="Nasir", last_name="Sanusi", identification_num="20232021", email="nasirsanusai@yahoo.com", phone_number="+2348135632605")
 ud5 = User(first_name="Ema", last_name="Okonjo", identification_num="20232033", email="emaokonjo@yahoo.com", phone_number="+2348135632633")
 
-ud6 = User.objects.filter(identification_num="20232024").first()
-ud6.middle_name = "Ikechukwu"
-ud6.phone_number = "+2348135632603"
-ud6.save()
-
 ud1.save()
 ud2.save()
 ud3.save()
 ud4.save()
 ud5.save()
+
+ud6 = User.objects.filter(identification_num="20232024").first()
+ud6.middle_name = "Ikechukwu"
+ud6.phone_number = "+2348135632603"
+ud6.save()
+
 
 dh1 = DepartmentHOD(hod=ud1, department=my_dept1, first_name=ud1.first_name, last_name=ud1.last_name, email=ud1.email, phone_number=ud1.phone_number, id_no=ud1.identification_num, universities="B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO", ranks="Ph.D")
 dh2 = DepartmentHOD(hod=ud2, department=my_dept2, first_name=ud2.first_name, last_name=ud2.last_name, email=ud2.email, phone_number=ud2.phone_number, id_no=ud2.identification_num)
@@ -165,6 +154,8 @@ dtc1.save()
 dtc2.save()
 dtc3.save()
 
+# ______
+# LETTER
 
 placement_lett = Letter(coordinator=dtc3, session="2023", text="This is our students placement letter")
 acceptance_lett = Letter(coordinator=dtc3, session="2023", text="This is our students acceptance letter", letter="acceptance letter")
@@ -175,6 +166,8 @@ acceptance_lett.save()
 # TRAINING STUDENTS
 
 u1 = User.objects.get(id=1)
+u1.is_staff = False
+u1.save()
 
 u2 = User(first_name="Shehu", last_name="Musa", identification_num="201031002", email="usmanmusa2019@gmail.com", phone_number="+2348144807260")
 u3 = User(first_name="Benjamin", last_name="Omoniyi", identification_num="201031003", email="benjamin@gmail.com", phone_number="+2348144807211")
@@ -185,6 +178,9 @@ u2.save()
 u3.save()
 u4.save()
 u5.save()
+
+# ________________
+# TRAINING STUDENT
 
 me_stdent1 = TrainingStudent(student=u1, student_training_coordinator=dtc3, first_name=u1.first_name, last_name=u1.last_name, matrix_no=u1.identification_num, email=u1.email, phone_number=u1.phone_number, level='300')
 me_stdent2 = TrainingStudent(student=u2, student_training_coordinator=dtc3, first_name=u2.first_name, last_name=u2.last_name, matrix_no=u2.identification_num, email=u2.email, phone_number=u2.phone_number)
@@ -202,8 +198,8 @@ me_stdent5.save()
 # make it `TrainingStudent` instance instead of `User` instance
 dtc3.training_students.add(u1)
 
-# ______________
-# STUDENT LETTER
+# ______________________
+# STUDENT LETTER REQUEST
 
 req_let1 = StudentLetterRequest(sender_req=me_stdent1, receiver_req=dtc3)
 req_let2 = StudentLetterRequest(sender_req=me_stdent2, receiver_req=dtc3)
