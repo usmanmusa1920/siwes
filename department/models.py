@@ -74,6 +74,7 @@ class Letter(models.Model):
   last_modified = models.DateTimeField(auto_now=True)
   letter_type = [('placement letter', 'Placement letter'), ('acceptance letter', 'Acceptance letter'),]
   letter = models.CharField(max_length=100, default='placement letter', choices=letter_type)
+  duration = models.CharField(max_length=100, default='3', blank=False, null=False)
   text = models.TextField(blank=True, null=True)
   viewers = models.ManyToManyField(User, blank=True, related_name='viewers')
   session = models.CharField(max_length=255, blank=False, null=False)
