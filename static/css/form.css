@@ -204,3 +204,27 @@
     width: 100%;
   }
 }
+
+.form_peace, .form_danger{
+  display: flex;
+}
+
+.form_peace button{
+  background: green;
+  color: white;
+  border: none;
+  padding: 3px 10px;
+  height: 30px;
+  margin: 5px;
+  width: fit-content;
+}
+
+.form_danger button{
+  background: red;
+  color: white;
+  border: none;
+  padding: 3px 10px;
+  height: 30px;
+  margin: 5px;
+  width: fit-content;
+}

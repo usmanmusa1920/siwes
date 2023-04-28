@@ -1,4 +1,5 @@
 # This script is, ease writing code in python interpreter
+# f"siwes/science/physics/l200"
 
 """
 Datetime format:
@@ -210,8 +211,8 @@ req_let2.save()
 # _________________
 # ACCEPTANCE LETTER
 
-my_accept1 = AcceptanceLetter(sender_acept=me_stdent1, receiver_acept=dtc3, image="/home/usman/Desktop/media/1-quantum.jpg")
-my_accept2 = AcceptanceLetter(sender_acept=me_stdent2, receiver_acept=dtc3, image="/home/usman/Desktop/media/Usman.jpg")
+my_accept1 = AcceptanceLetter(sender_acept=me_stdent1, receiver_acept=dtc3, level="300", image="img1.png")
+my_accept2 = AcceptanceLetter(sender_acept=me_stdent2, receiver_acept=dtc3, level="200", image="img2.png")
 
 my_accept1.save()
 my_accept2.save()

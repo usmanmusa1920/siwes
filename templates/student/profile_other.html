@@ -9,29 +9,30 @@
 
 <!-- page title -->
 {% block title %}
-  <title>Student profile page</title>
+  <title>Student ({{std.matrix_no}}) profile page</title>
 {% endblock title %}
 
 <!-- content of the page -->
 {% block main %}
   <div class="main_wrapp_head">
-    <p>Student {{dean.faculty.training}} profile</p>
+    <p>
+      {{std.student.first_name}}
+      {% if std.student.middle_name %}
+        {{std.student.middle_name}}
+      {% endif %}
+      {{std.student.last_name}}
+      {{dean.faculty.training}} profile
+    </p>
   </div>
 
   <div class="main_wrapp">
-    <form action="#" method="get" class="search">
-      <input type="search" name="" placeholder="Search">
-      <button type="submit">search</button>
-    </form>
     <div class="wrapp_img">
       <img src="{{std.student.profile.image.url}}" alt="">
     </div>
-
     <div class="wrapp_info">
       <div class="wrapp_info_left">
         <p>
-          <b>Name:</b>
-          {{std.student.first_name}}
+          <b>Name:</b> {{std.student.first_name}}
           {% if std.middle_name %}
             {{std.student.middle_name}}
           {% endif %}
@@ -52,21 +53,11 @@
             <b>Department:</b> {{hod.department.name}}
           {% endif %}
         </p>
+        <p>
+          <b>Level:</b> {{std.level}} level
+        </p>
         <br>
         <a href="#" class="delete_me">Delete me</a>
-      </div>
-
-      <div class="wrapp_info_right">
-        <a href="{% url 'student:uploaded_acceptance_letter' %}" class="good_me">Uploaded letter</a>
-        <br>
-        <br>
-        
-        <hr>
-        <br>
-        <a href="#" class="good_me">Edit profile</a>
-        <br>
-        <br>
-        <a href="#" class="good_me">Request for IT letter</a>
       </div>
     </div>
 

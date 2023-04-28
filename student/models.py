@@ -50,6 +50,7 @@ class AcceptanceLetter(models.Model):
   image = models.ImageField(blank=True, null=True, upload_to=f'{datetime.today().year}-acceptance_letter')
   text = models.TextField(blank=True, null=True,)
   is_reviewed = models.BooleanField(default=False)
+  can_change = models.BooleanField(default=False)
   
   def __str__(self):
     return f"Student ({self.sender_acept.matrix_no}) acceptance letter (approved)"
@@ -62,7 +63,7 @@ class UpdateAcceptanceLetter(models.Model):
   timestamp = models.DateTimeField(default=timezone.now)
   text = models.TextField(blank=True, null=True,)
   level = models.CharField(max_length=255, blank=False, null=False, default="200")
-  is_reviewed = models.BooleanField(default=False)
+  is_declined = models.BooleanField(default=False)
   
   def __str__(self):
     return f"{self.sender_acept.matrix_no} make a request to change acceptance letter on ({self.timestamp})"

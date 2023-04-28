@@ -43,22 +43,42 @@
         <br>
         <hr>
         <h1>Request to change acceptance letter</h1>
-        <form method="POST" action="{% url 'student:update_acceptance_letter_request' letter.id %}">
-          {% csrf_token %}
-          <div class="wrapp_danger">
-            <p>Why do you want to change your uploaded training acceptance letter ?</p>
-          </div>
-          <textarea name="text" class="wrapp_text" placeholder="write reason..." required></textarea>
-          {% if form.text.errors %}
+        {% if letter.sender_acept.level == "200" %}
+          <form method="POST" action="{% url 'student:update_acceptance_letter_request_200' letter.id %}">
+            {% csrf_token %}
             <div class="wrapp_danger">
-              <p>
-                <i><strong><small>{{form.text.errors}}</small></strong></i>
-              </p>
+              <p>Why do you want to change your uploaded training acceptance letter ?</p>
             </div>
-          {% endif %}
-          <br>
-          <button type="submit">Request</button>
-        </form>
+            <textarea name="text" class="wrapp_text" placeholder="write reason..." required></textarea>
+            {% if form.text.errors %}
+              <div class="wrapp_danger">
+                <p>
+                  <i><strong><small>{{form.text.errors}}</small></strong></i>
+                </p>
+              </div>
+            {% endif %}
+            <br>
+            <button type="submit">Request</button>
+          </form>
+        {% endif %}
+        {% if letter.sender_acept.level == "300" %}
+          <form method="POST" action="{% url 'student:update_acceptance_letter_request_300' letter.id %}">
+            {% csrf_token %}
+            <div class="wrapp_danger">
+              <p>Why do you want to change your uploaded training acceptance letter ?</p>
+            </div>
+            <textarea name="text" class="wrapp_text" placeholder="write reason..." required></textarea>
+            {% if form.text.errors %}
+              <div class="wrapp_danger">
+                <p>
+                  <i><strong><small>{{form.text.errors}}</small></strong></i>
+                </p>
+              </div>
+            {% endif %}
+            <br>
+            <button type="submit">Request</button>
+          </form>
+        {% endif %}
       </div>
     </div>
   </div>

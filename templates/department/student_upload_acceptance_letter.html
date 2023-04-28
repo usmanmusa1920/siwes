@@ -1,0 +1,82 @@
+<!-- extending from base.html file -->
+{% extends "base.html" %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>Uploaded acceptance letter (200/200) level page</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="wrapper">
+    <div class="wrapp_head">
+      <h1>Your student ({{letter.sender_acept.matrix_no}}) uploaded acceptance letter</h1>
+    </div>
+
+    <div class="wrapp_main">
+      <div class="wrapp_top_greynish">
+        <small>This is your 300 level acceptance letter you uploaded</small>
+      </div>
+      <form method="POST" action="{% url 'student:upload_acceptance_letter_300' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="wrapp_form">
+          {% if letter.image %}
+            <a href="{{letter.image.url}}" target="_blank" class="good_me">View full image</a>
+            <div class="accept_let_img">
+              <img src="{{letter.image.url}}" alt="" srcset="">
+            </div>
+          {% else %}
+            <div class="wrapp_body">
+              <div class="wrapp_null">
+                <div class="wrapp_in_null">
+                  <div class="main_wrapp_null">
+                    <p>Something bad happened to the student uploaded acceptance letter</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </form>
+      {% if student_request %}
+        <div class="wrapp_top_greynish">
+          <small>This student make some request</small>
+        </div>
+        <div class="wrapp_form">
+          {% for reqq in student_request %}
+            <div class="wrapp_warn">
+              <p>
+                <i><strong>Requested since: <small>{{reqq.timestamp|date:'d F, Y'}}</small></strong></i>
+                <hr>
+                <br>
+                {{reqq.sender_acept.first_name}}
+                {% if reqq.sender_acept.middle_name %}
+                  {{reqq.sender_acept.middle_name}}
+                {% endif %}
+                {{reqq.sender_acept.last_name}} ({{reqq.sender_acept.matrix_no}}) want to change
+                {% if reqq.sender_acept.gender == 'male' %}
+                  his
+                {% else %} <!-- for female -->
+                  her
+                {% endif %}
+                previous acceptance letter because:
+              </p>
+              <div class="wrapp_info">
+                <p>{{reqq.text}}</p>
+              </div>
+              <a href="{% url 'department:accept_student_request_approved' letter.id %}" class="good_me">Accept request</a>
+              &nbsp;
+              <a href="#" class="danger_me">Decline request</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock main %}

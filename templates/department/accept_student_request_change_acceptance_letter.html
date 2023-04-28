@@ -1,0 +1,73 @@
+<!-- extending from base.html file -->
+{% extends "base.html" %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>Accept student request to change acceptance letter page</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="wrapper">
+    <div class="wrapp_head">
+      <h1>Accept student request</h1>
+    </div>
+    
+    <div class="wrapp_main">
+      <div class="wrapp_top_greynish">
+        <small>Accept student request to change acceptance letter</small>
+      </div>
+      <div class="wrapp_form">
+        {% if letter.letter.image %}
+          <a href="{{letter.letter.image.url}}" target="_blank" class="good_me">View full image</a>
+          <div class="accept_let_img">
+            <img src="{{letter.letter.image.url}}" alt="" srcset="">
+          </div>
+          <div class="wrapp_info">
+            <!-- The reason why the student request to change a uploaded letter -->
+            <p>
+              <i>
+                <b>
+                  The reason why
+                  {{letter.sender_acept.first_name}}
+                  {% if letter.sender_acept.middle_name %}
+                    {{letter.sender_acept.middle_name}}
+                  {% endif %}
+                  {{letter.sender_acept.last_name}}
+                  chnage:
+                </b>
+              </i>
+              <br>
+              <hr>
+              {{letter.text}}
+            </p>
+          </div>
+        {% else %}
+          <div class="wrapp_body">
+            <div class="wrapp_null">
+              <div class="wrapp_in_null">
+                <div class="main_wrapp_null">
+                  <p>Unable to view student uploaded acceptance letter, because something bad happen to it</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+        <br>
+        <hr>
+        <h1>Are you ready to accept your student request?</h1>
+        <!-- <small>{{student.timestamp|date:'d, F Y'}}</small> -->
+        <form action="{% url 'department:accept_student_request_approved' letter.id %}" method="post" class="form_peace">
+          {% csrf_token %}
+          <button type="submit">Yes, accept</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock main %}

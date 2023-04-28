@@ -9,7 +9,7 @@
 
 <!-- page title -->
 {% block title %}
-  <title>Uploaded acceptance letter (200/300) level page</title>
+  <title>Uploaded acceptance letter (200/200) level page</title>
 {% endblock title %}
 
 <!-- content of the page -->
@@ -37,6 +37,46 @@
                 <div class="wrapp_info">
                   <p>You can change your uploaded acceptance letter before your training coordinator review it</p>
                 </div>
+                <input type="file" name="image" accept="image/*" required>
+                {% if form.errors %}
+                  <div class="wrapp_warn">
+                    {{form.errors}}
+                  </div>
+                {% endif %}
+                <br>
+                <button type="submit">Submit</button>
+              {% else %}
+                {% if acceptance_300.can_change == False %}
+                {% if student_requests_300 %}
+                  <div class="wrapp_warn">
+                    <p>Your request to change your uploaded acceptance letter, is not been approved yet!</p>
+                  </div>
+                {% else %}
+                  {% if student_declined_req_300 %}
+                    <div class="wrapp_warn">
+                      <p>Your request to change your uploaded acceptance letter, is declined!</p>
+                    </div>
+                  {% else %}
+                    <div class="wrapp_info">
+                      <p>Your acceptance letter has been viewd by your course coordinator</p>
+                    </div>
+                    <a href="{% url 'student:request_change_acceptance_letter' acceptance_300.id %}" class="danger_me">Request to change acceptance letter</a>
+                  {% endif %}
+                {% endif %}
+                {% else %}
+                  <div class="wrapp_info">
+                    <p>Your request to change your uploaded acceptance letter, has been approved!</p>
+                    <p>When changing or uploading your acceptance letter make sure it has an extension of PGN, JPG, or JPEG</p>
+                  </div>
+                  <input type="file" name="image" accept="image/*" required>
+                  {% if form.errors %}
+                    <div class="wrapp_warn">
+                      {{form.errors}}
+                    </div>
+                  {% endif %}
+                  <br>
+                  <button type="submit">Submit</button>
+                {% endif %}
               {% endif %}
             {% else %}
               <div class="wrapp_body">
@@ -51,20 +91,6 @@
               <div class="wrapp_info">
                 <p>When changing or uploading your acceptance letter make sure it has an extension of PGN, JPG, or JPEG</p>
               </div>
-            {% endif %}
-            {% if student_req_to_change_letter_300 %}
-              <div class="wrapp_warn">
-                <p>You already requested for changing your uploaded acceptance letter</p>
-                <a href="{% url 'student:request_change_acceptance_letter' acceptance_300.id %}" class="danger_me">Request again</a>
-              </div>
-            {% endif %}
-            {% if acceptance_300.is_reviewed %}
-              {% if student_req_to_change_letter_300 %}
-                <!-- pass -->
-              {% else %}
-                <a href="{% url 'student:request_change_acceptance_letter' acceptance_300.id %}" class="danger_me">Request to change acceptance letter</a>
-              {%  endif %}
-            {% else %}
               <input type="file" name="image" accept="image/*" required>
               {% if form.errors %}
                 <div class="wrapp_warn">
@@ -109,18 +135,43 @@
               <p>When changing or uploading your acceptance letter make sure it has an extension of PGN, JPG, or JPEG</p>
             </div>
           {% endif %}
+
           {% if student_req_to_change_letter_200 %}
-            <div class="wrapp_warn">
-              <p>You already requested for changing your uploaded acceptance letter</p>
-              <a href="{% url 'student:request_change_acceptance_letter' acceptance_200.id %}" class="danger_me">Request again</a>
-            </div>
+            {% if acceptance_200.is_reviewed %}
+              <div class="wrapp_warn">
+                <p>Your request for changing your uploaded acceptance letter is not approved yet!</p>
+              </div>
+            {% endif %}
           {% endif %}
+
+          {% if can_change_student_req_200 %}
+            <div class="wrapp_info">
+              <p>Your request to change your uploaded acceptance letter, has been approved!</p>
+              <p>When changing or uploading your acceptance letter make sure it has an extension of PGN, JPG, or JPEG</p>
+            </div>
+            <input type="file" name="image" accept="image/*" required>
+            {% if form.errors %}
+              <div class="wrapp_warn">
+                {{form.errors}}
+              </div>
+            {% endif %}
+            <br>
+            <button type="submit">Submit</button>
+          {% endif %}
+
           {% if acceptance_200.is_reviewed %}
             {% if student_req_to_change_letter_200 %}
               <!-- pass -->
             {% else %}
-              <a href="{% url 'student:request_change_acceptance_letter' acceptance_200.id %}" class="danger_me">Request to change acceptance letter</a>
-            {%  endif %}
+              {% if can_change_student_req_200 %}
+                <!-- pass -->
+              {% else %}
+                <div class="wrapp_info">
+                  <p>Your acceptance letter has been viewd by your course coordinator</p>
+                </div>
+                <a href="{% url 'student:request_change_acceptance_letter' acceptance_200.id %}" class="danger_me">Request to change acceptance letter</a>
+              {% endif %}
+            {% endif %}
           {% else %}
             <input type="file" name="image" accept="image/*" required>
             {% if form.errors %}
