@@ -57,7 +57,18 @@
       </div>
 
       <div class="wrapp_info_right">
-        <a href="{% url 'student:uploaded_acceptance_letter' %}" class="good_me">Uploaded letter</a>
+        {% if acceptance_200 %}
+          <a href="{% url 'student:uploaded_acceptance_letter_200' %}" class="good_me">View acceptance letter for 300</a>
+        {% else %}
+          <a href="{% url 'student:uploaded_acceptance_letter_200' %}" class="good_me">Upload acceptance letter for 300</a>
+        {% endif %}
+        <br>
+        <br>
+        {% if acceptance_300 %}
+          <a href="{% url 'student:uploaded_acceptance_letter_300' %}" class="good_me">View acceptance letter for 300</a>
+        {% else %}
+          <a href="{% url 'student:uploaded_acceptance_letter_300' %}" class="good_me">Upload acceptance letter for 300</a>
+        {% endif %}
         <br>
         <br>
         
@@ -72,11 +83,19 @@
 
     <div class="wrapp_level">
       <div>
-        Your 200 level training
+        {% if acceptance_200 %}
+          Your 200 level training
+        {% else %}
+          Your 200 level training is pending
+        {% endif %}
       </div>
       {% if std.level == "300" %}
         <div>
-          Your 300 level training
+          {% if acceptance_300 %}
+            Your 300 level training
+          {% else %}
+            Your 300 level training is pending
+          {% endif %}
         </div>
       {% endif %}
     </div>
