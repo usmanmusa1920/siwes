@@ -54,16 +54,3 @@ class AcceptanceLetter(models.Model):
   
   def __str__(self):
     return f"Student ({self.sender_acept.matrix_no}) acceptance letter (approved)"
-
-    
-class UpdateAcceptanceLetter(models.Model):
-  sender_acept = models.ForeignKey(TrainingStudent, related_name='sender_update_letter', on_delete=models.CASCADE)
-  receiver_acept = models.ForeignKey(DepartmentTrainingCoordinator, related_name='receiver_update_letter', on_delete=models.CASCADE)
-  letter = models.ForeignKey(AcceptanceLetter, related_name='acept_letter', on_delete=models.CASCADE)
-  timestamp = models.DateTimeField(default=timezone.now)
-  text = models.TextField(blank=True, null=True,)
-  level = models.CharField(max_length=255, blank=False, null=False, default="200")
-  is_declined = models.BooleanField(default=False)
-  
-  def __str__(self):
-    return f"{self.sender_acept.matrix_no} make a request to change acceptance letter on ({self.timestamp})"

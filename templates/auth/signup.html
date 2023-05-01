@@ -40,7 +40,7 @@
   <form method="post">
     {% csrf_token %}
     <h2>Create an account</h2>
-    <input type="text" name="first_name" placeholder="First name" class="input" required>
+    <input type="text" name="first_name" placeholder="First name" class="input" autofocus required>
     <input type="text" name="last_name" placeholder="Last name" class="input" required>
     <input type="text" name="identification_num" placeholder="Matrix number (reg number)" class="input" required>
     {% if form.identification_num.errors %}
@@ -68,6 +68,14 @@
     <div class="selection">
       {{form.country}}
     </div>
+    <div class="selection">
+      <select name="student_level" class="wrapp_select" required>
+        <option value="" selected="">Select your level</option>
+        <option value="200">200 level</option>
+        <option value="300">300 level</option>
+      </select>
+    </div>
+
     <div class="selection">
       <select name="all_department" class="wrapp_select" required>
         <option value="" selected="">Select your department</option>

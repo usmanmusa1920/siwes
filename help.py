@@ -26,6 +26,7 @@ python
 import django
 django.setup()
 
+import os
 import json
 import random
 from training.models import TrainingDirector
@@ -36,6 +37,11 @@ from django.contrib.auth import get_user_model
 
 
 User = get_user_model()
+
+# coping some dummy images as student acceptance letter
+os.system('mkdir -p media/2023-acceptance_letter')
+os.system('cp dummy_img/banner.jpg media/2023-acceptance_letter/banner.jpg')
+os.system('cp dummy_img/education.jpg media/2023-acceptance_letter/education.jpg')
 
 
 # __________________
@@ -66,9 +72,7 @@ with open("raw.json") as f:
 # FACULTY
 
 for i in r:
-  rr = random.randrange(100, 1000)
-  rn = random.randrange(10, 99)
-  ff = Faculty(name=i["faculty"], email=i["faculty"]+"@mail.com", phone_number="+23481448072"+str(rn))
+  ff = Faculty(name=i["faculty"], email=i["faculty"]+"@mail.com", phone_number=i["phone"])
   ff.save()
 
 my_fty1 = Faculty.objects.filter(name="Science").first()
@@ -211,8 +215,8 @@ req_let2.save()
 # _________________
 # ACCEPTANCE LETTER
 
-my_accept1 = AcceptanceLetter(sender_acept=me_stdent1, receiver_acept=dtc3, level="300", image="img1.png")
-my_accept2 = AcceptanceLetter(sender_acept=me_stdent2, receiver_acept=dtc3, level="200", image="img2.png")
+my_accept1 = AcceptanceLetter(sender_acept=me_stdent1, receiver_acept=dtc3, level="300", image="2023-acceptance_letter/banner.jpg")
+my_accept2 = AcceptanceLetter(sender_acept=me_stdent2, receiver_acept=dtc3, level="200", image="2023-acceptance_letter/education.jpg")
 
 my_accept1.save()
 my_accept2.save()

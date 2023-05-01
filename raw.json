@@ -1,6 +1,7 @@
 [
   {
     "faculty": "Science",
+    "phone": "+2348144907261",
     "dept": [
       "Chemistry",
       "Biochemistry",
@@ -16,6 +17,7 @@
   },
   {
     "faculty": "Humanities",
+    "phone": "+2348144907262",
     "dept": [
       "Arabic Language",
       "English Language",
@@ -27,6 +29,7 @@
   },
   {
     "faculty": "Education",
+    "phone": "+2348144907263",
     "dept": [
       "Education Arabic",
       "Education Biology",
@@ -42,6 +45,7 @@
   },
   {
     "faculty": "Management & Social science",
+    "phone": "+2348144907264",
     "dept": [
       "Accounting",
       "Business Administration",

@@ -32,7 +32,7 @@
             <div class="accept_let_img">
               <img src="{{form.instance.image.url}}" alt="" srcset="">
             </div>
-            {% if acceptance_200.is_reviewed == False %}
+            {% if acceptance_200.is_reviewed == False and acceptance_200.can_change == False %}
               <div class="wrapp_info">
                 <p>You can change your uploaded acceptance letter before your training coordinator review it</p>
               </div>
@@ -44,45 +44,22 @@
               {% endif %}
               <br>
               <button type="submit">Submit</button>
-            {% else %}
-              {% if acceptance_200.can_change == False %}
-                {% if student_requests_200 %}
-                  <div class="wrapp_warn">
-                    <p>Your request to change your uploaded acceptance letter, is not been approved yet!</p>
-                  </div>
-                {% else %}
-                  {% if student_declined_req_200 %}
-                    {% if acceptance_200.is_reviewed == True and acceptance_200.can_change == False %}
-                      <div class="wrapp_info">
-                        <p>Your acceptance letter has been viewd by your course coordinator</p>
-                      </div>
-                      <a href="{% url 'student:request_change_acceptance_letter' acceptance_200.id %}" class="danger_me">Request to change acceptance letter</a>
-                    {% else %}
-                      <div class="wrapp_warn">
-                        <p>Your request to change your uploaded acceptance letter, is declined!</p>
-                      </div>
-                    {% endif %}
-                  {% else %}
-                    <div class="wrapp_info">
-                      <p>Your acceptance letter has been viewd by your course coordinator</p>
-                    </div>
-                    <a href="{% url 'student:request_change_acceptance_letter' acceptance_200.id %}" class="danger_me">Request to change acceptance letter</a>
-                  {% endif %}
-                {% endif %}
-              {% else %}
-                <div class="wrapp_info">
-                  <p>Your request to change your uploaded acceptance letter, has been approved!</p>
-                  <p>When changing (uploading) your new acceptance letter make sure it has an extension of PGN, JPG, or JPEG</p>
+            {% elif acceptance_200.is_reviewed == True and acceptance_200.can_change == False %}
+              <div class="wrapp_info">
+                <p>Your acceptance letter has been viewd by your course coordinator, you can't change it now!</p>
+              </div>
+            {% elif acceptance_200.is_reviewed == True and acceptance_200.can_change == False or acceptance_200.is_reviewed == True and acceptance_200.can_change == True %}
+              <div class="wrapp_info">
+                <p>Your acceptance letter has been viewd by your course coordinator, but  you can still change it</p>
+              </div>
+              <input type="file" name="image" accept="image/*" required>
+              {% if form.errors %}
+                <div class="wrapp_warn">
+                  {{form.errors}}
                 </div>
-                <input type="file" name="image" accept="image/*" required>
-                {% if form.image.errors %}
-                  <div class="wrapp_warn">
-                    {{form.image.errors}}
-                  </div>
-                {% endif %}
-                <br>
-                <button type="submit">Submit</button>
               {% endif %}
+              <br>
+              <button type="submit">Submit</button>
             {% endif %}
           {% else %}
             <div class="wrapp_body">

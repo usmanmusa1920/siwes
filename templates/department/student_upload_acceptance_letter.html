@@ -44,39 +44,6 @@
           {% endif %}
         </div>
       </form>
-      {% if student_request %}
-        <div class="wrapp_top_greynish">
-          <small>This student make some request</small>
-        </div>
-        <div class="wrapp_form">
-          {% for reqq in student_request %}
-            <div class="wrapp_warn">
-              <p>
-                <i><strong>Requested since: <small>{{reqq.timestamp|date:'d F, Y'}}</small></strong></i>
-                <hr>
-                <br>
-                {{reqq.sender_acept.first_name}}
-                {% if reqq.sender_acept.middle_name %}
-                  {{reqq.sender_acept.middle_name}}
-                {% endif %}
-                {{reqq.sender_acept.last_name}} ({{reqq.sender_acept.matrix_no}}) want to change
-                {% if reqq.sender_acept.gender == 'male' %}
-                  his
-                {% else %} <!-- for female -->
-                  her
-                {% endif %}
-                previous acceptance letter because:
-              </p>
-              <div class="wrapp_info">
-                <p>{{reqq.text}}</p>
-              </div>
-              <a href="{% url 'department:accept_student_request_approved' letter.id %}" class="good_me">Accept request</a>
-              &nbsp;
-              <a href="#" class="danger_me">Decline request</a>
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
     </div>
   </div>
 {% endblock main %}

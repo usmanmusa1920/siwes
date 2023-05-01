@@ -73,6 +73,7 @@ def signup(request):
 
       all_department = request.POST["all_department"]
       raw_identification_num = form.cleaned_data["identification_num"]
+      student_level = form.cleaned_data["student_level"]
       messages.success(request, f'Welcome {raw_identification_num}, your account has been created, you are ready to login!')
       
       student_department = Department.objects.filter(name=all_department).first()
@@ -80,7 +81,8 @@ def signup(request):
       student_coord = DepartmentTrainingCoordinator.objects.filter(dept_hod=student_dept_hod).first()
       new_usr = User.objects.filter(identification_num=raw_identification_num).first()
       
-      new_student =  TrainingStudent(student=new_usr, student_training_coordinator=student_coord, first_name=form.cleaned_data["first_name"], last_name=form.cleaned_data["last_name"], matrix_no=raw_identification_num, email=form.cleaned_data["email"], phone_number=form.cleaned_data["phone_number"])
+      new_student =  TrainingStudent(student=new_usr, student_training_coordinator=student_coord, first_name=form.cleaned_data["first_name"], last_name=form.cleaned_data["last_name"], matrix_no=raw_identification_num, email=form.cleaned_data["email"], phone_number=form.cleaned_data["phone_number"], level=student_level)
+      print(student_level)
       new_student.save()
       
       return redirect('auth:login')
