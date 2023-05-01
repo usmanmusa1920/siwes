@@ -15,52 +15,44 @@
 <!-- content of the page -->
 {% block main %}
   <div class="main_wrapp_head">
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+    <p>Departmental training coordinator profile</p>
   </div>
 
   <div class="main_wrapp">
-    <div class="wrapp_img">
-      <img src="{% static 'media/user.png' %}" alt="">
-    </div>
 
-    <div class="section">
-      <a href="#" class="sec_current">Faculty of Science</a>
-      <a href="#" class="sec_link">Faculty of Education</a>
-      <a href="#" class="sec_link">Faculty of Humanities</a>
-      <a href="#" class="sec_link">Faculty of Management & Social science</a>
-    </div>
-
-    <div class="wrapp_form">
-      <p><b>Select department:</b></p>
-      <select name="" class="wrapp_select">
-        <option value="">Physics</option>
-        <option value="">Computer</option>
-        <option value="">Maths</option>
-        <option value="">Geography</option>
-      </select>
-      <form action="#" method="post" class="form_peace">
-        <button type="submit">Filter</button>
-      </form>
-    </div>
-
-    <!-- {% if student_make_request %}
+    {% if coordinator_students %}
       <div class="main_wrapp_head">
-        <p>Student requested to change acceptance letter</p>
+        <p>Student that will do IT this year ({{coordinator_students.all.count}})</p>
       </div>
-      {% for student in student_make_request %}
-        <div class="req_new">
-          <a href="{% url 'student:other_view_student_profile' student.sender_acept.matrix_no %}" class="req_new_peace">
-            {{student.sender_acept.first_name}}
+      {%  for student in coordinator_students|slice:":3" %}
+        <div class="wrapp_list">
+          <a href="#">
+            {{student.first_name}}
             {% if usr.middle_name %}
-              {{student.sender_acept.middle_name}}
+              {{student.middle_name}}
             {% endif %}
-            {{student.sender_acept.last_name}}
+            {{student.last_name}}
           </a>
-          <a href="{% url 'department:accept_student_request' student.id %}" class="req_new_dodger">Accept</a>
-          <a href="{% url 'department:decline_student_request' student.id %}" class="req_new_danger">Decline</a>
+          <small>{{student.level}} level student</small>
+          {% if student.student in training_tutor.training_students.all %}
+            <form action="#" method="post">
+              <button type="button">viewed</button>
+            </form>
+          {% else %}
+            <form action="#" method="post">
+              <button type="button">ADD</button>
+            </form>
+          {% endif %}
         </div>
       {% endfor %}
-    {% endif %} -->
+      {% if coordinator_students.all.count > 3 %}
+        <div class="wrapp_pages">
+          <div class="wrapp_pages_column">
+            <a href="{% url 'department:training_coordinator_session_student' %}" class="page_link">View all this year IT student</a>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
 
     {% if students_acceptances %}
       <div class="main_wrapp_head">
@@ -83,50 +75,6 @@
           {% endif %}
         </div>
       {% endfor %}
-    {% endif %}
-
-    <form action="#" method="get" class="search">
-      <input type="search" name="" placeholder="Search">
-      <button type="submit">search</button>
-    </form>
-
-    {% if coordinator_students %}
-      <div class="main_wrapp_head">
-        <p>Student that will do IT this year ({{coordinator_students.all.count}})</p>
-      </div>
-      {%  for student in coordinator_students %}
-        <div class="wrapp_list">
-          <a href="#">
-            {{student.first_name}}
-            {% if usr.middle_name %}
-              {{student.middle_name}}
-            {% endif %}
-            {{student.last_name}}
-          </a>
-          <small>{{student.level}} level student</small>
-          {% if student.student in training_tutor.training_students.all %}
-            <form action="#" method="post">
-              <button type="button">viewed</button>
-            </form>
-          {% else %}
-            <form action="#" method="post">
-              <button type="button">ADD</button>
-            </form>
-          {% endif %}
-        </div>
-      {% endfor %}
-
-      <div class="wrapp_pages">
-        <div class="wrapp_pages_column">
-          <a href="" class="surf">previous</a>
-          <a href="" class="page_link">9</a>
-          <a href="" class="page_link">10</a>
-          <a href="" class="current">11</a>
-          <a href="" class="page_link">12</a>
-          <a href="" class="page_link">13</a>
-          <a href="" class="surf">next</a>
-        </div>
-      </div>
     {% endif %}
 
     <div class="main_wrapp_head">
@@ -152,6 +100,9 @@
             <b>Department:</b> {{training_tutor.dept_hod.department.name}}
           {% endif %}
         </p>
+        <p>
+          <b>Status (is active):</b> {{training_tutor.is_active}}
+        </p>
       </div>
     </div>
 
@@ -173,7 +124,7 @@
     </div>
 
     <div class="main_wrapp_what">
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+      <p>Departmental training coordinator profile</p>
     </div>
   </div>
 {% endblock main %}

@@ -82,7 +82,6 @@ def signup(request):
       new_usr = User.objects.filter(identification_num=raw_identification_num).first()
       
       new_student =  TrainingStudent(student=new_usr, student_training_coordinator=student_coord, first_name=form.cleaned_data["first_name"], last_name=form.cleaned_data["last_name"], matrix_no=raw_identification_num, email=form.cleaned_data["email"], phone_number=form.cleaned_data["phone_number"], level=student_level)
-      print(student_level)
       new_student.save()
       
       return redirect('auth:login')

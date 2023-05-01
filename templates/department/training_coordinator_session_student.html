@@ -1,0 +1,71 @@
+<!-- extending from base.html file -->
+{% extends "base.html" %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>This session student page</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="main_wrapp_head">
+    <p>Student that will do IT this year ({{coordinator_students.paginator.count}})</p>
+  </div>
+
+  <div class="main_wrapp">
+    {% if coordinator_students %}
+      {%  for student in coordinator_students %}
+        <div class="wrapp_list">
+          <a href="#">
+            {{student.first_name}}
+            {% if usr.middle_name %}
+              {{student.middle_name}}
+            {% endif %}
+            {{student.last_name}}
+          </a>
+          <small>{{student.level}} level student</small>
+          {% if student.student in training_tutor.training_students.all %}
+            <form method="post">
+              <button type="button">Acknowledged</button>
+            </form>
+          {% else %}
+            <form action="{% url 'department:coordinator_acknowledge_student' student.student.id %}" method="post">
+              {% csrf_token %}
+              <button type="submit">ADD</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      {% if coordinator_students.paginator.count > 3 %}
+        <div class="wrapp_pages">
+          <div class="wrapp_pages_column">
+            {% if coordinator_students.has_previous %}
+              <a href="?page={{coordinator_students.previous_page_number}}" class="surf">previous</a>
+              <a>...</a>
+            {% endif %}
+
+            {% for num in coordinator_students.paginator.page_range %}
+              {% if coordinator_students.number == num %}
+                  <a href="?page={{num}}" class="current">{{num}}</a>
+              {% elif num > coordinator_students.number|add:'-4' and num < coordinator_students.number|add:'4' %}
+                  <a href="?page={{num}}" class="page_link">{{num}}</a>
+              {% endif %}
+            {% endfor %}
+
+            {% if coordinator_students.has_next %}
+              <a>...</a>
+              <a href="?page={{coordinator_students.next_page_number}}" class="surf">Next</a>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+{% endblock main %}

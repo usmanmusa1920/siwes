@@ -1,0 +1,67 @@
+<!-- extending from base.html file -->
+{% extends "base.html" %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>Search staff user</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="main_wrapp_head">
+    <p>Search staff user by identification number (ID number)</p>
+  </div>
+  <div class="main_wrapp">
+    <div class="wrapp_form">
+      <p><b>Filter staff user:</b></p>
+      <small>Search staff user by identification number (staff ID) and then click activate</small>
+      <form action="{% url 'training:filter_staff_user' %}" method="get" class="search">
+        {% csrf_token %}
+        <input type="search" name="search_q" placeholder="Filter ID" required>
+        <button type="submit">search</button>
+      </form>
+    </div>
+  </div>
+  {% for user in users %}
+    <div class="wrapp_list">
+      <a>{{user}}</a>
+      <small>{{user.first_name}} {{user.last_name}}</small>
+      <form action="{% url 'training:activate_training_coordinator' user.identification_num %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Activate</button>
+      </form>
+    </div>
+  {% endfor %}
+  
+  {% if users.paginator.count > 3 %}
+    <div class="wrapp_pages">
+      <div class="wrapp_pages_column">
+        {% if users.has_previous %}
+          <a href="?page={{users.previous_page_number}}&search_q={{search_panel}}" class="surf">previous</a>
+          <a>...</a>
+        {% endif %}
+        {% for num in users.paginator.page_range %}
+          {% if users.number == num %}
+            <a href="?page={{num}}&search_q={{search_panel}}" class="current">{{num}}</a>
+          {% elif num > users.number|add:'-3' and num < users.number|add:'3' %}
+            <a href="?page={{num}}&search_q={{search_panel}}" class="page_link">{{num}}</a>
+          {% endif %}
+        {% endfor %}
+        {% if users.has_next %}
+          <a>...</a>
+          <a href="?page={{users.next_page_number}}&search_q={{search_panel}}" class="surf">next</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+  <div class="main_wrapp_what">
+    <p>Search staff user by identification number (ID number)</p>
+  </div>
+  </div>
+{% endblock main %}
