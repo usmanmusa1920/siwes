@@ -1,5 +1,4 @@
 # This script is, ease writing code in python interpreter
-# f"siwes/science/physics/l200"
 
 """
 Datetime format:

@@ -112,12 +112,18 @@ def uploadAcceptanceLetter200(request):
   stu_usr = User.objects.get(id=request.user.id) # student user
   std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
   coord = std.student_training_coordinator
+
+  train = std.student_training_coordinator.dept_hod.department.faculty.training
+  faculty = std.student_training_coordinator.dept_hod.department.faculty.name
+  department = std.student_training_coordinator.dept_hod.department.name
+  level = std.level
+  route = train+'/'+faculty+'/'+department+'/l'+level+'/'
   
   form = UploadAcceptanceLetter(request.POST, request.FILES)
   if form.is_valid():
     instance = form.save(commit=False)
     pic_name = picture_name(instance.image.name)
-    instance.image.name = pic_name
+    instance.image.name = route + pic_name
     instance.sender_acept = std
     instance.receiver_acept = coord
     instance.level = "200"
@@ -131,12 +137,18 @@ def uploadAcceptanceLetter300(request):
   stu_usr = User.objects.get(id=request.user.id) # student user
   std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
   coord = std.student_training_coordinator
+
+  train = std.student_training_coordinator.dept_hod.department.faculty.training
+  faculty = std.student_training_coordinator.dept_hod.department.faculty.name
+  department = std.student_training_coordinator.dept_hod.department.name
+  level = std.level
+  route = train+'/'+faculty+'/'+department+'/l'+level+'/'
   
   form = UploadAcceptanceLetter(request.POST, request.FILES)
   if form.is_valid():
     instance = form.save(commit=False)
     pic_name = picture_name(instance.image.name)
-    instance.image.name = pic_name
+    instance.image.name = route + pic_name
     instance.sender_acept = std
     instance.receiver_acept = coord
     instance.level = "300"
@@ -151,6 +163,12 @@ def updateAcceptanceLetter200(request):
   std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
   coord = std.student_training_coordinator
   acceptance_200 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level="200").first()
+
+  train = std.student_training_coordinator.dept_hod.department.faculty.training
+  faculty = std.student_training_coordinator.dept_hod.department.faculty.name
+  department = std.student_training_coordinator.dept_hod.department.name
+  level = std.level
+  route = train+'/'+faculty+'/'+department+'/l'+level+'/'
   
   if not acceptance_200:
     return False
@@ -160,7 +178,10 @@ def updateAcceptanceLetter200(request):
     if form.is_valid():
       if os.path.exists(acceptance_200.image.path):
         os.remove(acceptance_200.image.path)
-      form.save()
+      instance = form.save(commit=False)
+      pic_name = picture_name(instance.image.name)
+      instance.image.name = route + pic_name
+      instance.save()
       
       stu_letter = AcceptanceLetter.objects.filter(sender_acept=std, level="200").first()
       if stu_letter:
@@ -185,6 +206,12 @@ def updateAcceptanceLetter300(request):
   std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
   coord = std.student_training_coordinator
   acceptance_300 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level="300").first()
+
+  train = std.student_training_coordinator.dept_hod.department.faculty.training
+  faculty = std.student_training_coordinator.dept_hod.department.faculty.name
+  department = std.student_training_coordinator.dept_hod.department.name
+  level = std.level
+  route = train+'/'+faculty+'/'+department+'/l'+level+'/'
   
   if not acceptance_300:
     return False
@@ -194,7 +221,10 @@ def updateAcceptanceLetter300(request):
     if form.is_valid():
       if os.path.exists(acceptance_300.image.path):
         os.remove(acceptance_300.image.path)
-      form.save()
+      instance = form.save(commit=False)
+      pic_name = picture_name(instance.image.name)
+      instance.image.name = route + pic_name
+      instance.save()
       
       stu_letter = AcceptanceLetter.objects.filter(sender_acept=std, level="300").first()
       if stu_letter:
