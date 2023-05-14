@@ -4,6 +4,27 @@
 NB:
 
 Only staff that will register student, will access signup page
+
+The following are the functional requirements for the
+SIWES portal:
+
+i.)The administrator creates the profiles of students that are eligible to go for the SIWES program.
+
+ii.)The system generates a list of the students that are eligible to go for the SIWES program.
+
+iii.)Students log in to the portal and are identified with unique matriculation number and password (registration number) as assigned by the school and as stored in the database.
+
+iv.)Students can fill their logbooks, edit them and view their logbook entry per week. They can also send and receive mails through the portal mailbox.
+
+v.)Lecturers supervise activities of students on SIWES and comment and grade them on weekly basis.
+
+vi.)Industry-based supervisors can monitor activities of students on SIWES in their company and comment and grade their logbooks weekly.
+
+vii.)SIWES coordinator assigns a set of students to a supervisor from the institution.
+
+viii.)Administrator creates user accounts for all user groups
+
+NB: Scanned students` logbook in hardcopy is (as picture)
 """
 
 """
