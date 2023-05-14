@@ -1,6 +1,12 @@
 # This script is, ease writing code in python interpreter
 
 """
+NB:
+
+Only staff that will register student, will access signup page
+"""
+
+"""
 Datetime format:
   d = '01' to '31'
   j = '1' to '31'
