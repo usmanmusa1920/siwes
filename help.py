@@ -1,10 +1,6 @@
-# This script is, ease writing code in python interpreter
+# This script, it ease writing code in python interpreter
 
 """
-NB:
-
-Only staff that will register student, will access signup page
-
 The following are the functional requirements for the
 SIWES portal:
 
@@ -40,11 +36,11 @@ Datetime format:
   Y = '1999'
 --------------------
 
+pmake && pmigrate && python manage.py createsuperuser --email usmanmusa1920@gmail.com --first_name Usman --last_name Musa --identification_num 2010310013 && python manage.py createsuperuser --email okoyeikechukwu@yahoo.com --first_name Okoye --last_name Francis --identification_num 20232024 && pm
+
   If any issue when using the default user model
   (from django.contrib.auth.models import User)
-  use the below tricks
-
-pmake && pmigrate && python manage.py createsuperuser --email usmanmusa1920@gmail.com --first_name Usman --last_name Musa --identification_num 2010310013 && python manage.py createsuperuser --email okoyeikechukwu@yahoo.com --first_name Okoye --last_name Francis --identification_num 20232024 && pm
+  use the below tricks (export DJANGO_SETTINGS_MODULE=fugus.settings)
 
 export DJANGO_SETTINGS_MODULE=fugus.settings
 python
@@ -55,7 +51,7 @@ django.setup()
 import os
 import json
 import random
-from training.models import TrainingDirector
+from training.models import Administrator
 from faculty.models import Faculty, FacultyDean
 from department.models import Department, DepartmentHOD, DepartmentTrainingCoordinator, Letter
 from student.models import TrainingStudent, StudentLetterRequest, AcceptanceLetter
@@ -82,9 +78,9 @@ du2.save()
 du3.save()
 
 
-td1 = TrainingDirector(director=du1, first_name=du1.first_name, last_name=du1.last_name, email=du1.email, phone_number=du1.phone_number, id_no=du1.identification_num)
-td2 = TrainingDirector(director=du2, first_name=du2.first_name, last_name=du2.last_name, email=du2.email, phone_number=du2.phone_number, id_no=du2.identification_num)
-td3 = TrainingDirector(director=du3, first_name=du3.first_name, last_name=du3.last_name, email=du3.email, phone_number=du3.phone_number, id_no=du3.identification_num)
+td1 = Administrator(director=du1, first_name=du1.first_name, last_name=du1.last_name, email=du1.email, phone_number=du1.phone_number, id_no=du1.identification_num)
+td2 = Administrator(director=du2, first_name=du2.first_name, last_name=du2.last_name, email=du2.email, phone_number=du2.phone_number, id_no=du2.identification_num)
+td3 = Administrator(director=du3, first_name=du3.first_name, last_name=du3.last_name, email=du3.email, phone_number=du3.phone_number, id_no=du3.identification_num)
 
 td1.save()
 td2.save()

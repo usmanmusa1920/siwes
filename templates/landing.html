@@ -31,9 +31,9 @@
         </div>
         <div class="straight">
           <a href="{% url 'department:training_coordinator_profile' %}">Training Coordinator</a>
-          <a href="{% url 'training:register_training_coordinator' %}">Register training Coordinator</a>
-          <a href="{% url 'training:filter_staff_user' %}">Filter staff user</a>
-          <a href="{% url 'training:training_director_profile' %}">Training Director</a>
+          <a href="{% url 'administrator:register_training_coordinator' %}">Register training Coordinator</a>
+          <a href="{% url 'administrator:filter_staff_user' %}">Filter staff user</a>
+          <a href="{% url 'administrator:administrator_director_profile' %}">Training Director</a>
         </div>
       </div>
       <div class="wrapp_bot_left">
@@ -52,7 +52,7 @@
       <a href="{% url 'student:placement_letter' %}">Placement letter</a>
       <a href="{% url 'student:acceptance_letter' %}">Acceptance letter</a>
       <a href="{% url 'faculty:profile' %}">Faculty profile</a>
-      <a href="{% url 'training:training_manager' %}">Training manager</a>
+      <a href="{% url 'administrator:administrator_manager' %}">Training manager</a>
       <a href="{% url 'auth:logout' %}">Logout</a>
       {% if request.user.is_superuser %}
         <a href="admin">Admin</a>

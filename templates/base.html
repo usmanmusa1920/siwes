@@ -103,7 +103,7 @@
 
           <div class="header_right">
             {% if request.user.is_staff %}
-              <a href="{% url 'training:training_manager' %}"><h4>Profile</h4></a>
+              <a href="{% url 'administrator:administrator_manager' %}"><h4>Profile</h4></a>
             {% else %}
               <a href="{% url 'student:profile' %}"><h4>Profile</h4></a>
             {% endif %}

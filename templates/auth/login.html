@@ -8,7 +8,15 @@
 {% endblock title %}
 
 {% block access_link %}
-  <a href="{% url 'auth:signup' %}" id="access_link">Sign up</a>
+  {% if request.user.is_authenticated %}
+    {% if request.user.is_staff %}
+      <a href="{% url 'auth:register_student' %}" id="access_link">Register</a>
+    {% else %}
+      <a id="access_link">Register</a>
+    {% endif %}
+  {% else %}
+    <a id="access_link">Register</a>
+  {% endif %}
 {% endblock access_link %}
 
 <!-- content of the page -->
@@ -50,8 +58,16 @@
     {% endif %}
     <button type="submit">Login</button>
     <div class="links">
-      <a href="{% url 'auth:signup' %}">Sign up</a>
-      <a href="#">Forgot password</a>
+      {% if request.user.is_authenticated %}
+        {% if request.user.is_staff %}
+          <a href="{% url 'auth:register_student' %}">Register</a>
+        {% else %}
+          <a>Register</a>
+        {% endif %}
+      {% else %}
+        <a>Register</a>
+      {% endif %}
+      <a>Forgot password</a>
     </div>
   </form>
 {% endblock main_right %}

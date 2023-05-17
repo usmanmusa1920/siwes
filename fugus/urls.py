@@ -37,7 +37,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", index, name="landing"),
     path("", include("account.urls")),
-    path("", include("training.urls")),
+    path("", include("administrator.urls")),
     path("", include("faculty.urls")),
     path("", include("department.urls")),
     path("", include("student.urls")),

@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class TrainingDirector(models.Model):
+class Administrator(models.Model):
   director = models.ForeignKey(User, on_delete=models.CASCADE)
   first_name = models.CharField(max_length=100, unique=False)
   middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
@@ -23,4 +23,4 @@ class TrainingDirector(models.Model):
   description = models.TextField(blank=True, null=True)
 
   def __str__(self):
-    return f"Training director {self.first_name} {self.last_name} ({self.id_no})"
+    return f"Administrator ({self.first_name} {self.last_name}) with ID number of {self.id_no}"

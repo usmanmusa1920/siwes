@@ -4,11 +4,11 @@
 
 <!-- page title -->
 {% block title %}
-  signup
+  Register student
 {% endblock title %}
 
 {% block access_link %}
-  <a href="{% url 'auth:login' %}" id="access_link">Login</a>
+  <a href="{% url 'auth:logout' %}" id="access_link">Logout</a>
 {% endblock access_link %}
 
 <!-- content of the page -->
@@ -39,7 +39,8 @@
 
   <form method="post">
     {% csrf_token %}
-    <h2>Create an account</h2>
+    <h2>Create student account</h2>
+    <p>Create student training account with the student appropriate informations</p>
     <input type="text" name="first_name" placeholder="First name" class="input" autofocus required>
     <input type="text" name="last_name" placeholder="Last name" class="input" required>
     <input type="text" name="identification_num" placeholder="Matrix number (reg number)" class="input" required>
@@ -100,10 +101,10 @@
       <p><i><strong><small>Password should not be similar to your account information, with a min-length of 8 character and avoid using numeric password entirely. Include symbols to make it strong like (?/@.^*) etc.</small></strong></i></p>
     {% endif %}
     
-    <button type="submit">Sign Up</button>
+    <button type="submit">Register</button>
     <div class="links">
-      <a href="{% url 'auth:login' %}">Login</a>
-      <a href="#">Forgot password</a>
+      <a href="{% url 'auth:logout' %}">Logout</a>
+      <a>Forgot password</a>
     </div>
   </form>
 {% endblock main_right %}

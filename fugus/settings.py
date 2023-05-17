@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     
     # my apps
     "account.apps.AccountConfig",
-    "training.apps.TrainingConfig",
+    "administrator.apps.AdministratorConfig",
     "faculty.apps.FacultyConfig",
     "department.apps.DepartmentConfig",
     "student.apps.StudentConfig",
