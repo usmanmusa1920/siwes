@@ -59,36 +59,31 @@ class AcceptanceLetter(models.Model):
 class WeekReader(models.Model):
   student = models.ForeignKey(TrainingStudent, related_name='student_week_reader', on_delete=models.CASCADE)
   week_no = models.IntegerField(default=0) # later max_length will be set
-  # start_of_training = models.DateTimeField(default=timezone.now)
-  # end_of_training = models.DateTimeField(default=timezone.now)
+
   def __str__(self):
-    return f"Week {self.week_no} of student training"
+    return f"Week {self.week_no} of student training out of 12 weeks"
 
 
 class WeekScannedLogbook(models.Model):
   week = models.ForeignKey(WeekReader, related_name='week_reader', on_delete=models.CASCADE)
-  # sender_acept = models.ForeignKey(TrainingStudent, related_name='sender_acept', on_delete=models.CASCADE)
-  # receiver_acept = models.ForeignKey(DepartmentTrainingCoordinator, related_name='receiver_acept', on_delete=models.CASCADE)
+  student_lg = models.ForeignKey(TrainingStudent, related_name='student_lg', on_delete=models.CASCADE)
   timestamp = models.DateTimeField(default=timezone.now)
-  # title = models.CharField(max_length=255, blank=True, null=True)
-  # level = models.CharField(max_length=255, blank=False, null=False)
-  # image = models.ImageField(blank=True, null=True, upload_to=f'{datetime.today().year}-week_training')
-  # text = models.TextField(blank=True, null=True,)
-  # is_reviewed = models.BooleanField(default=False)
-  # can_change = models.BooleanField(default=False)
+  title = models.CharField(max_length=255, blank=True, null=True)
+  image = models.ImageField(blank=True, null=True, upload_to=f'{datetime.today().year}-week_training')
+  text = models.TextField(blank=True, null=True,) # references
+  is_reviewed = models.BooleanField(default=False)
   
   def __str__(self):
-    return f"Student (self.sender_acept.matrix_no) acceptance letter (approved)"
+    return f"{self.student_lg.first_name}'s logbook of the {self.week} week out of 12 weeks"
 
 
-class CommentScannedLogbook(models.Model):
+class CommentOnLogbook(models.Model):
+  commentator = models.ForeignKey(User, on_delete=models.CASCADE)
   timestamp = models.DateTimeField(default=timezone.now)
-  # post = models.ForeignKey(WeekScannedLogbook, on_delete=models.CASCADE)
-  # grade = models.ForeignKey(WeekScannedLogbook, on_delete=models.CASCADE) # grade of that week logbook
-  # full_name = models.CharField(max_length=255, blank=False, null=False)
-  # email = models.CharField(max_length=255, blank=False, null=False)
-  # comment = models.TextField(blank=False, null=False)
-  # is_read = models.BooleanField(default=False)
+  logbook = models.ForeignKey(WeekScannedLogbook, on_delete=models.CASCADE) # Week scanned logbook
+  grade = models.IntegerField(blank=True, null=True) # grade of that week logbook
+  full_name = models.CharField(max_length=255, blank=False, null=False)
+  comment = models.TextField(blank=False, null=False)
   
   def __str__(self):
-    return f"self.text_body"
+    return f"Comment of {self.commentator.identification_num} on {self.logbook.student_lg.matrix_no} logbook"

@@ -75,6 +75,8 @@ class Letter(models.Model):
   letter_type = [('placement letter', 'Placement letter'), ('acceptance letter', 'Acceptance letter'),]
   letter = models.CharField(max_length=100, default='placement letter', choices=letter_type)
   duration = models.CharField(max_length=100, default='3', blank=False, null=False)
+  start_of_training = models.DateTimeField(default=timezone.now) # start date of the programm
+  end_of_training = models.DateTimeField(default=timezone.now) # end date of the programm
   text = models.TextField(blank=True, null=True)
   viewers = models.ManyToManyField(User, blank=True, related_name='viewers')
   session = models.CharField(max_length=255, blank=False, null=False)
