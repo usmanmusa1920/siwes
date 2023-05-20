@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
@@ -47,7 +46,8 @@ class AcceptanceLetter(models.Model):
   timestamp = models.DateTimeField(default=timezone.now)
   title = models.CharField(max_length=255, blank=True, null=True)
   level = models.CharField(max_length=255, blank=False, null=False)
-  image = models.ImageField(blank=True, null=True, upload_to=f'{datetime.today().year}-acceptance_letter')
+  # avoid updating student acceptance letter on admin page
+  image = models.ImageField(blank=True, null=True, upload_to=f'acceptance-letters')
   text = models.TextField(blank=True, null=True,)
   is_reviewed = models.BooleanField(default=False)
   can_change = models.BooleanField(default=False)
@@ -69,7 +69,9 @@ class WeekScannedLogbook(models.Model):
   student_lg = models.ForeignKey(TrainingStudent, related_name='student_lg', on_delete=models.CASCADE)
   timestamp = models.DateTimeField(default=timezone.now)
   title = models.CharField(max_length=255, blank=True, null=True)
-  image = models.ImageField(blank=True, null=True, upload_to=f'{datetime.today().year}-week_training')
+  # avoid updating student acceptance letter on admin page
+  # /{datetime.today().year}-logbooks (in views)
+  image = models.ImageField(blank=True, null=True, upload_to=f'weekly-scanned-logbook')
   text = models.TextField(blank=True, null=True,) # references
   is_reviewed = models.BooleanField(default=False)
   

@@ -51,7 +51,7 @@ django.setup()
 import os
 import json
 import random
-from training.models import Administrator
+from administrator.models import Administrator
 from faculty.models import Faculty, FacultyDean
 from department.models import Department, DepartmentHOD, DepartmentTrainingCoordinator, Letter
 from student.models import TrainingStudent, StudentLetterRequest, AcceptanceLetter
@@ -61,9 +61,9 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 # coping some dummy images as student acceptance letter
-os.system('mkdir -p media/2023-acceptance_letter')
-os.system('cp dummy_img/banner.jpg media/2023-acceptance_letter/banner.jpg')
-os.system('cp dummy_img/education.jpg media/2023-acceptance_letter/education.jpg')
+os.system('mkdir -p media/acceptance-letters/2023-acceptances/siwes/Science/Physics/l300')
+os.system('cp dummy_img/banner.jpg media/acceptance-letters/2023-acceptances/siwes/Science/Physics/l300/banner.jpg')
+os.system('cp dummy_img/education.jpg media/acceptance-letters/2023-acceptances/siwes/Science/Physics/l300/education.jpg')
 
 
 # __________________
@@ -237,8 +237,8 @@ req_let2.save()
 # _________________
 # ACCEPTANCE LETTER
 
-my_accept1 = AcceptanceLetter(sender_acept=me_stdent1, receiver_acept=dtc3, level="300", image="2023-acceptance_letter/banner.jpg")
-my_accept2 = AcceptanceLetter(sender_acept=me_stdent2, receiver_acept=dtc3, level="200", image="2023-acceptance_letter/education.jpg")
+my_accept1 = AcceptanceLetter(sender_acept=me_stdent1, receiver_acept=dtc3, level="300", image="acceptance-letters/2023-acceptances/siwes/Science/Physics/l300/banner.jpg")
+my_accept2 = AcceptanceLetter(sender_acept=me_stdent2, receiver_acept=dtc3, level="200", image="acceptance-letters/2023-acceptances/siwes/Science/Physics/l300/education.jpg")
 
 my_accept1.save()
 my_accept2.save()

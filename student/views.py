@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.db.models import Q
@@ -126,7 +127,7 @@ class Student:
     faculty = std.student_training_coordinator.dept_hod.department.faculty.name
     department = std.student_training_coordinator.dept_hod.department.name
     level = std.level
-    route = train+'/'+faculty+'/'+department+'/l'+level+'/'
+    route = f'{datetime.today().year}-acceptances'+'/'+train+'/'+faculty+'/'+department+'/l'+level+'/'
     
     form = UploadAcceptanceLetter(request.POST, request.FILES)
     if form.is_valid():
@@ -152,7 +153,7 @@ class Student:
     faculty = std.student_training_coordinator.dept_hod.department.faculty.name
     department = std.student_training_coordinator.dept_hod.department.name
     level = std.level
-    route = train+'/'+faculty+'/'+department+'/l'+level+'/'
+    route = f'{datetime.today().year}-acceptances'+'/'+train+'/'+faculty+'/'+department+'/l'+level+'/'
     
     form = UploadAcceptanceLetter(request.POST, request.FILES)
     if form.is_valid():
@@ -179,7 +180,7 @@ class Student:
     faculty = std.student_training_coordinator.dept_hod.department.faculty.name
     department = std.student_training_coordinator.dept_hod.department.name
     level = std.level
-    route = train+'/'+faculty+'/'+department+'/l'+level+'/'
+    route = f'{datetime.today().year}-acceptances'+'/'+train+'/'+faculty+'/'+department+'/l'+level+'/'
     
     if not acceptance_200:
       return False
@@ -187,6 +188,7 @@ class Student:
     if request.method == 'POST':
       form = UploadAcceptanceLetter(request.POST, request.FILES, instance=acceptance_200)
       if form.is_valid():
+        # the remove of previous acceptance is not workin, later will be arrange
         if os.path.exists(acceptance_200.image.path):
           os.remove(acceptance_200.image.path)
         instance = form.save(commit=False)
@@ -223,7 +225,7 @@ class Student:
     faculty = std.student_training_coordinator.dept_hod.department.faculty.name
     department = std.student_training_coordinator.dept_hod.department.name
     level = std.level
-    route = train+'/'+faculty+'/'+department+'/l'+level+'/'
+    route = f'{datetime.today().year}-acceptances'+'/'+train+'/'+faculty+'/'+department+'/l'+level+'/'
     
     if not acceptance_300:
       return False
@@ -231,6 +233,7 @@ class Student:
     if request.method == 'POST':
       form = UploadAcceptanceLetter(request.POST, request.FILES, instance=acceptance_300)
       if form.is_valid():
+        # the remove of previous acceptance is not workin, later will be arrange
         if os.path.exists(acceptance_300.image.path):
           os.remove(acceptance_300.image.path)
         instance = form.save(commit=False)
