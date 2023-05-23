@@ -16,6 +16,8 @@ User = get_user_model()
 
 class Administrator:
   """Administrator related views"""
+  @login_required
+  @staticmethod
   def directorProfile(request):
     context = {
       "None": None,
@@ -23,6 +25,8 @@ class Administrator:
     return render(request, "administrator/director_profile.html", context=context)
 
 
+  @login_required
+  @staticmethod
   def manager(request):
     faculties = Faculty.objects.all()
     departments = Department.objects.all()
@@ -46,6 +50,8 @@ class Administrator:
     return render(request, "administrator/manager.html", context=context)
     
 
+  @login_required
+  @staticmethod
   def registerAdministratorCoordinator(request):
     all_dept = DepartmentTrainingCoordinator.objects.filter(is_active=True)
     if request.method == 'POST':
@@ -78,11 +84,13 @@ class Administrator:
     return render(request, 'administrator/register_training_coordinator.html', context)
 
 
+  @login_required
+  @staticmethod
   def activateAdministratorCoordinator(request, staff_user_id):
     new_active_coord = DepartmentTrainingCoordinator.objects.filter(id_no=staff_user_id).first()
     if new_active_coord.is_active:
       messages.success(request, f'This ({new_active_coord.id_no}) is  already the {new_active_coord.dept_hod.department.name} department training coordinator!')
-      return redirect('training:filter_staff_user')
+      return redirect('administrator:filter_staff_user')
     new_active_coord.is_active = True
     new_active_coord.save()
     for coord in DepartmentTrainingCoordinator.objects.filter(is_active=True, dept_hod=new_active_coord.dept_hod):
@@ -92,6 +100,8 @@ class Administrator:
     return redirect('landing')
 
 
+  @login_required
+  @staticmethod
   def filterStaffUser(request):
     search_panel = request.GET.get('search_q')
     try:

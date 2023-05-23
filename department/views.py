@@ -11,6 +11,7 @@ User = get_user_model()
 
 class Coordinator:
   """Trianing coordinator related views"""
+  @login_required
   @staticmethod
   def profile(request):
     coord_dept_request_user = request.user
@@ -38,6 +39,7 @@ class Coordinator:
     return render(request, "department/training_coordinator_profile.html", context=context)
 
 
+  @login_required
   @staticmethod
   def sessionStudent(request):
     coord_dept_request_user = request.user
@@ -57,6 +59,7 @@ class Coordinator:
     return render(request, "department/training_coordinator_session_student.html", context=context)
 
 
+  @login_required
   @staticmethod
   def viewStudentLetter(request, letter_id):
     """if student departmental training coordinator view his/her acceptance letter,
@@ -71,6 +74,7 @@ class Coordinator:
     return render(request, "department/student_upload_acceptance_letter.html", context=context)
 
 
+  @login_required
   @staticmethod
   def acknowledgeStudent(request, student_id):
     # filtering student in user model using id

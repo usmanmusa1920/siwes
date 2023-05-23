@@ -21,7 +21,7 @@
     <div class="wrapp_form">
       <p><b>Filter staff user:</b></p>
       <small>Search staff user by identification number (staff ID) and then click activate</small>
-      <form action="{% url 'training:filter_staff_user' %}" method="get" class="search">
+      <form action="{% url 'administrator:filter_staff_user' %}" method="get" class="search">
         {% csrf_token %}
         <input type="search" name="search_q" placeholder="Filter ID" required>
         <button type="submit">search</button>
@@ -32,7 +32,7 @@
     <div class="wrapp_list">
       <a>{{user}}</a>
       <small>{{user.first_name}} {{user.last_name}}</small>
-      <form action="{% url 'training:activate_training_coordinator' user.identification_num %}" method="post">
+      <form action="{% url 'administrator:activate_training_coordinator' user.identification_num %}" method="post">
         {% csrf_token %}
         <button type="submit">Activate</button>
       </form>
