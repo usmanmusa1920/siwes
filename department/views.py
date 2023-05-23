@@ -11,9 +11,11 @@ User = get_user_model()
 
 class Coordinator:
   """Trianing coordinator related views"""
+
   @login_required
   @staticmethod
   def profile(request):
+    """coordinator profile"""
     coord_dept_request_user = request.user
     training_tutor = DepartmentTrainingCoordinator.objects.filter(coordinator=coord_dept_request_user).first()
 
@@ -42,6 +44,7 @@ class Coordinator:
   @login_required
   @staticmethod
   def sessionStudent(request):
+    """coordinator list of student page"""
     coord_dept_request_user = request.user
     training_tutor = DepartmentTrainingCoordinator.objects.filter(coordinator=coord_dept_request_user).first()
 
@@ -77,6 +80,7 @@ class Coordinator:
   @login_required
   @staticmethod
   def acknowledgeStudent(request, student_id):
+    """accept student as (coordinator add student in his list)"""
     # filtering student in user model using id
     student_to_add = User.objects.get(id=student_id)
 

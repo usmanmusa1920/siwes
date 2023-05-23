@@ -63,9 +63,11 @@ def changePassword(request):
   
 class Register:
   """These includes views for registering staffs and students' profiles"""
+
   @login_required
   @staticmethod
   def student(request):
+    """register student"""
     if request.user.is_staff == False:
       # block anyone from getting access to the register page of student if he/she is not a staff
       return False

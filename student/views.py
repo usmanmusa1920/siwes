@@ -16,6 +16,7 @@ User = get_user_model()
 
 class Student:
   """Students' related views"""
+
   @login_required
   @staticmethod
   def profile(request):
@@ -57,6 +58,7 @@ class Student:
   @login_required
   @staticmethod
   def placementLetter(request):
+    """student placement letter"""
     the_student_request_user = request.user
     std = TrainingStudent.objects.filter(student=the_student_request_user).first()
     letter = Letter.objects.filter(letter="placement letter", coordinator=std.student_training_coordinator).first()
@@ -75,6 +77,7 @@ class Student:
   @login_required
   @staticmethod
   def acceptanceLetter(request):
+    """student placement letter"""
     the_student_request_user = request.user
     std = TrainingStudent.objects.filter(student=the_student_request_user).first()
     letter = Letter.objects.filter(letter="acceptance letter", coordinator=std.student_training_coordinator).first()
@@ -326,6 +329,7 @@ class Student:
   @login_required
   @staticmethod
   def logbookComment(request, logbook_id):
+    """supervisor comment on student logbook"""
     logbook = WeekScannedLogbook.objects.get(id=logbook_id)
     stu_usr = User.objects.get(id=request.user.id) # student user
     std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()

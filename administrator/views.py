@@ -53,6 +53,7 @@ class Administrator:
   @login_required
   @staticmethod
   def registerAdministratorCoordinator(request):
+    """register department coordinator"""
     all_dept = DepartmentTrainingCoordinator.objects.filter(is_active=True)
     if request.method == 'POST':
       form = CoordinatorSignupForm(request.POST)
@@ -87,6 +88,7 @@ class Administrator:
   @login_required
   @staticmethod
   def activateAdministratorCoordinator(request, staff_user_id):
+    """activate department coordinator"""
     new_active_coord = DepartmentTrainingCoordinator.objects.filter(id_no=staff_user_id).first()
     if new_active_coord.is_active:
       messages.success(request, f'This ({new_active_coord.id_no}) is  already the {new_active_coord.dept_hod.department.name} department training coordinator!')
@@ -103,6 +105,7 @@ class Administrator:
   @login_required
   @staticmethod
   def filterStaffUser(request):
+    """filter staff by ID number"""
     search_panel = request.GET.get('search_q')
     try:
       users_search = User.objects.filter(Q(identification_num__istartswith=search_panel) | Q(identification_num__contains=search_panel), is_staff=True).order_by('-date_joined')
