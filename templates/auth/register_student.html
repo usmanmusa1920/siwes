@@ -43,7 +43,7 @@
     <p>Create student training account with the student appropriate informations</p>
     <input type="text" name="first_name" placeholder="First name" class="input" autofocus required>
     <input type="text" name="last_name" placeholder="Last name" class="input" required>
-    <input type="text" name="identification_num" placeholder="Matrix number (reg number)" class="input" required>
+    <input type="text" name="identification_num" oninput="automate_passwd()" placeholder="Matrix number (reg number)" class="input" id="id_no" required>
     {% if form.identification_num.errors %}
       <p><i><strong><small>{{form.identification_num.errors}}</small></strong></i></p>
     {% endif %}
@@ -61,7 +61,7 @@
       </div>
     {% endif %}
 
-    <input type="tel" name="phone_number" placeholder="Phone number (e.g +12125552368)" class="input" required>
+    <input type="tel" name="phone_number" oninput="searchPlus()" placeholder="Phone number (e.g +12125552368)" class="input" required>
     {% if form.phone_number.errors %}
       <p><i><strong><small>{{form.phone_number.errors}}</small></strong></i></p>
     {% endif %}
@@ -91,11 +91,13 @@
       <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
     {% endif %}
 
-    <input type="password" name="password1" placeholder="Enter password" class="input" minlength="8" required>
+    <!-- we hide these two passwor field using `auth.css`, because the value will be automatically field once we inputed student matrix number -->
+    <input type="password" name="password1" id="pwd1" placeholder="Enter password" class="input" minlength="8" required>
     {% if form.password1.errors %}
       <p><i><strong><small>{{form.new_password2.errors}}</small></strong></i></p>
     {% endif %}
-    <input type="password" name="password2" placeholder="Confirm password" class="input" minlength="8" required>
+    <input type="password" name="password2" id="pwd2" placeholder="Confirm password" class="input" minlength="8" required>
+    {{form.errors}}
     {% if form.password2.errors %}
       <p><i><strong><small>{{form.password2.errors}}</small></strong></i></p>
       <p><i><strong><small>Password should not be similar to your account information, with a min-length of 8 character and avoid using numeric password entirely. Include symbols to make it strong like (?/@.^*) etc.</small></strong></i></p>

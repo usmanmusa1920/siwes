@@ -305,6 +305,10 @@ body{
   margin: 3px;
 }
 
+#pwd1, #pwd2{
+  display: None;
+}
+
 .radio{
   width: 100%;
 }

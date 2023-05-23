@@ -80,7 +80,7 @@ class Register:
         all_department = request.POST["all_department"]
         raw_identification_num = form.cleaned_data["identification_num"]
         student_level = form.cleaned_data["student_level"]
-        messages.success(request, f'Welcome {raw_identification_num}, your account has been created, you are ready to login!')
+        messages.success(request, f'Student with admission number of {raw_identification_num} has been registered for training programme!')
         
         student_department = Department.objects.filter(name=all_department).first()
         student_dept_hod = DepartmentHOD.objects.filter(department=student_department).first()
@@ -94,7 +94,7 @@ class Register:
         WR = WeekReader(student=new_student)
         WR.save()
         
-        return redirect('auth:login')
+        return redirect('auth:register_student')
     else:
       form = SignupForm()
     context = {
