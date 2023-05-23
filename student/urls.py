@@ -17,4 +17,7 @@ urlpatterns = [
 
   path("student/update/acceptance/letter/200", Student.updateAcceptanceLetter200, name="update_acceptance_letter_200"),
   path("student/update/acceptance/letter/300", Student.updateAcceptanceLetter300, name="update_acceptance_letter_300"),
+
+  path("logbook-entry", Student.logbookEntry, name="logbook_entry"),
+  path("logbook/comment/<int:logbook_id>", Student.logbookComment, name="logbook_comment"),
 ]

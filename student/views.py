@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from .models import TrainingStudent, AcceptanceLetter
-from .forms import UploadAcceptanceLetter
+from .models import TrainingStudent, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook
+from .forms import UploadAcceptanceLetter, UploadLogbookEntry, LogbookEntryComment
 from django.contrib.auth import get_user_model
 from toolkit import picture_name
 from faculty.models import FacultyDean
@@ -16,6 +16,7 @@ User = get_user_model()
 
 class Student:
   """Students' related views"""
+  @login_required
   @staticmethod
   def profile(request):
     """student profile"""
@@ -37,6 +38,7 @@ class Student:
     return render(request, "student/profile.html", context=context)
     
 
+  @login_required
   @staticmethod
   def otherViewProfile(request, student_id):
     """student profile (for other when they view it, such as coordinator, training manager, etc)"""
@@ -52,6 +54,7 @@ class Student:
     return render(request, "student/profile_other.html", context=context)
 
 
+  @login_required
   @staticmethod
   def placementLetter(request):
     the_student_request_user = request.user
@@ -69,6 +72,7 @@ class Student:
     return render(request, "student/placement_letter.html", context=context)
 
 
+  @login_required
   @staticmethod
   def acceptanceLetter(request):
     the_student_request_user = request.user
@@ -86,6 +90,7 @@ class Student:
     return render(request, "student/acceptance_letter.html", context=context)
 
 
+  @login_required
   @staticmethod
   def uploadedAcceptanceLetter200(request):
     """This view show 200 level student acceptance letter"""
@@ -101,6 +106,7 @@ class Student:
     return render(request, "student/upload_acceptance_letter_200.html", context=context)
 
 
+  @login_required
   @staticmethod
   def uploadedAcceptanceLetter300(request):
     """This view show 300 level student acceptance letter"""
@@ -116,6 +122,7 @@ class Student:
     return render(request, "student/upload_acceptance_letter_300.html", context=context)
 
 
+  @login_required
   @staticmethod
   def uploadAcceptanceLetter200(request):
     """upload (the view that will upload) acceptance letter for 200 level student"""
@@ -142,6 +149,7 @@ class Student:
       return redirect(reverse('student:uploaded_acceptance_letter_200'))
 
 
+  @login_required
   @staticmethod
   def uploadAcceptanceLetter300(request):
     """upload (the view that will upload) acceptance letter for 300 level student"""
@@ -168,6 +176,7 @@ class Student:
       return redirect(reverse('student:uploaded_acceptance_letter_300'))
 
 
+  @login_required
   @staticmethod
   def updateAcceptanceLetter200(request):
     """update acceptance letter for 200 level student"""
@@ -213,6 +222,7 @@ class Student:
     return render(request, 'student/update_acceptance_letter_200.html', context)
 
 
+  @login_required
   @staticmethod
   def updateAcceptanceLetter300(request):
     """update acceptance letter for 300 level student"""
@@ -256,3 +266,85 @@ class Student:
       "acceptance_300": acceptance_300,
     }
     return render(request, 'student/update_acceptance_letter_300.html', context)
+
+
+  @login_required
+  @staticmethod
+  def logbookEntry(request):
+    """
+    This method handle the tricks of student logbook entry per week (upload i.e scanned logbook in hardcopy), which can be view by them and their supervisor.
+    """
+    stu_usr = User.objects.get(id=request.user.id) # student user
+    std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
+    coord = std.student_training_coordinator
+
+    train = std.student_training_coordinator.dept_hod.department.faculty.training
+    faculty = std.student_training_coordinator.dept_hod.department.faculty.name
+    department = std.student_training_coordinator.dept_hod.department.name
+    level = std.level
+    route = f'{datetime.today().year}-logbooks-entry'+'/'+train+'/'+faculty+'/'+department+'/l'+level+'/'
+    WR = WeekReader.objects.filter(student=std).last()
+    # increment week by one, but it doesn't save it into the database,
+    # just to make it the start of our range below (w)
+    a = WR.week_no + 1
+
+    # Increment 12 by one, to make it the end of our range below (w)
+    b = 12 + 1
+    w = range(a, b)
+    weeks = list(w) # convert range (w) to list
+    week_no = WR.week_no + 1
+    logbook_entries = WeekScannedLogbook.objects.filter(student_lg=std, week=WR).all()
+
+    if request.method == 'POST':
+      form = UploadLogbookEntry(request.POST, request.FILES)
+      if form.is_valid():
+        instance = form.save(commit=False)
+        pic_name = picture_name(instance.image.name)
+        instance.image.name = route + pic_name
+        instance.student_lg = std
+        instance.week = WR
+        instance.week_no = WR.week_no + 1 # incrementing the week number of (within logbook field)
+        instance.save()
+
+        # increment week by one
+        WR.week_no += 1
+        WR.save()
+        messages.success(request, f'You just upload your logbook entry for {WR.week_no} week!')
+        return redirect(reverse('student:logbook_entry'))
+    else:
+      form = UploadLogbookEntry()
+    context = {
+      'form': form,
+      "std": std,
+      "weeks": weeks,
+      "week_no": week_no,
+      "logbook_entries": logbook_entries,
+    }
+    return render(request, 'student/logbook_entry.html', context)
+
+
+  @login_required
+  @staticmethod
+  def logbookComment(request, logbook_id):
+    logbook = WeekScannedLogbook.objects.get(id=logbook_id)
+    stu_usr = User.objects.get(id=request.user.id) # student user
+    std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
+    comments = CommentOnLogbook.objects.filter(logbook=logbook).all()
+
+    if request.method == 'POST':
+      form = LogbookEntryComment(request.POST)
+      if form.is_valid():
+        instance = form.save(commit=False)
+        instance.commentator = request.user
+        instance.logbook = logbook
+        instance.save()
+        messages.success(request, f'You just comment on logbook entry for {logbook.week_no} week of {std.matrix_no}')
+        return redirect(reverse('student:logbook_comment', kwargs={'logbook_id':logbook_id}))
+    else:
+      form = LogbookEntryComment()
+    context = {
+      "form": form,
+      "comments": comments,
+      "logbook": logbook,
+    }
+    return render(request, 'student/logbook_comment.html', context)

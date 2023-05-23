@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from .forms import PasswordChangeForm, SignupForm
 from department.models import Department, DepartmentHOD, DepartmentTrainingCoordinator
-from student.models import TrainingStudent
+from student.models import TrainingStudent, WeekReader
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -89,6 +89,10 @@ class Register:
         
         new_student =  TrainingStudent(student=new_usr, student_training_coordinator=student_coord, first_name=form.cleaned_data["first_name"], last_name=form.cleaned_data["last_name"], matrix_no=raw_identification_num, email=form.cleaned_data["email"], phone_number=form.cleaned_data["phone_number"], level=student_level)
         new_student.save()
+
+        # creating student week reader
+        WR = WeekReader(student=new_student)
+        WR.save()
         
         return redirect('auth:login')
     else:

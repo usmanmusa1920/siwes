@@ -29,6 +29,26 @@ class TrainingStudent(models.Model):
     return f"Training student with matrix number of {self.matrix_no}"
 
 
+class StudentSupervisor(models.Model):
+  supervisor = models.ForeignKey(User, on_delete=models.CASCADE)
+  supervisor_training_coordinator = models.ForeignKey(DepartmentTrainingCoordinator, on_delete=models.CASCADE)
+  first_name = models.CharField(max_length=100, unique=False)
+  middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
+  last_name = models.CharField(max_length=100, unique=False)
+  gender_choices = [('female', 'Female'), ('male', 'Male'),]
+  gender = models.CharField(max_length=100, default='male', choices=gender_choices)
+  date_of_birth = models.DateField(max_length=100, blank=True, null=True)
+  id_no = models.CharField(max_length=255, unique=True)
+  location = models.CharField(max_length=100, default="200")
+  email = models.EmailField(max_length=255, unique=False)
+  phone_number = PhoneNumberField(max_length=100, unique=False)
+  date_joined = models.DateTimeField(default=timezone.now)
+  date_leave = models.DateTimeField(auto_now=True)
+
+  def __str__(self):
+    return f"Training supervisor with identification number of {self.id_no}"
+
+
 class StudentLetterRequest(models.Model):
   """if he didn't see training letter, he/she should make request"""
   sender_req = models.ForeignKey(TrainingStudent, related_name='sender_req', on_delete=models.CASCADE)
@@ -69,8 +89,8 @@ class WeekScannedLogbook(models.Model):
   student_lg = models.ForeignKey(TrainingStudent, related_name='student_lg', on_delete=models.CASCADE)
   timestamp = models.DateTimeField(default=timezone.now)
   title = models.CharField(max_length=255, blank=True, null=True)
+  week_no = models.IntegerField(blank=True, null=True)
   # avoid updating student acceptance letter on admin page
-  # /{datetime.today().year}-logbooks (in views)
   image = models.ImageField(blank=True, null=True, upload_to=f'weekly-scanned-logbook')
   text = models.TextField(blank=True, null=True,) # references
   is_reviewed = models.BooleanField(default=False)
@@ -84,7 +104,6 @@ class CommentOnLogbook(models.Model):
   timestamp = models.DateTimeField(default=timezone.now)
   logbook = models.ForeignKey(WeekScannedLogbook, on_delete=models.CASCADE) # Week scanned logbook
   grade = models.IntegerField(blank=True, null=True) # grade of that week logbook
-  full_name = models.CharField(max_length=255, blank=False, null=False)
   comment = models.TextField(blank=False, null=False)
   
   def __str__(self):

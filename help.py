@@ -1,29 +1,6 @@
 # This script, it ease writing code in python interpreter
 
 """
-The following are the functional requirements for the
-SIWES portal:
-
-i.)The administrator creates the profiles of students that are eligible to go for the SIWES program.
-
-ii.)The system generates a list of the students that are eligible to go for the SIWES program.
-
-iii.)Students log in to the portal and are identified with unique matriculation number and password (registration number) as assigned by the school and as stored in the database.
-
-iv.)Students can fill their logbooks, edit them and view their logbook entry per week. They can also send and receive mails through the portal mailbox.
-
-v.)Lecturers supervise activities of students on SIWES and comment and grade them on weekly basis.
-
-vi.)Industry-based supervisors can monitor activities of students on SIWES in their company and comment and grade their logbooks weekly.
-
-vii.)SIWES coordinator assigns a set of students to a supervisor from the institution.
-
-viii.)Administrator creates user accounts for all user groups
-
-NB: Scanned students` logbook in hardcopy is (as picture)
-"""
-
-"""
 Datetime format:
   d = '01' to '31'
   j = '1' to '31'
@@ -54,7 +31,7 @@ import random
 from administrator.models import Administrator
 from faculty.models import Faculty, FacultyDean
 from department.models import Department, DepartmentHOD, DepartmentTrainingCoordinator, Letter
-from student.models import TrainingStudent, StudentLetterRequest, AcceptanceLetter
+from student.models import TrainingStudent, StudentLetterRequest, AcceptanceLetter, WeekReader
 from django.contrib.auth import get_user_model
 
 
@@ -224,6 +201,11 @@ me_stdent5.save()
 # adding `2010310013` as approved training student. But I will
 # make it `TrainingStudent` instance instead of `User` instance
 dtc3.training_students.add(u1)
+
+# ___________
+# WEEK READER
+WR = WeekReader(student=me_stdent1)
+WR.save()
 
 # ______________________
 # STUDENT LETTER REQUEST
