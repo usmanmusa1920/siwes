@@ -2,6 +2,7 @@
 
 This script, it ease writing code in python interpreter
 
+```
 Datetime format:
   d = '01' to '31'
   j = '1' to '31'
@@ -12,7 +13,7 @@ Datetime format:
   F = 'May'
   y = '99'
   Y = '1999'
---------------------
+```
 
 pmake && pmigrate && python manage.py createsuperuser --email usmanmusa1920@gmail.com --first_name Usman --last_name Musa --identification_num 2010310013 && python manage.py createsuperuser --email okoyeikechukwu@yahoo.com --first_name Okoye --last_name Francis --identification_num 20232024 && pm
 
