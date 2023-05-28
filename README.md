@@ -226,3 +226,4 @@ my_accept2 = AcceptanceLetter(sender_acept=me_stdent2, receiver_acept=dtc3, leve
 
 my_accept1.save()
 my_accept2.save()
+
