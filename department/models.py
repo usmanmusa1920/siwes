@@ -42,7 +42,7 @@ class DepartmentHOD(models.Model):
   is_active = models.BooleanField(default=False)
 
   def __str__(self):
-    return f"H.O.D of {self.department} department"
+    return f'H.O.D of {self.department} department'
 
 
 class DepartmentTrainingCoordinator(models.Model):
@@ -64,7 +64,7 @@ class DepartmentTrainingCoordinator(models.Model):
   training_students = models.ManyToManyField(User, blank=True, related_name='training_students')
 
   def __str__(self):
-    return f"{self.dept_hod.department} {self.dept_hod.department.faculty.training} coordinator"
+    return f'{self.dept_hod.department} {self.dept_hod.department.faculty.training} coordinator'
 
 
 class Letter(models.Model):
@@ -82,4 +82,4 @@ class Letter(models.Model):
   session = models.CharField(max_length=255, blank=False, null=False)
   
   def __str__(self):
-    return f"Letter of ({self.letter})"
+    return f'Letter of ({self.letter})'

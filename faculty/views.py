@@ -6,6 +6,6 @@ from django.contrib.auth.decorators import login_required
 def facultyProfile(request):
   """faculty profile page"""
   context = {
-    "None": None,
+    'None': None,
   }
-  return render(request, "faculty/profile.html", context=context)
+  return render(request, 'faculty/profile.html', context=context)

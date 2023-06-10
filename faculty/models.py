@@ -18,7 +18,7 @@ class Faculty(models.Model):
   description = models.TextField(blank=True, null=True)
   
   def __str__(self):
-    return f"Faculty of {self.name}"
+    return f'Faculty of {self.name}'
 
 
 class FacultyDean(models.Model):
@@ -38,4 +38,4 @@ class FacultyDean(models.Model):
   is_active = models.BooleanField(default=False)
 
   def __str__(self):
-    return f"Dean faculty of {self.faculty}"
+    return f'Dean faculty of {self.faculty}'

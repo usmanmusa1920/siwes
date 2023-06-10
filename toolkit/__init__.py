@@ -19,5 +19,5 @@ def picture_name(pic_name):
   random_hex = secrets.token_hex(8)
   _, f_ext = os.path.splitext(pic_name)
   picture_fn = random_hex + f_ext
-  new_name = _ + "_" + picture_fn
+  new_name = _ + '_' + picture_fn
   return new_name

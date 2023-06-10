@@ -26,17 +26,17 @@ class Student:
     dean = FacultyDean.objects.filter(faculty=std.student_training_coordinator.dept_hod.department.faculty).last()
     hod = DepartmentHOD.objects.filter(department=std.student_training_coordinator.dept_hod.department).last()
 
-    acceptance_200 = AcceptanceLetter.objects.filter(sender_acept=std, level="200").last()
-    acceptance_300 = AcceptanceLetter.objects.filter(sender_acept=std, level="300").last()
+    acceptance_200 = AcceptanceLetter.objects.filter(sender_acept=std, level='200').last()
+    acceptance_300 = AcceptanceLetter.objects.filter(sender_acept=std, level='300').last()
     
     context = {
-      "std": std,
-      "dean": dean,
-      "hod": hod,
-      "acceptance_200": acceptance_200,
-      "acceptance_300": acceptance_300,
+      'std': std,
+      'dean': dean,
+      'hod': hod,
+      'acceptance_200': acceptance_200,
+      'acceptance_300': acceptance_300,
     }
-    return render(request, "student/profile.html", context=context)
+    return render(request, 'student/profile.html', context=context)
     
 
   @login_required
@@ -48,11 +48,11 @@ class Student:
     hod = DepartmentHOD.objects.filter(department=std.student_training_coordinator.dept_hod.department).last()
 
     context = {
-      "std": std,
-      "dean": dean,
-      "hod": hod,
+      'std': std,
+      'dean': dean,
+      'hod': hod,
     }
-    return render(request, "student/profile_other.html", context=context)
+    return render(request, 'student/profile_other.html', context=context)
 
 
   @login_required
@@ -61,17 +61,17 @@ class Student:
     """student placement letter"""
     the_student_request_user = request.user
     std = TrainingStudent.objects.filter(student=the_student_request_user).first()
-    letter = Letter.objects.filter(letter="placement letter", coordinator=std.student_training_coordinator).first()
+    letter = Letter.objects.filter(letter='placement letter', coordinator=std.student_training_coordinator).first()
     dean = FacultyDean.objects.filter(faculty=std.student_training_coordinator.dept_hod.department.faculty).last()
     hod = DepartmentHOD.objects.filter(department=std.student_training_coordinator.dept_hod.department).last()
 
     context = {
-      "std": std,
-      "letter": letter,
-      "dean": dean,
-      "hod": hod,
+      'std': std,
+      'letter': letter,
+      'dean': dean,
+      'hod': hod,
     }
-    return render(request, "student/placement_letter.html", context=context)
+    return render(request, 'student/placement_letter.html', context=context)
 
 
   @login_required
@@ -80,17 +80,17 @@ class Student:
     """student placement letter"""
     the_student_request_user = request.user
     std = TrainingStudent.objects.filter(student=the_student_request_user).first()
-    letter = Letter.objects.filter(letter="acceptance letter", coordinator=std.student_training_coordinator).first()
+    letter = Letter.objects.filter(letter='acceptance letter', coordinator=std.student_training_coordinator).first()
     dean = FacultyDean.objects.filter(faculty=std.student_training_coordinator.dept_hod.department.faculty).last()
     hod = DepartmentHOD.objects.filter(department=std.student_training_coordinator.dept_hod.department).last()
 
     context = {
-      "std": std,
-      "letter": letter,
-      "dean": dean,
-      "hod": hod,
+      'std': std,
+      'letter': letter,
+      'dean': dean,
+      'hod': hod,
     }
-    return render(request, "student/acceptance_letter.html", context=context)
+    return render(request, 'student/acceptance_letter.html', context=context)
 
 
   @login_required
@@ -102,11 +102,11 @@ class Student:
     coord = std.student_training_coordinator
 
     # acceptance letter for the student
-    acceptance_200 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level="200").last()
+    acceptance_200 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level='200').last()
     context = {
-      "acceptance_200": acceptance_200,
+      'acceptance_200': acceptance_200,
     }
-    return render(request, "student/upload_acceptance_letter_200.html", context=context)
+    return render(request, 'student/upload_acceptance_letter_200.html', context=context)
 
 
   @login_required
@@ -118,11 +118,11 @@ class Student:
     coord = std.student_training_coordinator
 
     # acceptance letter for the student
-    acceptance_300 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level="300").last()
+    acceptance_300 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level='300').last()
     context = {
-      "acceptance_300": acceptance_300,
+      'acceptance_300': acceptance_300,
     }
-    return render(request, "student/upload_acceptance_letter_300.html", context=context)
+    return render(request, 'student/upload_acceptance_letter_300.html', context=context)
 
 
   @login_required
@@ -146,7 +146,7 @@ class Student:
       instance.image.name = route + pic_name
       instance.sender_acept = std
       instance.receiver_acept = coord
-      instance.level = "200"
+      instance.level = '200'
       instance.save()
       messages.success(request, f'Your 200 level acceptance letter image has been uploaded!')
       return redirect(reverse('student:uploaded_acceptance_letter_200'))
@@ -173,7 +173,7 @@ class Student:
       instance.image.name = route + pic_name
       instance.sender_acept = std
       instance.receiver_acept = coord
-      instance.level = "300"
+      instance.level = '300'
       instance.save()
       messages.success(request, f'Your 300 level acceptance letter image has been uploaded!')
       return redirect(reverse('student:uploaded_acceptance_letter_300'))
@@ -186,7 +186,7 @@ class Student:
     stu_usr = User.objects.get(id=request.user.id) # student user
     std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
     coord = std.student_training_coordinator
-    acceptance_200 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level="200").first()
+    acceptance_200 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level='200').first()
 
     train = std.student_training_coordinator.dept_hod.department.faculty.training
     faculty = std.student_training_coordinator.dept_hod.department.faculty.name
@@ -208,7 +208,7 @@ class Student:
         instance.image.name = route + pic_name
         instance.save()
         
-        stu_letter = AcceptanceLetter.objects.filter(sender_acept=std, level="200").first()
+        stu_letter = AcceptanceLetter.objects.filter(sender_acept=std, level='200').first()
         if stu_letter:
           stu_letter.is_reviewed = False
           stu_letter.can_change = False
@@ -219,8 +219,8 @@ class Student:
       form = UploadAcceptanceLetter(instance=acceptance_200)
     context = {
       'form': form,
-      "std": std,
-      "acceptance_200": acceptance_200,
+      'std': std,
+      'acceptance_200': acceptance_200,
     }
     return render(request, 'student/update_acceptance_letter_200.html', context)
 
@@ -232,7 +232,7 @@ class Student:
     stu_usr = User.objects.get(id=request.user.id) # student user
     std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
     coord = std.student_training_coordinator
-    acceptance_300 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level="300").first()
+    acceptance_300 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level='300').first()
 
     train = std.student_training_coordinator.dept_hod.department.faculty.training
     faculty = std.student_training_coordinator.dept_hod.department.faculty.name
@@ -254,7 +254,7 @@ class Student:
         instance.image.name = route + pic_name
         instance.save()
         
-        stu_letter = AcceptanceLetter.objects.filter(sender_acept=std, level="300").first()
+        stu_letter = AcceptanceLetter.objects.filter(sender_acept=std, level='300').first()
         if stu_letter:
           stu_letter.is_reviewed = False
           stu_letter.can_change = False
@@ -265,8 +265,8 @@ class Student:
       form = UploadAcceptanceLetter(instance=acceptance_300)
     context = {
       'form': form,
-      "std": std,
-      "acceptance_300": acceptance_300,
+      'std': std,
+      'acceptance_300': acceptance_300,
     }
     return render(request, 'student/update_acceptance_letter_300.html', context)
 
@@ -318,10 +318,10 @@ class Student:
       form = UploadLogbookEntry()
     context = {
       'form': form,
-      "std": std,
-      "weeks": weeks,
-      "week_no": week_no,
-      "logbook_entries": logbook_entries,
+      'std': std,
+      'weeks': weeks,
+      'week_no': week_no,
+      'logbook_entries': logbook_entries,
     }
     return render(request, 'student/logbook_entry.html', context)
 
@@ -347,8 +347,8 @@ class Student:
     else:
       form = LogbookEntryComment()
     context = {
-      "form": form,
-      "comments": comments,
-      "logbook": logbook,
+      'form': form,
+      'comments': comments,
+      'logbook': logbook,
     }
     return render(request, 'student/logbook_comment.html', context)

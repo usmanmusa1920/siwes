@@ -24,23 +24,23 @@ from django.conf.urls.static import static
     there are 4 already defined handler
     methods in `django.urls` functions.
 """
-handler400 = "account.views.error_400"
-handler403 = "account.views.error_403"
-handler404 = "account.views.error_404"
-handler500 = "account.views.error_500"
+handler400 = 'account.views.error_400'
+handler403 = 'account.views.error_403'
+handler404 = 'account.views.error_404'
+handler500 = 'account.views.error_500'
 
 
 @login_required
 def index(request):
-    return render(request, "landing.html")
+    return render(request, 'landing.html')
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", index, name="landing"),
-    path("", include("account.urls")),
-    path("", include("administrator.urls")),
-    path("", include("faculty.urls")),
-    path("", include("department.urls")),
-    path("", include("student.urls")),
+    path('admin/', admin.site.urls),
+    path('', index, name='landing'),
+    path('', include('account.urls')),
+    path('', include('administrator.urls')),
+    path('', include('faculty.urls')),
+    path('', include('department.urls')),
+    path('', include('student.urls')),
 ]
 
 if settings.DEBUG:

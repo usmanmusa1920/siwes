@@ -18,7 +18,7 @@ class TrainingStudent(models.Model):
   date_of_birth = models.DateField(max_length=100, blank=True, null=True)
   matrix_no = models.CharField(max_length=255, unique=True)
   level_choices = [('200', '200 level'), ('300', '300 level'),]
-  level = models.CharField(max_length=100, default="200", choices=level_choices)
+  level = models.CharField(max_length=100, default='200', choices=level_choices)
   email = models.EmailField(max_length=255, unique=False)
   phone_number = PhoneNumberField(max_length=100, unique=False)
   date_joined = models.DateTimeField(default=timezone.now)
@@ -26,7 +26,7 @@ class TrainingStudent(models.Model):
   is_in_school = models.BooleanField(default=False)
 
   def __str__(self):
-    return f"Training student with matrix number of {self.matrix_no}"
+    return f'Training student with matrix number of {self.matrix_no}'
 
 
 class StudentSupervisor(models.Model):
@@ -39,14 +39,14 @@ class StudentSupervisor(models.Model):
   gender = models.CharField(max_length=100, default='male', choices=gender_choices)
   date_of_birth = models.DateField(max_length=100, blank=True, null=True)
   id_no = models.CharField(max_length=255, unique=True)
-  location = models.CharField(max_length=100, default="200")
+  location = models.CharField(max_length=100, default='200')
   email = models.EmailField(max_length=255, unique=False)
   phone_number = PhoneNumberField(max_length=100, unique=False)
   date_joined = models.DateTimeField(default=timezone.now)
   date_leave = models.DateTimeField(auto_now=True)
 
   def __str__(self):
-    return f"Training supervisor with identification number of {self.id_no}"
+    return f'Training supervisor with identification number of {self.id_no}'
 
 
 class StudentLetterRequest(models.Model):
@@ -73,7 +73,7 @@ class AcceptanceLetter(models.Model):
   can_change = models.BooleanField(default=False)
   
   def __str__(self):
-    return f"Student ({self.sender_acept.matrix_no}) acceptance letter (approved)"
+    return f'Student ({self.sender_acept.matrix_no}) acceptance letter (approved)'
 
 
 class WeekReader(models.Model):
@@ -81,7 +81,7 @@ class WeekReader(models.Model):
   week_no = models.IntegerField(default=0) # later max_length will be set
 
   def __str__(self):
-    return f"Week {self.week_no} of student training out of 12 weeks"
+    return f'Week {self.week_no} of student training out of 12 weeks'
 
 
 class WeekScannedLogbook(models.Model):
@@ -96,7 +96,7 @@ class WeekScannedLogbook(models.Model):
   is_reviewed = models.BooleanField(default=False)
   
   def __str__(self):
-    return f"{self.student_lg.first_name}'s logbook of the {self.week} week out of 12 weeks"
+    return f'{self.student_lg.first_name}\'s logbook of the {self.week} week out of 12 weeks'
 
 
 class CommentOnLogbook(models.Model):
@@ -107,4 +107,4 @@ class CommentOnLogbook(models.Model):
   comment = models.TextField(blank=False, null=False)
   
   def __str__(self):
-    return f"Comment of {self.commentator.identification_num} on {self.logbook.student_lg.matrix_no} logbook"
+    return f'Comment of {self.commentator.identification_num} on {self.logbook.student_lg.matrix_no} logbook'

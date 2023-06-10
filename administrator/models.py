@@ -23,4 +23,4 @@ class Administrator(models.Model):
   description = models.TextField(blank=True, null=True)
 
   def __str__(self):
-    return f"Administrator ({self.first_name} {self.last_name}) with ID number of {self.id_no}"
+    return f'Administrator ({self.first_name} {self.last_name}) with ID number of {self.id_no}'

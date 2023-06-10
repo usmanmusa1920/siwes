@@ -14,4 +14,4 @@ class SignupForm(UserCreationForm):
   student_level = forms.CharField(required=True) # it is not part of User model fields
   class Meta:
     model = User
-    fields = ["first_name", "middle_name", "last_name", "gender", "date_of_birth", "identification_num", "email", "phone_number", "country", "password1", "password2", "student_level"]
+    fields = ['first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'identification_num', 'email', 'phone_number', 'country', 'password1', 'password2', 'student_level']

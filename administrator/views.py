@@ -20,9 +20,9 @@ class Administrator:
   @staticmethod
   def directorProfile(request):
     context = {
-      "None": None,
+      'None': None,
     }
-    return render(request, "administrator/director_profile.html", context=context)
+    return render(request, 'administrator/director_profile.html', context=context)
 
 
   @login_required
@@ -41,13 +41,13 @@ class Administrator:
       dept = TS.student_training_coordinator.dept_hod.department # Department of Physics
       
     context = {
-      "faculties": faculties,
-      "departments": departments,
-      "all_dept_coord": all_dept_coord,
-      "fclty": fclty,
-      "dept": dept,
+      'faculties': faculties,
+      'departments': departments,
+      'all_dept_coord': all_dept_coord,
+      'fclty': fclty,
+      'dept': dept,
     }
-    return render(request, "administrator/manager.html", context=context)
+    return render(request, 'administrator/manager.html', context=context)
     
 
   @login_required
@@ -60,8 +60,8 @@ class Administrator:
       if form.is_valid():
         form.save()
 
-        all_department = request.POST["all_department"]
-        raw_identification_num = form.cleaned_data["identification_num"]
+        all_department = request.POST['all_department']
+        raw_identification_num = form.cleaned_data['identification_num']
         messages.success(request, f'You just create {raw_identification_num} account as departmental coordinator!')
         
         student_department = Department.objects.filter(name=all_department).first()
@@ -79,8 +79,8 @@ class Administrator:
     else:
       form = CoordinatorSignupForm()
     context = {
-      "all_dept": all_dept,
-      "form": form,
+      'all_dept': all_dept,
+      'form': form,
     }
     return render(request, 'administrator/register_training_coordinator.html', context)
 
@@ -115,7 +115,7 @@ class Administrator:
     page = request.GET.get('page')
     users = paginator.get_page(page)
     context = {
-      "users": users,
-      "search_panel": search_panel,
+      'users': users,
+      'search_panel': search_panel,
     }
     return render(request, 'administrator/filter_staff_user.html', context=context)

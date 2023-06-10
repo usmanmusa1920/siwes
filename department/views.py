@@ -26,19 +26,19 @@ class Coordinator:
     students_acceptances = AcceptanceLetter.objects.filter(receiver_acept=training_tutor)
 
     # filtering coordinator training student whose their level is 200
-    student_of_200 = TrainingStudent.objects.filter(student_training_coordinator=training_tutor, level="200")
+    student_of_200 = TrainingStudent.objects.filter(student_training_coordinator=training_tutor, level='200')
 
     # filtering coordinator training student whose their level is 300
-    student_of_300 = TrainingStudent.objects.filter(student_training_coordinator=training_tutor, level="300")
+    student_of_300 = TrainingStudent.objects.filter(student_training_coordinator=training_tutor, level='300')
 
     context = {
-      "training_tutor": training_tutor,
-      "coordinator_students": coordinator_students,
-      "students_acceptances": students_acceptances,
-      "student_of_200": student_of_200,
-      "student_of_300": student_of_300,
+      'training_tutor': training_tutor,
+      'coordinator_students': coordinator_students,
+      'students_acceptances': students_acceptances,
+      'student_of_200': student_of_200,
+      'student_of_300': student_of_300,
     }
-    return render(request, "department/training_coordinator_profile.html", context=context)
+    return render(request, 'department/training_coordinator_profile.html', context=context)
 
 
   @login_required
@@ -56,25 +56,27 @@ class Coordinator:
     coordinator_students = paginator.get_page(page)
 
     context = {
-      "training_tutor": training_tutor,
-      "coordinator_students": coordinator_students,
+      'training_tutor': training_tutor,
+      'coordinator_students': coordinator_students,
     }
-    return render(request, "department/training_coordinator_session_student.html", context=context)
+    return render(request, 'department/training_coordinator_session_student.html', context=context)
 
 
   @login_required
   @staticmethod
   def viewStudentLetter(request, letter_id):
-    """if student departmental training coordinator view his/her acceptance letter,
-    it will automatically mark it as reviewed using this view"""
+    """
+    If student departmental training coordinator view his/her acceptance letter,
+    it will automatically mark it as reviewed using this view
+    """
     letter = AcceptanceLetter.objects.get(id=letter_id)
     letter.is_reviewed = True
     letter.can_change = False
     letter.save()
     context = {
-      "letter": letter,
+      'letter': letter,
     }
-    return render(request, "department/student_upload_acceptance_letter.html", context=context)
+    return render(request, 'department/student_upload_acceptance_letter.html', context=context)
 
 
   @login_required
