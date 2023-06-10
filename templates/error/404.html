@@ -1,43 +1,7 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
-  <link rel="shortcut icon" href="{% static 'media/favicon.ico' %}" type="image/x-icon">
-  <title>
-    Error page
-  </title>
-</head>
+{% extends 'error/error_base.html' %}
+{% block error_code %} 404 {% endblock error_code %}
 
-<body>
-  <div class="container">
-    <div class="head">
-      <div class="head_column">
-        <div class="head_left">
-          <h2>
-            <a href="/">Fugus</a>
-          </h2>
-        </div>
-        <div class="head_right">
-          <a href="https://pdeg.fugusau.edu.ng">Pre-degree</a>
-          <a href="https://ugs.fugusau.edu.ng">Undergraduate</a>
-          <a href="#" id="access_link">login</a>
-          <a href="#">sign up</a>
-        </div>
-      </div>
-    </div>
-    <div class="main">
-      <div class="err_div">
-        <h1 class="err_txt">Page 404 not found</h1>
-      </div>
-    </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <hr>
-  </div>
-</body>
+
+{% block error_text %}
+  <h1 class="err_txt">Page 404 not found</h1>
+{% endblock error_text %}
