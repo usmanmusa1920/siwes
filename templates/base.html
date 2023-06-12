@@ -38,46 +38,72 @@
               <img src="{% static 'media/logo.png' %}" alt="" srcset="">
             </div>
           </div>
-          <a href="#" class="dash_link">
-            {{request.user.first_name}}
-            {% if request.user.middle_name %}
-              {{request.user.middle_name}}
-            {% endif %}
-            {{request.user.last_name}}
-          </a>
+          {% if request.user.is_staff %}
+            <a href="{% url 'department:training_coordinator_profile' %}" class="dash_link">
+              {{request.user.first_name}}
+              {% if request.user.middle_name %}
+                {{request.user.middle_name}}
+              {% endif %}
+              {{request.user.last_name}}
+            </a>
+          {% else %}
+            <a href="{% url 'student:profile' %}" class="dash_link">
+              {{request.user.first_name}}
+              {% if request.user.middle_name %}
+                {{request.user.middle_name}}
+              {% endif %}
+              {{request.user.last_name}}
+            </a>
+          {% endif %}
         </span>
         
         {% if request.user.is_staff %}
           <h3 class="category">Campus Staff</h3>
+          <a class="dash_link">Staff on student SIWES</a>
         {% else %}
           <h3 class="category">200/300 level</h3>
+          <a class="dash_link">Student SIWES</a>
         {% endif %}
-        <a href="#" class="dash_link">Student SIWES</a>
 
-        <span class="link_ref">Fees</span>
-        <a href="#" class="dash_link">Pay Fees</a>
-        <a href="#" class="dash_link">Payment history</a>
-        
-        <span class="link_ref">Forms</span>
-        <a href="#" class="dash_link">Medical Form</a>
-        <a href="#" class="dash_link">Particulars Form</a>
-        
-        <span class="link_ref">Hostel</span>
-        <a href="#" class="dash_link">Apply</a>
-        <a href="#" class="dash_link">Status</a>
-        
-        <span class="link_ref">Course Registeration</span>
-        <a href="#" class="dash_link">Register Courses</a>
-        <a href="#" class="dash_link">Add Electives Courses</a>
-        <a href="#" class="dash_link">ViewCourses</a>
-        
-        <span class="link_ref">Exams and Result</span>
-        <a href="#" class="dash_link">Exam Card</a>
-        <a href="#" class="dash_link">View Result</a>
-        <a href="#" class="dash_link">Senate Approved Result</a>
+        {% if request.user.is_staff == False %}
+          <span class="link_ref">Fees</span>
+          <a href="#" class="dash_link">Pay Fees</a>
+          <a href="#" class="dash_link">Payment history</a>
+          
+          <span class="link_ref">Forms</span>
+          <a href="#" class="dash_link">Medical Form</a>
+          <a href="#" class="dash_link">Particulars Form</a>
+          
+          <span class="link_ref">Hostel</span>
+          <a href="#" class="dash_link">Apply</a>
+          <a href="#" class="dash_link">Status</a>
+          
+          <span class="link_ref">Course Registeration</span>
+          <a href="#" class="dash_link">Register Courses</a>
+          <a href="#" class="dash_link">Add Electives Courses</a>
+          <a href="#" class="dash_link">ViewCourses</a>
+          
+          <span class="link_ref">Exams and Result</span>
+          <a href="#" class="dash_link">Exam Card</a>
+          <a href="#" class="dash_link">View Result</a>
+          <a href="#" class="dash_link">Senate Approved Result</a>
+        {% else %}
+          <span class="link_ref">Profile:</span>
+          <a class="dash_link" href="{% url 'department:training_coordinator_profile' %}">Training Coordinator</a>
+          <a class="dash_link" href="{% url 'administrator:administrator_director_profile' %}">Training Director</a>
+
+          <span class="link_ref">Register:</span>
+          <a class="dash_link" href="{% url 'administrator:register_training_coordinator' %}">Training Coordinator</a>
+          <a class="dash_link" href="{% url 'auth:register_student' %}">Student</a>
+
+          <span class="link_ref">Filter:</span>
+          <a class="dash_link" href="{% url 'administrator:filter_staff_user' %}">Staff user</a>
+        {% endif %}
         
         <span class="link_ref">Authentication</span>
-        <a href="/admin" class="dash_link">Admin</a>
+        {% if request.user.is_superuser %}
+          <a href="/admin" class="dash_link">Admin</a>
+        {% endif %}
         <a href="{% url 'auth:change_password' %}" class="dash_link">Change password</a>
         <a href="{% url 'auth:logout' %}" class="dash_link">Logout</a>
         <br>

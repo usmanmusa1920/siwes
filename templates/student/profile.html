@@ -21,7 +21,7 @@
   <div class="main_wrapp">
     <form action="#" method="get" class="search">
       <input type="search" name="" placeholder="Search">
-      <button type="submit">search</button>
+      <button type="button">search</button>
     </form>
     <div class="wrapp_img">
       <img src="{{std.student.profile.image.url}}" alt="">
@@ -53,7 +53,7 @@
           {% endif %}
         </p>
         <br>
-        <a href="#" class="delete_me">Delete me</a>
+        <a class="delete_me">Report problem</a>
       </div>
 
       <div class="wrapp_info_right">
@@ -77,27 +77,24 @@
         
         <hr>
         <br>
-        <a href="#" class="good_me">Edit profile</a>
-        <br>
-        <br>
-        <a href="#" class="good_me">Request for IT letter</a>
+        <a href="{% url 'student:profile_update' %}" class="good_me">Edit profile</a>
       </div>
     </div>
 
     <div class="wrapp_level">
       <div>
         {% if acceptance_200 %}
-          Your 200 level training
+          Your 200 level acceptance is available
         {% else %}
-          Your 200 level training is pending
+          Your 200 level acceptance is pending
         {% endif %}
       </div>
       {% if std.level == "300" %}
         <div>
           {% if acceptance_300 %}
-            Your 300 level training
+            Your 300 level acceptance is available
           {% else %}
-            Your 300 level training is pending
+            Your 300 level acceptance is pending
           {% endif %}
         </div>
       {% endif %}

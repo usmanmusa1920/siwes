@@ -20,7 +20,7 @@ class UserAdminForm(UserAdmin):
       (None , {"fields": ('password', 'identification_num', 'email',)}),
       ('Personal', {"fields": ('first_name', 'last_name')}),
       ('Account activity', {"fields": ('last_login',)}),
-      ('Permissions', {"fields": ('is_active','is_superuser', 'is_staff')}),
+      ('Permissions', {"fields": ('is_active','is_superuser', 'is_staff', 'is_admin', 'is_verified')}),
   )
   # These are the field that will display when you want to create new user account via admin
   add_fieldsets = (

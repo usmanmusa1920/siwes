@@ -4,7 +4,7 @@
 
 <!-- page title -->
 {% block title %}
-  Register student
+  Update profile
 {% endblock title %}
 
 {% block access_link %}
@@ -39,20 +39,24 @@
 
   <form method="post">
     {% csrf_token %}
-    <h2>Create student profile</h2>
-    <p>Create student training profile with the student appropriate informations</p>
-    <input type="text" name="first_name" placeholder="First name" class="input" autofocus required>
-    <input type="text" name="last_name" placeholder="Last name" class="input" required>
-    <input type="text" name="identification_num" oninput="automate_passwd()" placeholder="Matrix number (reg number)" class="input" id="id_no" required>
+    <h2>Update your profile</h2>
+    <p>Update your profile with the appropriate informations</p>
+    <input type="text" name="first_name" placeholder="First name" class="input" value="{{form.first_name.value}}" required>
+    <input type="text" name="last_name" placeholder="Last name" class="input" value="{{form.last_name.value}}" required>
+    <!-- <input type="text" name="identification_num" oninput="automate_passwd()" placeholder="Matrix number (reg number)" class="input" value="{{form.identification_num.value}}" id="id_no" required>
     {% if form.identification_num.errors %}
       <p><i><strong><small>{{form.identification_num.errors}}</small></strong></i></p>
     {% endif %}
 
     <div class="radio">
-      <input type="radio" name="gender" value="female" required> Female
-      <input type="radio" name="gender" value="male" required> Male
+      Your gender is: {{form.gender.value}}
+      <br>
+      <input type="radio" name="gender" value="Female" required> Female
+      <input type="radio" name="gender" value="Mmale" required> Male
     </div>
     <div class="calender">
+      Your birth day is: {{form.date_of_birth.value}}
+      <br>
       <input type="date" name="date_of_birth" class="input" required>
     </div>
     {% if form.date_of_birth.errors %}
@@ -61,7 +65,7 @@
       </div>
     {% endif %}
 
-    <input type="tel" name="phone_number" oninput="searchPlus()" placeholder="Phone number (e.g +12125552368)" class="input" required>
+    <input type="tel" name="phone_number" oninput="searchPlus()" placeholder="Phone number (e.g +12125552368)" class="input" value="{{form.phone_number.value}}" required>
     {% if form.phone_number.errors %}
       <p><i><strong><small>{{form.phone_number.errors}}</small></strong></i></p>
     {% endif %}
@@ -86,24 +90,12 @@
       </select>
     </div>
 
-    <input type="text" name="email" placeholder="Email addres" class="input" required>
+    <input type="text" name="email" placeholder="Email addres" class="input" value="{{form.email.value}}" required>
     {% if form.email.errors %}
       <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
-    {% endif %}
-
-    <!-- we hide these two passwor field using `auth.css`, because the value will be automatically field once we inputed student matrix number -->
-    <input type="password" name="password1" id="pwd1" placeholder="Enter password" class="input" minlength="8" required>
-    {% if form.password1.errors %}
-      <p><i><strong><small>{{form.new_password2.errors}}</small></strong></i></p>
-    {% endif %}
-    <input type="password" name="password2" id="pwd2" placeholder="Confirm password" class="input" minlength="8" required>
-    {{form.errors}}
-    {% if form.password2.errors %}
-      <p><i><strong><small>{{form.password2.errors}}</small></strong></i></p>
-      <p><i><strong><small>Password should not be similar to your account information, with a min-length of 8 character and avoid using numeric password entirely. Include symbols to make it strong like (?/@.^*) etc.</small></strong></i></p>
-    {% endif %}
+    {% endif %} -->
     
-    <button type="submit">Register</button>
+    <button type="submit">Update</button>
     <div class="links">
       <a href="{% url 'auth:logout' %}">Logout</a>
       <a>Forgot password</a>

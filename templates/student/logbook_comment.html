@@ -1,5 +1,5 @@
 <!-- extending from base.html file -->
-{% extends ;base.html; %}
+{% extends 'base.html' %}
 {% load static %}
 
 <!-- css file link -->
@@ -31,11 +31,15 @@
           <br>
           <a href="{{logbook.image.url}}" target="_blank" class="good_me">View full image</a>
           <br>
-          <p>Grade:</p>
-          <input type="number" name="grade" class="wrapp_input" placeholder="Grade logbook entry" required>
-          <p>Comment:</p>
-          <textarea name="comment" class="wrapp_text" placeholder="Comment on logbook entry" required></textarea>
-          <button type="submit">Comment</button>
+          {% if comments %}
+            <!-- blank -->
+          {% else %}
+            <p>Grade:</p>
+            <input type="number" name="grade" class="wrapp_input" placeholder="Grade logbook entry" required>
+            <p>Comment:</p>
+            <textarea name="comment" class="wrapp_text" placeholder="Comment on logbook entry" required></textarea>
+            <button type="submit">Comment</button>
+          {% endif %}
         </div>
       </form>
       <div class="wrapp_form">

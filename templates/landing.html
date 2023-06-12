@@ -30,15 +30,27 @@
           </div>
         </div>
         <div class="straight">
-          <a href="{% url 'department:training_coordinator_profile' %}">Training Coordinator</a>
-          <a href="{% url 'administrator:register_training_coordinator' %}">Register training Coordinator</a>
-          <a href="{% url 'auth:register_student' %}">Register student</a>
-          <a href="{% url 'administrator:filter_staff_user' %}">Filter staff user</a>
-          <a href="{% url 'administrator:administrator_director_profile' %}">Training Director</a>
+          {% if request.user.is_staff %}
+            <a href="{% url 'department:training_coordinator_profile' %}">Training Coordinator</a>
+            <a href="{% url 'administrator:register_training_coordinator' %}">Register training Coordinator</a>
+            <a href="{% url 'auth:register_student' %}">Register student</a>
+            <a href="{% url 'administrator:filter_staff_user' %}">Filter staff user</a>
+            <a href="{% url 'administrator:administrator_director_profile' %}">Training Director</a>
+          {% else %}
+            <a href="{% url 'student:profile' %}">Student profile</a>
+            <a href="{% url 'student:profile' %}">Student profile</a>
+            <a href="{% url 'student:profile' %}">Student profile</a>
+            <a href="{% url 'student:profile' %}">Student profile</a>
+            <a href="{% url 'student:profile' %}">Student profile</a>
+          {% endif %}
         </div>
       </div>
       <div class="wrapp_bot_left">
-        <h2>Student training (IT & TP) dashboard</h2>
+        {% if request.user.is_staff %}
+          <h2>Staff dashboard of students` training (IT & TP)</h2>
+        {% else %}
+          <h2>Student training (IT & TP) dashboard</h2>
+        {% endif %}
       </div>
     </div>
 
@@ -46,18 +58,20 @@
       <div class="img">
         <img src="{{request.user.profile.image.url}}" alt="">
       </div>
-      {% if request.user.is_authenticated %}
-        <a href="#"><h4>{{request.user}}</h4></a>
+      {% if request.user.is_staff %}
+        <a><h4>{{request.user}}</h4></a>
+        <a href="{% url 'faculty:profile' %}">Faculty profile</a>
+        <a href="{% url 'administrator:administrator_manager' %}">Training manager</a>
+        {% if request.user.is_superuser %}
+          <a href="admin">Admin</a>
+        {% endif %}
+      {% else %}
+        <a><h4>{{request.user}}</h4></a>
+        <a href="{% url 'student:profile' %}">Student profile</a>
+        <a href="{% url 'student:placement_letter' %}">Placement letter</a>
+        <a href="{% url 'student:acceptance_letter' %}">Acceptance letter</a>
       {% endif %}
-      <a href="{% url 'student:profile' %}">Student profile</a>
-      <a href="{% url 'student:placement_letter' %}">Placement letter</a>
-      <a href="{% url 'student:acceptance_letter' %}">Acceptance letter</a>
-      <a href="{% url 'faculty:profile' %}">Faculty profile</a>
-      <a href="{% url 'administrator:administrator_manager' %}">Training manager</a>
       <a href="{% url 'auth:logout' %}">Logout</a>
-      {% if request.user.is_superuser %}
-        <a href="admin">Admin</a>
-      {% endif %}
     </div>
   </div>
 {% endblock main %}

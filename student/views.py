@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from .models import TrainingStudent, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook
-from .forms import UploadAcceptanceLetter, UploadLogbookEntry, LogbookEntryComment
+from .forms import UpdateProfile,  UploadAcceptanceLetter, UploadLogbookEntry, LogbookEntryComment
 from django.contrib.auth import get_user_model
 from toolkit import picture_name
 from faculty.models import FacultyDean
@@ -37,6 +37,34 @@ class Student:
       'acceptance_300': acceptance_300,
     }
     return render(request, 'student/profile.html', context=context)
+
+
+  @login_required
+  @staticmethod
+  def updateProfile(request):
+    """student update profile"""
+    the_student_request_user = request.user
+    std = TrainingStudent.objects.filter(student=the_student_request_user).first()
+    dean = FacultyDean.objects.filter(faculty=std.student_training_coordinator.dept_hod.department.faculty).last()
+    hod = DepartmentHOD.objects.filter(department=std.student_training_coordinator.dept_hod.department).last()
+
+    if request.method == 'POST':
+      form = UpdateProfile(request.POST, request.FILES, instance=the_student_request_user)
+      if form.is_valid():
+        instance = form.save(commit=False)
+        instance.save()
+        messages.success(request, f'Your profile has been updated!')
+        return redirect(reverse('student:profile'))
+    else:
+      form = UpdateProfile(instance=the_student_request_user)
+    
+    context = {
+      'std': std,
+      'dean': dean,
+      'hod': hod,
+      'form': form,
+    }
+    return render(request, 'student/update_profile.html', context=context)
     
 
   @login_required
