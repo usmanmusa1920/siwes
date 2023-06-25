@@ -137,6 +137,23 @@
   background: lightgrey;
 }
 
+/* the below ids tag are not physically seen in the html file, why because we capture them using form tag (form.country, form.training) */
+#id_country, #id_training, #id_faculty{
+  outline: none;
+  width: fit-content;
+  /* height: 30px; */
+  border: none;
+  /* padding: 7px; */
+  /* margin-bottom: 15px; */
+  background: lightgrey;
+}
+
+/* hiding two passwords field when registering new
+(administrator, faculty dean, department HOD, department training coordinator) */
+#pwd1, #pwd2{
+  display: None;
+}
+
 .wrapp_text{
   outline: none;
   width: 300px;

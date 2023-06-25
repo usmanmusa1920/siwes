@@ -11,7 +11,7 @@ class Faculty(models.Model):
   last_modified = models.DateTimeField(auto_now=True)
   training_category = [('siwes', 'Student industrial work experience (SIWES)'), ('tp', 'Teaching practice (TP)')]
   training = models.CharField(max_length=100, default='siwes', choices=training_category)
-  name = models.CharField(max_length=300, blank=True, null=True)
+  name = models.CharField(max_length=300, blank=True, null=True, unique=True)
   email = models.EmailField(max_length=255, unique=True)
   website = models.CharField(max_length=300, blank=True, null=True)
   phone_number = PhoneNumberField(max_length=100, unique=True)
@@ -24,6 +24,7 @@ class Faculty(models.Model):
 class FacultyDean(models.Model):
   dean = models.ForeignKey(User, on_delete=models.CASCADE)
   faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+  ranks = models.CharField(max_length=100, unique=False, blank=True, null=True) # his/her rank or universities he/she get them e.g B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO
   first_name = models.CharField(max_length=100, unique=False)
   middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
   last_name = models.CharField(max_length=100, unique=False)

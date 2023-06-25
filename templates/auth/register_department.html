@@ -1,0 +1,59 @@
+<!-- extending from base.html file -->
+{% extends 'base.html' %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>New department page</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="wrapper">
+    <div class="wrapp_head">
+      <h1>Register new department</h1>
+    </div>
+    <div class="wrapp_main">
+      <div class="wrapp_top_greynish">
+        <small>New department creation page</small>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <div class="wrapp_form">
+          <h2>Fill in department information</h2>
+          <div class="wrapp_info">
+            <p>Register new department.</p>
+          </div>
+          <p><b>Select department faculty:</b></p>
+          <div class="wrapp_select">
+            {{form.faculty}}
+          </div>
+          <input type="text" name="name" class="wrapp_input" placeholder="Department name" autofocus required>
+          <input type="text" name="email" class="wrapp_input" placeholder="Department email" required>
+          {% if form.email.errors %}
+            <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
+          {% endif %}
+          <input type="text" name="website" class="wrapp_input" placeholder="Department website">
+          <input type="tel" name="phone_number" placeholder="Phone number (e.g +12125552368)" class="wrapp_input" required>
+          {% if form.phone_number.errors %}
+            <div class="wrapp_warn">
+              <p><i><strong><small>{{form.phone_number.errors}}</small></strong></i></p>
+            </div>
+          {% endif %}
+        </div>
+        <div class="wrapp_form">
+          <p><b>Description:</b></p>
+          <textarea name="description" class="wrapp_text" placeholder="Write small description about new department (optional)"></textarea>
+        </div>
+        <div class="wrapp_form">
+          <button type="submit">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock main %}

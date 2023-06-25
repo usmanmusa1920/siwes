@@ -1,0 +1,121 @@
+<!-- extending from base.html file -->
+{% extends 'base.html' %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock css %}
+
+<!-- js file link -->
+{% block js %}
+  <script src="{% static 'js/auth.js' %}"></script>
+{% endblock js %}
+
+<!-- page title -->
+{% block title %}
+  <title>New faculty dean page</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="wrapper">
+    <div class="wrapp_head">
+      <h1>Register new faculty dean</h1>
+    </div>
+    <div class="wrapp_main">
+      <div class="wrapp_top_greynish">
+        <small>New faculty dean creation page</small>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <div class="wrapp_form">
+          <h2>Fill in new faculty user information</h2>
+          <div class="wrapp_info">
+            <p>Register new faculty dean.</p>
+          </div>
+          <input type="text" name="first_name" oninput="automate_passwd()" id="first_name" class="wrapp_input" placeholder="First name" autofocus required>
+          <input type="text" name="middle_name" class="wrapp_input" placeholder="Middle name (optional)">
+          <input type="text" name="last_name" oninput="automate_passwd()" id="last_name" class="wrapp_input" placeholder="Last name" required>
+          <input type="text" name="identification_num" oninput="automate_passwd()" id="id_no" class="wrapp_input" placeholder="ID number" required>
+          {% if form.identification_num.errors %}
+            <div class="wrapp_danger">
+              <p><i><strong><small>{{form.identification_num.errors}}</small></strong></i></p>
+            </div>
+          {% endif %}
+          <p><b>Select gender:</b></p>
+          <span class="wrapp_radio">
+            <input type="radio" name="gender" value="female" name="rad" required> Female
+          </span>
+          <span class="wrapp_radio">
+            <input type="radio" name="gender" value="male" name="rad" required> Male
+          </span>
+
+          <div class="calender">
+            <input type="date" name="date_of_birth" class="wrapp_input" required>
+          </div>
+          {% if form.date_of_birth.errors %}
+            <div class="wrapp_warn">
+              <small>{{form.date_of_birth.errors}}</small>
+            </div>
+          {% endif %}
+      
+          <input type="tel" name="phone_number" placeholder="Phone number (e.g +12125552368)" class="wrapp_input" required>
+          {% if form.phone_number.errors %}
+            <div class="wrapp_warn">
+              <p><i><strong><small>{{form.phone_number.errors}}</small></strong></i></p>
+            </div>
+          {% endif %}
+
+          <input type="text" name="email" class="wrapp_input" placeholder="Email addres" required>
+          {% if form.email.errors %}
+            <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
+          {% endif %}
+
+          <p><b>Select country:</b></p>
+          <div class="wrapp_select">
+            {{form.country}}
+          </div>
+        </div>
+        <div class="wrapp_form">
+          <p><b>Select faculty:</b></p>
+          <select name="raw_faculty" class="wrapp_select" required>
+            <option value="" selected="">Select faculty</option>
+            {% for faculty in faculties %}
+              <option value="{{faculty.name}}">{{faculty.name}}</option>
+            {% endfor %}
+          </select>
+
+          <p><b>Ranks:</b></p>
+          <textarea name="ranks" class="wrapp_text" placeholder="Ranks e.g B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO (optional)" required></textarea>
+        </div>
+        <div class="wrapp_form">
+          <p><b>Security:</b></p>
+          <small>Default password for new dean of a faculty is his/her (first name, first letter + ID number + last name, first letter), he/she can change it later</small>
+          <!-- 
+            E.g
+            first_name = Usman
+            last_name = Musa
+            admin_no = 234578
+            password = u234578m
+          -->
+          
+          <!-- we hide these two passwords field using `form.css`, because the value will be automatically field once we inputed student matrix number -->
+          <input type="text" name="password1" id="pwd1" placeholder="Enter password" class="wrapp_input" minlength="8" required>
+          {% if form.password1.errors %}
+            <p><i><strong><small>{{form.new_password2.errors}}</small></strong></i></p>
+          {% endif %}
+          <input type="text" name="password2" id="pwd2" placeholder="Confirm password" class="wrapp_input" minlength="8" required>
+          {{form.errors}}
+          {% if form.password2.errors %}
+            <p><i><strong><small>{{form.password2.errors}}</small></strong></i></p>
+            <p><i><strong><small>Password should not be similar to your account information, with a min-length of 8 character and avoid using numeric password entirely. Include symbols to make it strong like (?/@.^*) etc.</small></strong></i></p>
+          {% endif %}
+        </div>
+        <div class="wrapp_form">
+          <button type="submit">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock main %}

@@ -41,8 +41,9 @@
     {% csrf_token %}
     <h2>Create student profile</h2>
     <p>Create student training profile with the student appropriate informations</p>
-    <input type="text" name="first_name" placeholder="First name" class="input" autofocus required>
-    <input type="text" name="last_name" placeholder="Last name" class="input" required>
+    <input type="text" name="first_name" placeholder="First name" oninput="automate_passwd()" id="first_name" class="input" autofocus required>
+    <!-- <input type="text" name="middle_name" placeholder="Middle name (optional)" class="input"> -->
+    <input type="text" name="last_name" oninput="automate_passwd()" id="last_name" placeholder="Last name" class="input" required>
     <input type="text" name="identification_num" oninput="automate_passwd()" placeholder="Matrix number (reg number)" class="input" id="id_no" required>
     {% if form.identification_num.errors %}
       <p><i><strong><small>{{form.identification_num.errors}}</small></strong></i></p>
@@ -90,8 +91,16 @@
     {% if form.email.errors %}
       <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
     {% endif %}
+    <small>Default password for new student is his/her (first name, first letter + reg number + last name, first letter), he/she can change it later</small>
+    <!-- 
+      E.g
+      first_name = Usman
+      last_name = Musa
+      admin_no = 234578
+      password = u234578m
+    -->
 
-    <!-- we hide these two passwor field using `auth.css`, because the value will be automatically field once we inputed student matrix number -->
+    <!-- we hide these two password field using `auth.css`, because the value will be automatically field once we inputed student matrix number -->
     <input type="password" name="password1" id="pwd1" placeholder="Enter password" class="input" minlength="8" required>
     {% if form.password1.errors %}
       <p><i><strong><small>{{form.new_password2.errors}}</small></strong></i></p>

@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from faculty.models import Faculty
 from department.models import Department, DepartmentHOD, DepartmentTrainingCoordinator, Letter
 from student.models import TrainingStudent
-from .forms import CoordinatorSignupForm
 from django.contrib.auth import get_user_model
 
 
@@ -16,9 +15,11 @@ User = get_user_model()
 
 class Administrator:
   """Administrator related views"""
+
   @login_required
   @staticmethod
   def directorProfile(request):
+    """director profile"""
     context = {
       'None': None,
     }
@@ -28,6 +29,7 @@ class Administrator:
   @login_required
   @staticmethod
   def manager(request):
+    """manager"""
     faculties = Faculty.objects.all()
     departments = Department.objects.all()
     all_dept_coord = DepartmentTrainingCoordinator.objects.all()
@@ -48,46 +50,15 @@ class Administrator:
       'dept': dept,
     }
     return render(request, 'administrator/manager.html', context=context)
-    
+  
+
+
+class Activate:
+  """Activate (and also deactivate previous) related views"""
 
   @login_required
   @staticmethod
-  def registerAdministratorCoordinator(request):
-    """register department coordinator"""
-    all_dept = DepartmentTrainingCoordinator.objects.filter(is_active=True)
-    if request.method == 'POST':
-      form = CoordinatorSignupForm(request.POST)
-      if form.is_valid():
-        form.save()
-
-        all_department = request.POST['all_department']
-        raw_identification_num = form.cleaned_data['identification_num']
-        messages.success(request, f'You just create {raw_identification_num} account as departmental coordinator!')
-        
-        student_department = Department.objects.filter(name=all_department).first()
-        dept_hod = DepartmentHOD.objects.filter(department=student_department).first()
-        # student_coord = DepartmentTrainingCoordinator.objects.filter(dept_hod=dept_hod).first()
-        new_usr = User.objects.filter(identification_num=raw_identification_num).first()
-        new_usr.is_staff = True # making him/her as staff
-        new_usr.save()
-
-        # registering user to department training coordinator table
-        new_training_coordinator = DepartmentTrainingCoordinator(coordinator=new_usr, dept_hod=dept_hod, first_name=new_usr.first_name, last_name=new_usr.last_name, email=new_usr.email, phone_number=new_usr.phone_number, id_no=raw_identification_num)
-        new_training_coordinator.save() # saving
-        
-        return redirect('landing')
-    else:
-      form = CoordinatorSignupForm()
-    context = {
-      'all_dept': all_dept,
-      'form': form,
-    }
-    return render(request, 'administrator/register_training_coordinator.html', context)
-
-
-  @login_required
-  @staticmethod
-  def activateAdministratorCoordinator(request, staff_user_id):
+  def administratorCoordinator(request, staff_user_id):
     """activate department coordinator"""
     new_active_coord = DepartmentTrainingCoordinator.objects.filter(id_no=staff_user_id).first()
     if new_active_coord.is_active:
@@ -100,11 +71,14 @@ class Administrator:
       coord.save()
     messages.success(request, f'You just activate {new_active_coord.id_no} as {new_active_coord.dept_hod.department.name} department training coordinator!')
     return redirect('landing')
+  
 
+class Filter:
+  """Filters related views"""
 
   @login_required
   @staticmethod
-  def filterStaffUser(request):
+  def staffUser(request):
     """filter staff by ID number"""
     search_panel = request.GET.get('search_q')
     try:
