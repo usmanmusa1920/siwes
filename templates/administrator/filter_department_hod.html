@@ -9,19 +9,19 @@
 
 <!-- page title -->
 {% block title %}
-  <title>Search staff user</title>
+  <title>Search department HOD</title>
 {% endblock title %}
 
 <!-- content of the page -->
 {% block main %}
   <div class="main_wrapp_head">
-    <p>Search staff user by identification number (ID number)</p>
+    <p>Search department HOD user by identification number (ID number)</p>
   </div>
   <div class="main_wrapp">
     <div class="wrapp_form">
-      <p><b>Filter staff user:</b></p>
-      <small>Search staff user by identification number (staff ID)</small>
-      <form action="{% url 'administrator:filter_staff_user' %}" method="get" class="search">
+      <p><b>Filter department HOD:</b></p>
+      <small>Search department HOD by identification number (staff ID)</small>
+      <form action="{% url 'administrator:filter_department_hod' %}" method="get" class="search">
         {% csrf_token %}
         <input type="search" name="search_q" placeholder="Filter ID" required>
         <button type="submit">search</button>
@@ -32,12 +32,13 @@
   {% if users %}
     <div class="main_wrapp">
       <div class="wrapp_form">
-        <h2>Staff user found</h2>
-        <small>We found the following result for your search</small>
+        <h2>Department HOD found</h2>
+        <small>We found the following result for your search, click activate to make him/her the new department HOD</small>
       </div>
       {% for user in users %}
+      <div class="wrapp_form">
         <div class="wrapp_list">
-          <a>{{user}}</a>
+          <a>{{user.department}}</a>
           <small>
             {{user.first_name}}
             {% if user.middle_name %}
@@ -45,12 +46,37 @@
             {% endif %}
             {{user.last_name}}
           </small>
-          <form action="#" method="post">
+          <form action="{% url 'administrator:activate_department_hod' user.id_no %}" method="post">
             {% csrf_token %}
-            <button type="submit">View</button>
+            <button type="submit">Activate</button>
           </form>
         </div>
+        <small>
+          {{user.first_name}}
+          {% if user.middle_name %}
+            {{user.middle_name}}
+          {% endif %}
+          {{user.last_name}} is
+          {% if user.is_active %}
+            the <span class="req_new_dodger">active</span> HOD of <span class="req_new_dodger">{{user.department}}</span>
+          {% else %}
+            <span class="req_new_dodger">not the active</span> HOD of <span class="req_new_dodger">{{user.department}}</span>
+          {% endif %}
+        </small>
+      </div>
       {% endfor %}
+    </div>
+  {% elif search_panel == None %}
+    <div class="main_wrapp">
+      <div class="wrapp_form">
+        <div class="wrapp_null">
+          <div class="wrapp_in_null">
+            <div class="main_wrapp_null">
+              <p>Search department HOD by ID number</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   {% else %}
     <div class="main_wrapp">
@@ -58,7 +84,7 @@
         <div class="wrapp_null">
           <div class="wrapp_in_null">
             <div class="main_wrapp_null">
-              <p>We can't find that staff user ({{search_panel}})</p>
+              <p>We can't find that department HOD ({{search_panel}})</p>
             </div>
           </div>
         </div>
@@ -88,7 +114,7 @@
     </div>
   {% endif %}
   <div class="main_wrapp_what">
-    <p>Search staff user by identification number (ID number)</p>
+    <p>Search department HOD by identification number (ID number)</p>
   </div>
   </div>
 {% endblock main %}

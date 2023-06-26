@@ -48,9 +48,9 @@ os.system('cp dummy_img/education.jpg media/acceptance-letters/2023-acceptances/
 ### __________________
 ### TRAINING DIRECTORS
 
-du1 = User(first_name='Olagoke', last_name='Abdul', identification_num='20151888', email='olagokeabdul@yahoo.com', phone_number='+2348144807200')
-du2 = User(first_name='Ahmad', last_name='Aminu', identification_num='20151889', email='ahmadaminu@yahoo.com', phone_number='+2348144807201')
-du3 = User(first_name='Ashiru', last_name='Lamido', identification_num='20151890', email='ashirulamido@yahoo.com', phone_number='+2348144807202')
+du1 = User(first_name='Olagoke', last_name='Abdul', identification_num='20151888', email='olagokeabdul@yahoo.com', phone_number='+2348144807200', is_staff=True)
+du2 = User(first_name='Ahmad', last_name='Aminu', identification_num='20151889', email='ahmadaminu@yahoo.com', phone_number='+2348144807201', is_staff=True)
+du3 = User(first_name='Ashiru', last_name='Lamido', identification_num='20151890', email='ashirulamido@yahoo.com', phone_number='+2348144807202', is_staff=True)
 
 du1.save()
 du2.save()
@@ -85,10 +85,10 @@ my_fty4 = Faculty.objects.filter(name='Management & Social science').first()
 ### ____________
 ### FACULTY DEAN
 
-fcd1 = User(first_name='Muhammad', last_name='Ahmad', identification_num='20161666', email='muhammadahmad@yahoo.com', phone_number='+2348144807203')
-fcd2 = User(first_name='Sani', last_name='Aliyu', identification_num='20161667', email='sanialiyu@yahoo.com', phone_number='+2348144807204')
-fcd3 = User(first_name='Alameen', last_name='Sambo', identification_num='20161668', email='alameensambo@yahoo.com', phone_number='+2348144807205')
-fcd4 = User(first_name='Suraj', last_name='Haqil', identification_num='20161669', email='surajhaqil@yahoo.com', phone_number='+2348144807206')
+fcd1 = User(first_name='Muhammad', last_name='Ahmad', identification_num='20161666', email='muhammadahmad@yahoo.com', phone_number='+2348144807203', is_staff=True)
+fcd2 = User(first_name='Sani', last_name='Aliyu', identification_num='20161667', email='sanialiyu@yahoo.com', phone_number='+2348144807204', is_staff=True)
+fcd3 = User(first_name='Alameen', last_name='Sambo', identification_num='20161668', email='alameensambo@yahoo.com', phone_number='+2348144807205', is_staff=True)
+fcd4 = User(first_name='Suraj', last_name='Haqil', identification_num='20161669', email='surajhaqil@yahoo.com', phone_number='+2348144807206', is_staff=True)
 
 fcd1.save()
 fcd2.save()
@@ -123,11 +123,11 @@ my_dept3 = Department.objects.filter(name='Mathematics').first()
 ### ______________
 ### DEPARTMENT HOD
 
-ud1 = User(first_name='Lawal', last_name='Saad', identification_num='20191999', email='lawalsaad@yahoo.com', phone_number='+2349036632603')
-ud2 = User(first_name='Ahmad', last_name='Jabaka', identification_num='20191920', email='ahmadjabaka@yahoo.com', phone_number='+2349036632604')
-ud3 = User(first_name='Tanim', last_name='Mubarak', identification_num='20191921', email='tanimmubarak@yahoo.com', phone_number='+2349036632615')
-ud4 = User(first_name='Nasir', last_name='Sanusi', identification_num='20232021', email='nasirsanusai@yahoo.com', phone_number='+2348135632605')
-ud5 = User(first_name='Ema', last_name='Okonjo', identification_num='20232033', email='emaokonjo@yahoo.com', phone_number='+2348135632633')
+ud1 = User(first_name='Lawal', last_name='Saad', identification_num='20191999', email='lawalsaad@yahoo.com', phone_number='+2349036632603', is_staff=True)
+ud2 = User(first_name='Ahmad', last_name='Jabaka', identification_num='20191920', email='ahmadjabaka@yahoo.com', phone_number='+2349036632604', is_staff=True)
+ud3 = User(first_name='Tanim', last_name='Mubarak', identification_num='20191921', email='tanimmubarak@yahoo.com', phone_number='+2349036632615', is_staff=True)
+ud4 = User(first_name='Nasir', last_name='Sanusi', identification_num='20232021', email='nasirsanusai@yahoo.com', phone_number='+2348135632605', is_staff=True)
+ud5 = User(first_name='Ema', last_name='Okonjo', identification_num='20232033', email='emaokonjo@yahoo.com', phone_number='+2348135632633', is_staff=True)
 
 ud1.save()
 ud2.save()
@@ -141,7 +141,7 @@ ud6.phone_number = '+2348135632603'
 ud6.save()
 
 
-dh1 = DepartmentHOD(hod=ud1, department=my_dept1, first_name=ud1.first_name, last_name=ud1.last_name, email=ud1.email, phone_number=ud1.phone_number, id_no=ud1.identification_num, universities='B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO', ranks='Ph.D')
+dh1 = DepartmentHOD(hod=ud1, department=my_dept1, first_name=ud1.first_name, last_name=ud1.last_name, email=ud1.email, phone_number=ud1.phone_number, id_no=ud1.identification_num, ranks='B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO')
 dh2 = DepartmentHOD(hod=ud2, department=my_dept2, first_name=ud2.first_name, last_name=ud2.last_name, email=ud2.email, phone_number=ud2.phone_number, id_no=ud2.identification_num)
 dh3 = DepartmentHOD(hod=ud3, department=my_dept3, first_name=ud3.first_name, last_name=ud3.last_name, email=ud3.email, phone_number=ud3.phone_number, id_no=ud3.identification_num)
 
@@ -178,7 +178,7 @@ u1.save()
 u2 = User(first_name='Shehu', last_name='Musa', identification_num='201031002', email='usmanmusa2019@gmail.com', phone_number='+2348144807260')
 u3 = User(first_name='Benjamin', last_name='Omoniyi', identification_num='201031003', email='benjamin@gmail.com', phone_number='+2348144807211')
 u4 = User(first_name='Abdulhakeem', last_name='Odoi', identification_num='201031004', email='odoi@gmail.com', phone_number='+2348144807222')
-u5 = User(first_name='Muhammad', last_name='Amin', identification_num='201031005', email='moh'd@mail.com', phone_number='+2348144807233')
+u5 = User(first_name='Muhammad', last_name='Amin', identification_num='201031005', email='moh\'d@mail.com', phone_number='+2348144807233')
 
 u2.save()
 u3.save()
