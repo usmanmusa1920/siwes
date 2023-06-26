@@ -19,10 +19,15 @@ class Student:
 
   @login_required
   @staticmethod
-  def profile(request):
+  def profile(request, matrix_id):
     """student profile"""
-    the_student_request_user = request.user
-    std = TrainingStudent.objects.filter(student=the_student_request_user).first()
+    std = TrainingStudent.objects.filter(matrix_no=matrix_id).first()
+
+    if request.user.is_staff == False and request.user.identification_num != std.matrix_no:
+      # restricting any student from getting access to other students` profile
+      # but allowing himself and staff user to get access to it
+      return False
+    
     dean = FacultyDean.objects.filter(faculty=std.student_training_coordinator.dept_hod.department.faculty).last()
     hod = DepartmentHOD.objects.filter(department=std.student_training_coordinator.dept_hod.department).last()
 
@@ -65,22 +70,6 @@ class Student:
       'form': form,
     }
     return render(request, 'student/update_profile.html', context=context)
-    
-
-  @login_required
-  @staticmethod
-  def otherViewProfile(request, student_id):
-    """student profile (for other when they view it, such as coordinator, training manager, etc)"""
-    std = TrainingStudent.objects.filter(matrix_no=student_id).first()
-    dean = FacultyDean.objects.filter(faculty=std.student_training_coordinator.dept_hod.department.faculty).last()
-    hod = DepartmentHOD.objects.filter(department=std.student_training_coordinator.dept_hod.department).last()
-
-    context = {
-      'std': std,
-      'dean': dean,
-      'hod': hod,
-    }
-    return render(request, 'student/profile_other.html', context=context)
 
 
   @login_required

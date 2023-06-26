@@ -15,14 +15,14 @@
 <!-- content of the page -->
 {% block main %}
   <div class="main_wrapp_head">
-    <p>Student {{dean.faculty.training}} profile</p>
+    {% if std.matrix_no == request.user.identification_num %}
+      <p>Your {{dean.faculty.training}} profile</p>
+    {% else %}
+      <p>{{std.student.first_name}}`s {{dean.faculty.training}} profile</p>
+    {% endif %}
   </div>
 
   <div class="main_wrapp">
-    <form action="#" method="get" class="search">
-      <input type="search" name="" placeholder="Search">
-      <button type="button">search</button>
-    </form>
     <div class="wrapp_img">
       <img src="{{std.student.profile.image.url}}" alt="">
     </div>
@@ -52,64 +52,83 @@
             <b>Department:</b> {{hod.department.name}}
           {% endif %}
         </p>
-        <br>
-        <a class="delete_me">Report problem</a>
+        {% if std.matrix_no == request.user.identification_num %}
+          <br>
+          <a class="delete_me">Report problem</a>
+        {% endif %}
       </div>
 
-      <div class="wrapp_info_right">
-        {% if acceptance_200 %}
-          <a href="{% url 'student:uploaded_acceptance_letter_200' %}" class="good_me">View acceptance letter for 200</a>
-        {% else %}
-          <a href="{% url 'student:uploaded_acceptance_letter_200' %}" class="good_me">Upload acceptance letter for 200</a>
-        {% endif %}
-        <br>
-        <br>
-        {% if acceptance_300 %}
-          <a href="{% url 'student:uploaded_acceptance_letter_300' %}" class="good_me">View acceptance letter for 300</a>
-        {% else %}
-          <a href="{% url 'student:uploaded_acceptance_letter_300' %}" class="good_me">Upload acceptance letter for 300</a>
-        {% endif %}
-        <br>
-        <br>
-        <a href="{% url 'student:logbook_entry' %}" class="good_me">Logbook entry</a>
-        <br>
-        <br>
-        
-        <hr>
-        <br>
-        <a href="{% url 'student:profile_update' %}" class="good_me">Edit profile</a>
-      </div>
-    </div>
-
-    <div class="wrapp_level">
-      <div>
-        {% if acceptance_200 %}
-          Your 200 level acceptance is available
-        {% else %}
-          Your 200 level acceptance is pending
-        {% endif %}
-      </div>
-      {% if std.level == "300" %}
-        <div>
-          {% if acceptance_300 %}
-            Your 300 level acceptance is available
+      {% if std.matrix_no == request.user.identification_num %}
+        <div class="wrapp_info_right">
+          {% if acceptance_200 %}
+            <a href="{% url 'student:uploaded_acceptance_letter_200' %}" class="good_me">View acceptance letter for 200</a>
           {% else %}
-            Your 300 level acceptance is pending
+            <a href="{% url 'student:uploaded_acceptance_letter_200' %}" class="good_me">Upload acceptance letter for 200</a>
           {% endif %}
+          <br>
+          <br>
+          {% if acceptance_300 %}
+            <a href="{% url 'student:uploaded_acceptance_letter_300' %}" class="good_me">View acceptance letter for 300</a>
+          {% else %}
+            <a href="{% url 'student:uploaded_acceptance_letter_300' %}" class="good_me">Upload acceptance letter for 300</a>
+          {% endif %}
+          <br>
+          <br>
+          <a href="{% url 'student:logbook_entry' %}" class="good_me">Logbook entry</a>
+          <br>
+          <br>
+          
+          <hr>
+          <br>
+          <a href="{% url 'student:profile_update' %}" class="good_me">Edit profile</a>
         </div>
       {% endif %}
     </div>
 
-    <div class="wrapp_null">
-      <div class="wrapp_in_null">
-        <div class="main_wrapp_null">
-          <p>We can't find trusted user with that data</p>
+    <div class="wrapp_level">
+      {% if std.matrix_no == request.user.identification_num %}
+        <div>
+          {% if acceptance_200 %}
+            Your 200 level acceptance is available
+          {% else %}
+            Your 200 level acceptance is pending
+          {% endif %}
         </div>
-      </div>
+        {% if std.level == "300" %}
+          <div>
+            {% if acceptance_300 %}
+              Your 300 level acceptance is available
+            {% else %}
+              Your 300 level acceptance is pending
+            {% endif %}
+          </div>
+        {% endif %}
+      {% else %}
+        <div>
+          {% if acceptance_200 %}
+            {{std.student.first_name}}`s 200 level acceptance is available
+          {% else %}
+            {{std.student.first_name}}`s 200 level acceptance is pending
+          {% endif %}
+        </div>
+        {% if std.level == "300" %}
+          <div>
+            {% if acceptance_300 %}
+              {{std.student.first_name}}`s 300 level acceptance is available
+            {% else %}
+              {{std.student.first_name}}`s 300 level acceptance is pending
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endif %}
     </div>
 
     <div class="main_wrapp_what">
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+      {% if std.matrix_no == request.user.identification_num %}
+        <p>This is your {{dean.faculty.training}} profile</p>
+      {% else %}
+        <p>This is {{std.student.first_name}}`s {{dean.faculty.training}} profile</p>
+      {% endif %}
     </div>
   </div>
 {% endblock main %}

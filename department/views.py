@@ -9,15 +9,38 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
+class DepartmentCls:
+  """department related views"""
+
+  @login_required
+  @staticmethod
+  def students(request, dept_name):
+    """department list of students"""
+    depart = Department.objects.filter(name=dept_name).first()
+    depart_hod = DepartmentHOD.objects.filter(department=depart).first()
+    depart_coord = DepartmentTrainingCoordinator.objects.filter(dept_hod=depart_hod).first()
+    all_students = TrainingStudent.objects.filter(student_training_coordinator=depart_coord).order_by('-date_joined')
+
+    # for student
+    paginator_student = Paginator(all_students, 10)
+    page_student = request.GET.get('page')
+    students = paginator_student.get_page(page_student)
+
+    context = {
+      'depart': depart,
+      'students': students,
+    }
+    return render(request, 'department/students_list.html', context=context)
+
+
 class Coordinator:
   """Trianing coordinator related views"""
 
   @login_required
   @staticmethod
-  def profile(request):
+  def profile(request, id_no):
     """coordinator profile"""
-    coord_dept_request_user = request.user
-    training_tutor = DepartmentTrainingCoordinator.objects.filter(coordinator=coord_dept_request_user).first()
+    training_tutor = DepartmentTrainingCoordinator.objects.filter(id_no=id_no).first()
 
     # filtering coordinator training student
     coordinator_students = TrainingStudent.objects.filter(student_training_coordinator=training_tutor)

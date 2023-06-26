@@ -32,7 +32,15 @@ handler500 = 'account.views.error_500'
 
 @login_required
 def index(request):
-    return render(request, 'landing.html')
+    """this is landing page view"""
+    from faculty.models import Faculty
+    faculties = Faculty.objects.all()
+    context = {
+        'faculties': faculties,
+    }
+    return render(request, 'landing.html', context=context)
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index, name='landing'),

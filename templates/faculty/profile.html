@@ -9,13 +9,13 @@
 
 <!-- page title -->
 {% block title %}
-  <title>Faculty profile page</title>
+  <title>Faculty of {{faculty.name}} profile page</title>
 {% endblock title %}
 
 <!-- content of the page -->
 {% block main %}
   <div class="main_wrapp_head">
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+    <p>This is {{faculty}} profile page.</p>
   </div>
 
   <div class="main_wrapp">
@@ -23,123 +23,151 @@
       <img src="{% static 'media/user.png' %}" alt="">
     </div>
 
+    <!-- querying all faculties -->
     <div class="section">
-      <a href="#" class="sec_current">Faculty of Science</a>
-      <a href="#" class="sec_link">Faculty of Education</a>
-      <a href="#" class="sec_link">Faculty of Humanities</a>
-      <a href="#" class="sec_link">Faculty of Management & Social science</a>
+      {% for faty in faculties %}
+        {% if faty == faculty %}
+          <a href="{% url 'faculty:profile' faty.name %}" class="sec_current">{{faty}}</a>
+        {% else %}
+          <a href="{% url 'faculty:profile' faty.name %}" class="sec_link">{{faty}}</a>
+        {% endif %}
+      {% endfor %}
     </div>
-
+    
+    <!-- querying all departments in a faculty -->
     <div class="wrapp_form">
       <p><b>Select department:</b></p>
-      <select name="" class="wrapp_select">
-        <option value="">Physics</option>
-        <option value="">Computer</option>
-        <option value="">Maths</option>
-        <option value="">Geography</option>
-      </select>
+      <small>Filter student base on depaertment</small>
       <form action="#" method="post" class="form_peace">
-        <button type="submit">Filter</button>
-      </form>
-    </div>
-
-    <div class="main_wrapp_head">
-      <p>Student request for IT letter</p>
-    </div>
-    <div class="request">
-      <a href="#">Usman Musa</a>
-      <small>25, March 2019</small>
-      <form action="#" method="post" class="form_peace">
-        <button type="submit">Accept</button>
-      </form>
-      <form action="#" method="post" class="form_danger">
-        <button type="submit">Decline</button>
-      </form>
-    </div>
-
-    <form action="#" method="get" class="search">
-      <input type="search" name="" placeholder="Search">
-      <button type="submit">search</button>
-    </form>
-
-    <div class="wrapp_list">
-      <a href="#">Usman Musa</a>
-      <small>200 level student</small>
-      <form action="#" method="post">
-        <button type="submit">ADD</button>
-      </form>
-    </div>
-
-    <div class="wrapp_pages">
-      <div class="wrapp_pages_column">
-        <a href="" class="surf">previous</a>
-        <a href="" class="page_link">9</a>
-        <a href="" class="page_link">10</a>
-        <a href="" class="current">11</a>
-        <a href="" class="page_link">12</a>
-        <a href="" class="page_link">13</a>
-        <a href="" class="surf">next</a>
-      </div>
-    </div>
-
-    <div class="wrapp_list">
-      <a href="#">Usman Musa</a>
-      <small>200 level student</small>
-      <form action="#" method="post">
-        <button type="button">viewed</button>
+        {% csrf_token %}
+        <select name="filter_dept" class="wrapp_select" required>
+          <option value="" selected="">Query list of department students</option>
+          {% for dept in departments %}
+            <option value="{{dept.name}}">{{dept}}</option>
+          {% endfor %}
+        </select>
+        <button type="submit">Query</button>
       </form>
     </div>
 
     <div class="wrapp_info">
       <div class="wrapp_info_left">
         <p>
-          <b>Name:</b> Usman Musa
+          <b>Name:</b> {{faculty}}
         </p>
         <p>
-          <b>Matrix no:</b> 2010310013
-        </p>
-        <p>
-          <b>Faculty:</b> Science
-        </p>
-        <p>
-          <b>Department:</b> B.Sc Physics
+          <b>Number of departments:</b> {{departments.all.count}}
         </p>
       </div>
 
       <div class="wrapp_info_right">
-        <input type="file" name="" id="">
-        <br>
-        <br>
-        <a href="#">Edit profile</a>
-        <br>
-        <a href="#">Request for IT letter</a>
+        <p>
+          <b>Number of students:</b> {{students.paginator.count}}
+          <small>This is number of cureent student in the school</small>
+        </p>
+        <a href="/admin">Admin page</a>
       </div>
-    </div>
-
-    <div class="wrapp_level">
-      <div>
-        Your 200 level training
-      </div>
-      <div>
-        Your 300 level training
-      </div>
-    </div>
-
-    <div class="wrapp_null">
-      <div class="wrapp_in_null">
-        <div class="main_wrapp_null">
-          <p>We can't find trusted user with that data</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="main_wrapp_what">
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
     </div>
 
     <div class="main_wrapp_head">
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+      <p>All students that are currently in school</p>
     </div>
+    {% for student in students %}
+      <div class="request">
+        <a href="#">
+          {{student.first_name}}
+          {% if student.middle_name %}
+            {{student.middle_name}}
+          {% endif %}
+          {{student.last_name}}
+        </a>
+        <small>25, March 2019</small>
+        <form action="#" method="post" class="form_peace">
+          <button type="submit">Accept</button>
+        </form>
+        <form action="#" method="post" class="form_danger">
+          <button type="submit">Decline</button>
+        </form>
+      </div>
+    {% endfor %}
 
+    {% if students.paginator.count > 10 %}
+      <div class="wrapp_pages">
+        <div class="wrapp_pages_column">
+          {% if students.has_previous %}
+            <a href="?page={{students.previous_page_number}}" class="surf">previous</a>
+            <a>...</a>
+          {% endif %}
+          {% for num in students.paginator.page_range %}
+            {% if students.number == num %}
+              <a href="?page={{num}}" class="current">{{num}}</a>
+            {% elif num > students.number|add:'-3' and num < students.number|add:'3' %}
+              <a href="?page={{num}}" class="page_link">{{num}}</a>
+            {% endif %}
+          {% endfor %}
+          {% if students.has_next %}
+            <a>...</a>
+            <a href="?page={{students.next_page_number}}" class="surf">next</a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    <form action="{% url 'administrator:filter_student_user' %}" method="get" class="search">
+      {% csrf_token %}
+      <input type="search" name="search_q" placeholder="Filter student by ID" required>
+      <button type="submit">search</button>
+    </form>
+    <br>
+
+    <div class="main_wrapp_head">
+      <p>All staffs in the school</p>
+    </div>
+    {% for staff in staffs %}
+      <div class="wrapp_list">
+        <a href="#">
+          {{staff.first_name}}
+          {% if staff.middle_name %}
+            {{staff.middle_name}}
+          {% endif %}
+          {{staff.last_name}}
+        </a>
+        <small>200 level staff</small>
+        <form action="#" method="post">
+          <button type="submit">ADD</button>
+        </form>
+      </div>
+    {% endfor %}
+
+    {% if staffs.paginator.count > 10 %}
+      <div class="wrapp_pages">
+        <div class="wrapp_pages_column">
+          {% if staffs.has_previous %}
+            <a href="?page={{staffs.previous_page_number}}" class="surf">previous</a>
+            <a>...</a>
+          {% endif %}
+          {% for num in staffs.paginator.page_range %}
+            {% if staffs.number == num %}
+              <a href="?page={{num}}" class="current">{{num}}</a>
+            {% elif num > staffs.number|add:'-3' and num < staffs.number|add:'3' %}
+              <a href="?page={{num}}" class="page_link">{{num}}</a>
+            {% endif %}
+          {% endfor %}
+          {% if staffs.has_next %}
+            <a>...</a>
+            <a href="?page={{staffs.next_page_number}}" class="surf">next</a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+    <form action="{% url 'administrator:filter_staff_user' %}" method="get" class="search">
+      {% csrf_token %}
+      <input type="search" name="search_q" placeholder="Filter staff by ID" required>
+      <button type="submit">search</button>
+    </form>
+
+    <div class="main_wrapp_what">
+      <p>This is {{faculty}} profile page.</p>
+    </div>
   </div>
 {% endblock main %}

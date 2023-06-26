@@ -20,6 +20,11 @@ class Administrator:
   @staticmethod
   def directorProfile(request):
     """director profile"""
+    if request.user.is_staff == False:
+      """restrict user access to certain pages"""
+      # block anyone from getting access to the register page of
+      # administrator if he/she is not a staff
+      return False
     context = {
       'None': None,
     }
@@ -30,6 +35,11 @@ class Administrator:
   @staticmethod
   def manager(request):
     """manager"""
+    if request.user.is_staff == False:
+      """restrict user access to certain pages"""
+      # block anyone from getting access to the register page of
+      # administrator if he/she is not a staff
+      return False
     faculties = Faculty.objects.all()
     departments = Department.objects.all()
     all_dept_coord = DepartmentTrainingCoordinator.objects.all()
@@ -60,6 +70,11 @@ class Activate:
   @staticmethod
   def facultyDean(request, staff_user_id):
     """activate (and also deactivate previous) new faculty dean"""
+    if request.user.is_staff == False:
+      """restrict user access to certain pages"""
+      # block anyone from getting access to the register page of
+      # administrator if he/she is not a staff
+      return False
     new_active_dean = FacultyDean.objects.filter(id_no=staff_user_id).first()
     if new_active_dean.is_active:
       messages.success(request, f'This ({new_active_dean.id_no}) is already the dean of faculty of {new_active_dean.faculty.name}')
@@ -80,6 +95,11 @@ class Activate:
   @staticmethod
   def departmentHOD(request, staff_user_id):
     """activate (and also deactivate previous) new department HOD"""
+    if request.user.is_staff == False:
+      """restrict user access to certain pages"""
+      # block anyone from getting access to the register page of
+      # administrator if he/she is not a staff
+      return False
     new_active_hod = DepartmentHOD.objects.filter(id_no=staff_user_id).first()
     if new_active_hod.is_active == True:
       messages.success(request, f'This ({new_active_hod.id_no}) is already the {new_active_hod.department.name} department H.O.D')
@@ -100,6 +120,11 @@ class Activate:
   @staticmethod
   def departmentTrainingCoordinator(request, staff_user_id):
     """activate (and also deactivate previous) new department training coordinator"""
+    if request.user.is_staff == False:
+      """restrict user access to certain pages"""
+      # block anyone from getting access to the register page of
+      # administrator if he/she is not a staff
+      return False
     new_active_coord = DepartmentTrainingCoordinator.objects.filter(id_no=staff_user_id).first()
     if new_active_coord.is_active == True:
       messages.success(request, f'This ({new_active_coord.id_no}) is already the {new_active_coord.dept_hod.department.name} department training coordinator!')
@@ -123,6 +148,11 @@ class Filter:
   @staticmethod
   def staffUser(request):
     """filter staff by ID number"""
+    if request.user.is_staff == False:
+      """restrict user access to certain pages"""
+      # block anyone from getting access to the register page of
+      # administrator if he/she is not a staff
+      return False
     search_panel = request.GET.get('search_q')
 
     # quering all staff users
@@ -144,6 +174,11 @@ class Filter:
   @staticmethod
   def facultyDean(request):
     """filter faculty dean by ID number"""
+    if request.user.is_staff == False:
+      """restrict user access to certain pages"""
+      # block anyone from getting access to the register page of
+      # administrator if he/she is not a staff
+      return False
     search_panel = request.GET.get('search_q')
 
     # quering all registered faculty dean
@@ -165,6 +200,11 @@ class Filter:
   @staticmethod
   def departmentHod(request):
     """filter department HOD by ID number"""
+    if request.user.is_staff == False:
+      """restrict user access to certain pages"""
+      # block anyone from getting access to the register page of
+      # administrator if he/she is not a staff
+      return False
     search_panel = request.GET.get('search_q')
 
     # quering all registered department HOD
@@ -186,6 +226,11 @@ class Filter:
   @staticmethod
   def departmentTrainingCoordinator(request):
     """filter department training coordinator by ID number"""
+    if request.user.is_staff == False:
+      """restrict user access to certain pages"""
+      # block anyone from getting access to the register page of
+      # administrator if he/she is not a staff
+      return False
     search_panel = request.GET.get('search_q')
 
     # quering all registered department training coordinator
@@ -201,3 +246,29 @@ class Filter:
       'search_panel': search_panel,
     }
     return render(request, 'administrator/filter_department_training_coordinator.html', context=context)
+  
+
+  @login_required
+  @staticmethod
+  def studentUser(request):
+    """filter student by ID number"""
+    if request.user.is_staff == False:
+      """restrict user access to certain pages"""
+      # block anyone from getting access to the register page of
+      # administrator if he/she is not a staff
+      return False
+    search_panel = request.GET.get('search_q')
+
+    # quering all staff users
+    try:
+      users_search = User.objects.filter(Q(identification_num__istartswith=search_panel) | Q(identification_num__contains=search_panel), is_staff=False).order_by('-date_joined')
+    except:
+      users_search = User.objects.filter(Q(identification_num=search_panel), is_staff=False).order_by('-date_joined')
+    paginator = Paginator(users_search, 10)
+    page = request.GET.get('page')
+    users = paginator.get_page(page)
+    context = {
+      'users': users,
+      'search_panel': search_panel,
+    }
+    return render(request, 'administrator/filter_student_user.html', context=context)

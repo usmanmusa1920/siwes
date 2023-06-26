@@ -31,17 +31,16 @@
         </div>
         <div class="straight">
           {% if request.user.is_staff %}
-            <a href="{% url 'department:training_coordinator_profile' %}">Training Coordinator</a>
-            <a href="{% url 'auth:register_department_training_coordinator' %}">Register training Coordinator</a>
+            <a href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Training Coordinator</a>
             <a href="{% url 'auth:register_student' %}">Register student</a>
-            <a href="{% url 'administrator:filter_staff_user' %}">Filter staff user</a>
+            <a href="{% url 'administrator:administrator_manager' %}">Training manager</a>
             <a href="{% url 'administrator:administrator_director_profile' %}">Training Director</a>
           {% else %}
-            <a href="{% url 'student:profile' %}">Student profile</a>
-            <a href="{% url 'student:profile' %}">Student profile</a>
-            <a href="{% url 'student:profile' %}">Student profile</a>
-            <a href="{% url 'student:profile' %}">Student profile</a>
-            <a href="{% url 'student:profile' %}">Student profile</a>
+            <a href="{% url 'student:profile' request.user.identification_num %}">Student profile</a>
+            <a href="{% url 'student:profile' request.user.identification_num %}">Student profile</a>
+            <a href="{% url 'student:profile' request.user.identification_num %}">Student profile</a>
+            <a href="{% url 'student:profile' request.user.identification_num %}">Student profile</a>
+            <a href="{% url 'student:profile' request.user.identification_num %}">Student profile</a>
           {% endif %}
         </div>
       </div>
@@ -60,18 +59,16 @@
       </div>
       {% if request.user.is_staff %}
         <a><h4>{{request.user}}</h4></a>
-        <a href="{% url 'faculty:profile' %}">Faculty profile</a>
-        <a href="{% url 'administrator:administrator_manager' %}">Training manager</a>
-        {% if request.user.is_superuser %}
-          <a href="admin">Admin</a>
-        {% endif %}
+        {% for faculty in faculties %}
+          <a href="{% url 'faculty:profile' faculty.name %}">{{faculty}} profile</a>
+        {% endfor %}
       {% else %}
         <a><h4>{{request.user}}</h4></a>
-        <a href="{% url 'student:profile' %}">Student profile</a>
+        <a href="{% url 'student:profile' request.user.identification_num %}">Student profile</a>
         <a href="{% url 'student:placement_letter' %}">Placement letter</a>
         <a href="{% url 'student:acceptance_letter' %}">Acceptance letter</a>
+        <a href="{% url 'auth:logout' %}">Logout</a>
       {% endif %}
-      <a href="{% url 'auth:logout' %}">Logout</a>
     </div>
   </div>
 {% endblock main %}

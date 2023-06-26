@@ -188,11 +188,11 @@ u5.save()
 ### ________________
 ### TRAINING STUDENT
 
-me_stdent1 = TrainingStudent(student=u1, student_training_coordinator=dtc3, first_name=u1.first_name, last_name=u1.last_name, matrix_no=u1.identification_num, email=u1.email, phone_number=u1.phone_number, level='300')
-me_stdent2 = TrainingStudent(student=u2, student_training_coordinator=dtc3, first_name=u2.first_name, last_name=u2.last_name, matrix_no=u2.identification_num, email=u2.email, phone_number=u2.phone_number)
-me_stdent3 = TrainingStudent(student=u3, student_training_coordinator=dtc3, first_name=u3.first_name, last_name=u3.last_name, matrix_no=u3.identification_num, email=u3.email, phone_number=u3.phone_number)
-me_stdent4 = TrainingStudent(student=u4, student_training_coordinator=dtc3, first_name=u4.first_name, last_name=u4.last_name, matrix_no=u4.identification_num, email=u4.email, phone_number=u4.phone_number)
-me_stdent5 = TrainingStudent(student=u5, student_training_coordinator=dtc3, first_name=u5.first_name, last_name=u5.last_name, matrix_no=u5.identification_num, email=u5.email, phone_number=u5.phone_number)
+me_stdent1 = TrainingStudent(student=u1, student_training_coordinator=dtc3, first_name=u1.first_name, last_name=u1.last_name, matrix_no=u1.identification_num, email=u1.email, phone_number=u1.phone_number, level='300', is_in_school=True)
+me_stdent2 = TrainingStudent(student=u2, student_training_coordinator=dtc3, first_name=u2.first_name, last_name=u2.last_name, matrix_no=u2.identification_num, email=u2.email, phone_number=u2.phone_number, is_in_school=True)
+me_stdent3 = TrainingStudent(student=u3, student_training_coordinator=dtc3, first_name=u3.first_name, last_name=u3.last_name, matrix_no=u3.identification_num, email=u3.email, phone_number=u3.phone_number, is_in_school=True)
+me_stdent4 = TrainingStudent(student=u4, student_training_coordinator=dtc3, first_name=u4.first_name, last_name=u4.last_name, matrix_no=u4.identification_num, email=u4.email, phone_number=u4.phone_number, is_in_school=True)
+me_stdent5 = TrainingStudent(student=u5, student_training_coordinator=dtc3, first_name=u5.first_name, last_name=u5.last_name, matrix_no=u5.identification_num, email=u5.email, phone_number=u5.phone_number, is_in_school=True)
 
 me_stdent1.save()
 me_stdent2.save()

@@ -348,7 +348,7 @@ class Register:
         filtering_usr = User.objects.filter(identification_num=raw_identification_num).first()
         
         # registering user to training student table
-        new_student =  TrainingStudent(student=filtering_usr, student_training_coordinator=dept_training_coord, first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data['last_name'], matrix_no=raw_identification_num, email=form.cleaned_data['email'], phone_number=form.cleaned_data['phone_number'], level=student_level)
+        new_student =  TrainingStudent(student=filtering_usr, student_training_coordinator=dept_training_coord, first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data['last_name'], matrix_no=raw_identification_num, email=form.cleaned_data['email'], phone_number=form.cleaned_data['phone_number'], level=student_level, is_in_school=True)
         new_student.save()
 
         # creating student weekly reader

@@ -39,7 +39,7 @@
             </div>
           </div>
           {% if request.user.is_staff %}
-            <a href="{% url 'department:training_coordinator_profile' %}" class="dash_link">
+            <a href="{% url 'department:training_coordinator_profile' request.user.identification_num %}" class="dash_link">
               {{request.user.first_name}}
               {% if request.user.middle_name %}
                 {{request.user.middle_name}}
@@ -47,7 +47,7 @@
               {{request.user.last_name}}
             </a>
           {% else %}
-            <a href="{% url 'student:profile' %}" class="dash_link">
+            <a href="{% url 'student:profile' request.user.identification_num %}" class="dash_link">
               {{request.user.first_name}}
               {% if request.user.middle_name %}
                 {{request.user.middle_name}}
@@ -89,7 +89,7 @@
           <a href="#" class="dash_link">Senate Approved Result</a>
         {% else %}
           <span class="link_ref">Profile:</span>
-          <a class="dash_link" href="{% url 'department:training_coordinator_profile' %}">Training Coordinator</a>
+          <a class="dash_link" href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Training Coordinator</a>
           <a class="dash_link" href="{% url 'administrator:administrator_director_profile' %}">Training Director</a>
 
           <span class="link_ref">Register:</span>
@@ -106,6 +106,7 @@
           <a class="dash_link" href="{% url 'administrator:filter_faculty_dean' %}">Faculty dean</a>
           <a class="dash_link" href="{% url 'administrator:filter_department_hod' %}">Department HOD</a>
           <a class="dash_link" href="{% url 'administrator:filter_department_training_coordinator' %}">Department training coordinator</a>
+          <a class="dash_link" href="{% url 'administrator:filter_student_user' %}">Student user</a>
         {% endif %}
         
         <span class="link_ref">Authentication</span>
@@ -139,7 +140,7 @@
             {% if request.user.is_staff %}
               <a href="{% url 'administrator:administrator_manager' %}"><h4>Profile</h4></a>
             {% else %}
-              <a href="{% url 'student:profile' %}"><h4>Profile</h4></a>
+              <a href="{% url 'student:profile' request.user.identification_num %}"><h4>Profile</h4></a>
             {% endif %}
           </div>
         </div>
