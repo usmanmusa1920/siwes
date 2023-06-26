@@ -14,6 +14,7 @@ urlpatterns = [
   path('filter/faculty/dean', Filter.facultyDean, name='filter_faculty_dean'),
   path('filter/department/hod', Filter.departmentHod, name='filter_department_hod'),
   path('filter/department/training/coordinator', Filter.departmentTrainingCoordinator, name='filter_department_training_coordinator'),
+  path('filter/student/user', Filter.studentUser, name='filter_student_user'),
 
   # activate
   path('activate/faculty/dean/<int:staff_user_id>/', Activate.facultyDean, name='activate_faculty_dean'),

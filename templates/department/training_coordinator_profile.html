@@ -60,7 +60,7 @@
       </div>
       {% for student in students_acceptances %}
         <div class="wrapp_list">
-          <a href="{% url 'student:other_view_student_profile' student.sender_acept.matrix_no %}">
+          <a href="{% url 'student:profile' student.sender_acept.matrix_no %}">
             {{student.sender_acept.first_name}}
             {% if usr.middle_name %}
               {{student.sender_acept.middle_name}}
@@ -112,14 +112,6 @@
       </div>
       <div>
         You have a total of {{student_of_300.all.count}} IT student in 300 level
-      </div>
-    </div>
-
-    <div class="wrapp_null">
-      <div class="wrapp_in_null">
-        <div class="main_wrapp_null">
-          <p>We can't find trusted user with that data</p>
-        </div>
       </div>
     </div>
 

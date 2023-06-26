@@ -1,9 +1,9 @@
 from django.urls import path, include
-from .views import facultyProfile
+from .views import FacultyCls
 
 
 app_name = 'faculty'
 
 urlpatterns = [
-    path('faculty/profile/', facultyProfile, name='profile'),
+    path('faculty/profile/<str:faculty_name>/', FacultyCls.profile, name='profile'),
 ]
