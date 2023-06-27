@@ -2,8 +2,9 @@ from django.db import models
 from django.utils import timezone
 from faculty.models import Faculty
 from phonenumber_field.modelfields import PhoneNumberField
-
 from django.contrib.auth import get_user_model
+
+
 User = get_user_model()
 
 
@@ -26,7 +27,11 @@ class DepartmentHOD(models.Model):
   """This is departmental h.o.d database table"""
   hod = models.ForeignKey(User, on_delete=models.CASCADE)
   department = models.ForeignKey(Department, on_delete=models.CASCADE)
-  ranks = models.CharField(max_length=100, unique=False, blank=True, null=True) # his/her rank or universities he/she get them e.g B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO
+
+  # his/her rank or universities he/she get them e.g
+  # B.Sc (Ed), (UDUSOK Nig); Msc, PhD (USIM Malaysia); CFTO
+  ranks = models.CharField(max_length=100, unique=False, blank=True, null=True)
+
   first_name = models.CharField(max_length=100, unique=False)
   middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
   last_name = models.CharField(max_length=100, unique=False)
@@ -64,6 +69,31 @@ class DepartmentTrainingCoordinator(models.Model):
 
   def __str__(self):
     return f'{self.dept_hod.department} {self.dept_hod.department.faculty.training} coordinator'
+  
+
+class StudentSupervisor(models.Model):
+  """
+  This is supervisor database table, that departmental
+  training coordinator will assign a set of student to
+  """
+  supervisor = models.ForeignKey(User, related_name='student_supervisor', on_delete=models.CASCADE)
+  dept_training_coordinator = models.ForeignKey(DepartmentTrainingCoordinator, related_name='dept_training_coordinator', on_delete=models.CASCADE)
+  first_name = models.CharField(max_length=100, unique=False)
+  middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
+  last_name = models.CharField(max_length=100, unique=False)
+  gender_choices = [('female', 'Female'), ('male', 'Male'),]
+  gender = models.CharField(max_length=100, default='male', choices=gender_choices)
+  date_of_birth = models.DateField(max_length=100, blank=True, null=True)
+  id_no = models.CharField(max_length=255, unique=True)
+  email = models.EmailField(max_length=255, unique=False)
+  phone_number = PhoneNumberField(max_length=100, unique=False)
+  date_joined = models.DateTimeField(default=timezone.now)
+  date_leave = models.DateTimeField(auto_now=True)
+  is_active = models.BooleanField(default=False)
+  training_students = models.ManyToManyField(User, blank=True, related_name='supervisor_training_students')
+
+  def __str__(self):
+    return f'{self.first_name} {self.last_name} is supervisor of {self.dept_training_coordinator.dept_hod.department.name} department for {self.dept_training_coordinator.dept_hod.department.faculty.training} training'
 
 
 class Letter(models.Model):

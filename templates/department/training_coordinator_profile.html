@@ -19,6 +19,25 @@
   </div>
 
   <div class="main_wrapp">
+    <div class="section">
+      <a href="{% url 'department:training_coordinator_profile' training_tutor.id_no %}" class="sec_current">Your profile</a>
+      <a href="{% url 'department:department_students_level' 200 %}" class="sec_link">Your 200 level student</a>
+      <a href="{% url 'department:department_students_level' 300 %}" class="sec_link">Your 300 level student</a>
+    </div>
+
+    <div class="wrapp_form">
+      <p><b>Select student level:</b></p>
+      <small>Filter student base on level</small>
+      <form method="post" class="form_peace">
+        {% csrf_token %}
+        <select name="filter_level" class="wrapp_select" required>
+          <option value="" selected="">Query list of level of students</option>
+            <option value="200">200 level</option>
+            <option value="300">300 level</option>
+        </select>
+        <button type="submit">Query</button>
+      </form>
+    </div>
 
     {% if coordinator_students %}
       <div class="main_wrapp_head">
@@ -53,6 +72,20 @@
         </div>
       {% endif %}
     {% endif %}
+
+    <div class="main_wrapp_head">
+      <p>Student request for IT letter</p>
+    </div>
+    <div class="request">
+      <a href="#">Usman Musa</a>
+      <small>25, March 2019</small>
+      <form action="#" method="post" class="form_peace">
+        <button type="submit">Accept</button>
+      </form>
+      <form action="#" method="post" class="form_danger">
+        <button type="submit">Decline</button>
+      </form>
+    </div>
 
     {% if students_acceptances %}
       <div class="main_wrapp_head">
@@ -103,6 +136,12 @@
         <p>
           <b>Status (is active):</b> {{training_tutor.is_active}}
         </p>
+      </div>
+
+      <div class="wrapp_info_right">
+        <a href="#">Edit profile</a>
+        <br>
+        <a href="#">Request for IT letter</a>
       </div>
     </div>
 

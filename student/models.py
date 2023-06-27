@@ -4,6 +4,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from department.models import DepartmentTrainingCoordinator
 from django.contrib.auth import get_user_model
 
+
 User = get_user_model()
 
 

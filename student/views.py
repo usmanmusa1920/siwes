@@ -6,10 +6,11 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from .models import TrainingStudent, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook
 from .forms import UpdateProfile,  UploadAcceptanceLetter, UploadLogbookEntry, LogbookEntryComment
-from django.contrib.auth import get_user_model
 from toolkit import picture_name
 from faculty.models import FacultyDean
 from department.models import DepartmentHOD, Letter
+from django.contrib.auth import get_user_model
+
 
 User = get_user_model()
 

@@ -6,6 +6,7 @@ from .models import Department, DepartmentHOD, DepartmentTrainingCoordinator
 from student.models import TrainingStudent, StudentLetterRequest, AcceptanceLetter
 from django.contrib.auth import get_user_model
 
+
 User = get_user_model()
 
 
@@ -31,6 +32,25 @@ class DepartmentCls:
       'students': students,
     }
     return render(request, 'department/students_list.html', context=context)
+  
+
+  @login_required
+  @staticmethod
+  def studentsLevel(request, level):
+    """department list of students base on level"""
+    depart_coord = DepartmentTrainingCoordinator.objects.filter(coordinator=request.user).first()
+    all_students = TrainingStudent.objects.filter(student_training_coordinator=depart_coord, level=level).order_by('-date_joined')
+
+    # for student
+    paginator_student = Paginator(all_students, 10)
+    page_student = request.GET.get('page')
+    students = paginator_student.get_page(page_student)
+
+    context = {
+      'level': level,
+      'students': students,
+    }
+    return render(request, 'department/students_level.html', context=context)
 
 
 class Coordinator:
@@ -53,6 +73,12 @@ class Coordinator:
 
     # filtering coordinator training student whose their level is 300
     student_of_300 = TrainingStudent.objects.filter(student_training_coordinator=training_tutor, level='300')
+    
+    # grab student filter base on level
+    if request.method == 'POST':
+      level_raw = request.POST['filter_level']
+      return redirect('department:department_students_level', level=level_raw)
+      # return redirect(reverse('department:department_students_level', kwargs={'level': level_raw}))
 
     context = {
       'training_tutor': training_tutor,

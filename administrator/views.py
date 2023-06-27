@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from .models import Administrator
 from faculty.models import Faculty, FacultyDean
 from department.models import Department, DepartmentHOD, DepartmentTrainingCoordinator, Letter
 from student.models import TrainingStudent
@@ -11,57 +12,7 @@ from django.contrib.auth import get_user_model
 
 
 User = get_user_model()
-
-
-class Administrator:
-  """Administrator related views"""
-
-  @login_required
-  @staticmethod
-  def directorProfile(request):
-    """director profile"""
-    if request.user.is_staff == False:
-      """restrict user access to certain pages"""
-      # block anyone from getting access to the register page of
-      # administrator if he/she is not a staff
-      return False
-    context = {
-      'None': None,
-    }
-    return render(request, 'administrator/director_profile.html', context=context)
-
-
-  @login_required
-  @staticmethod
-  def manager(request):
-    """manager"""
-    if request.user.is_staff == False:
-      """restrict user access to certain pages"""
-      # block anyone from getting access to the register page of
-      # administrator if he/she is not a staff
-      return False
-    faculties = Faculty.objects.all()
-    departments = Department.objects.all()
-    all_dept_coord = DepartmentTrainingCoordinator.objects.all()
-
-    if request.user.is_staff:
-      fclty = Faculty.objects
-      dept = DepartmentTrainingCoordinator.objects
-    else:
-      TS = TrainingStudent.objects.filter(matrix_no=request.user.identification_num).first() # Training student with matrix number of 2010310013
-      fclty = TS.student_training_coordinator.dept_hod.department.faculty # Faculty of Science
-      dept = TS.student_training_coordinator.dept_hod.department # Department of Physics
-      
-    context = {
-      'faculties': faculties,
-      'departments': departments,
-      'all_dept_coord': all_dept_coord,
-      'fclty': fclty,
-      'dept': dept,
-    }
-    return render(request, 'administrator/manager.html', context=context)
   
-
 
 class Activate:
   """Activate (and also deactivate previous) related views"""
