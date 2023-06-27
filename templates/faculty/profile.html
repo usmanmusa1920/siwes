@@ -38,8 +38,11 @@
     <div class="wrapp_form">
       <p><b>Select department:</b></p>
       <small>Filter student base on depaertment</small>
-      <form action="#" method="post" class="form_peace">
+      <form method="post" class="form_peace">
         {% csrf_token %}
+        <!-- {% comment %}
+        this will go to "{% url 'department:department_students' physics %}"
+        {% endcomment %} -->
         <select name="filter_dept" class="wrapp_select" required>
           <option value="" selected="">Query list of department students</option>
           {% for dept in departments %}
@@ -74,19 +77,20 @@
     </div>
     {% for student in students %}
       <div class="request">
-        <a href="#">
+        <a href="{% url 'student:profile' student.matrix_no %}">
           {{student.first_name}}
           {% if student.middle_name %}
             {{student.middle_name}}
           {% endif %}
           {{student.last_name}}
         </a>
-        <small>25, March 2019</small>
+        <!-- <small>{{student.date_joined|date:'d F, Y'}}</small> -->
+        <small>{{student.level}} level</small>
         <form action="#" method="post" class="form_peace">
-          <button type="submit">Accept</button>
+          <button type="button">Accept</button>
         </form>
         <form action="#" method="post" class="form_danger">
-          <button type="submit">Decline</button>
+          <button type="button">Decline</button>
         </form>
       </div>
     {% endfor %}
@@ -125,7 +129,7 @@
     </div>
     {% for staff in staffs %}
       <div class="wrapp_list">
-        <a href="#">
+        <a href="{% url 'auth:general_profile' request.user.identification_num %}">
           {{staff.first_name}}
           {% if staff.middle_name %}
             {{staff.middle_name}}
@@ -134,7 +138,7 @@
         </a>
         <small>200 level staff</small>
         <form action="#" method="post">
-          <button type="submit">ADD</button>
+          <button type="button">ADD</button>
         </form>
       </div>
     {% endfor %}

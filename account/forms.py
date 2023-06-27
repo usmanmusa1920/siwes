@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
 from faculty.models import Faculty
-from department.models import Department, DepartmentTrainingCoordinator
+from department.models import Department, DepartmentTrainingCoordinator, StudentSupervisor
 from django.contrib.auth import get_user_model
 
 
@@ -54,6 +54,13 @@ class DepartmentHODSignupForm(UserCreationForm):
 
 class DepartmentCoordinatorSignupForm(UserCreationForm):
   """student training coordinator signup form class"""
+  class Meta:
+    model = User
+    fields = ['first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'identification_num', 'email', 'phone_number', 'country', 'password1', 'password2']
+
+
+class StudentSupervisorSignupForm(UserCreationForm):
+  """student supervisor signup form class"""
   class Meta:
     model = User
     fields = ['first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'identification_num', 'email', 'phone_number', 'country', 'password1', 'password2']

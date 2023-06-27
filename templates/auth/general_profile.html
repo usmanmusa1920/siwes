@@ -1,0 +1,84 @@
+<!-- extending from base.html file -->
+{% extends 'base.html' %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>General profile page of ({{user.first_name}})</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="main_wrapp_head">
+    <p>This is general profile page of ({{user.first_name}})</p>
+  </div>
+
+  <div class="main_wrapp">
+    <div class="wrapp_img">
+      <img src="{{user.profile.image.url}}" alt="">
+    </div>
+
+    {% if request.user.is_faculty_dean %}
+      <!-- pass -->
+    {% endif %}
+
+    {% if request.user.is_dept_hod %}
+      <!-- pass -->
+    {% endif %}
+
+    {% if request.user.is_training_coordinator %}
+      <!-- pass -->
+    {% endif %}
+
+    {% if request.user.is_supervisor %}
+      <!-- pass -->
+    {% endif %}
+
+    {% if request.user.is_student %}
+      <!-- pass -->
+    {% endif %}
+
+    <div class="wrapp_info">
+      <div class="wrapp_info_left">
+        <p>
+          <b>Name:</b>
+          {{user.first_name}}
+          {% if user.middle_name %}
+            {{user.middle_name}}
+          {% endif %}
+          {{user.last_name}}
+        </p>
+        <p><b>Gender:</b> {{user.gender}}</p>
+        <p><b>Date of birth:</b> {{user.date_of_birth}}</p>
+        <p><b>Identification no:</b> {{user.identification_num}}</p>
+        <p><b>Email:</b> {{user.email}}</p>
+        <p><b>Phone number:</b> {{user.phone_number}}</p>
+        <p><b>Country:</b> {{user.country}}</p>
+        <p><b>Date joined:</b> {{user.date_joined}}</p>
+      </div>
+
+      <div class="wrapp_info_right">
+        <!-- permission -->
+        <p><b>Is active:</b> {{user.is_active}}</p>
+        <p><b>Is staff:</b> {{user.is_staff}}</p>
+        <p><b>Is admin:</b> {{user.is_admin}}</p>
+        <p><b>Is superuser:</b> {{user.is_superuser}}</p>
+        <!-- others -->
+        <p><b>Is faculty dean:</b> {{user.is_faculty_dean}}</p>
+        <p><b>Is department HOD:</b> {{user.is_dept_hod}}</p>
+        <p><b>Is training coordinator:</b> {{user.is_training_coordinator}}</p>
+        <p><b>Is training supervisor:</b> {{user.is_supervisor}}</p>
+        <p><b>Is student:</b> {{user.is_student}}</p>
+      </div>
+    </div>
+
+    <div class="main_wrapp_what">
+      <p>This is general profile page of ({{user.first_name}})</p>
+    </div>
+  </div>
+{% endblock main %}

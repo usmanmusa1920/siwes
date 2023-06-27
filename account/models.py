@@ -4,8 +4,9 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from phonenumber_field.modelfields import PhoneNumberField
 from django_countries.fields import CountryField
-
 from django.conf import settings
+
+
 User = settings.AUTH_USER_MODEL
 
 
@@ -101,11 +102,18 @@ class UserAccount(AbstractBaseUser):
   country = CountryField(max_length=100, blank_label='Select your country',)
   date_joined = models.DateTimeField(default=timezone.now)
   
+  # permissions
   is_active = models.BooleanField(default=True)
-  is_verified = models.BooleanField(default=False)
   is_staff = models.BooleanField(default=False)
   is_admin = models.BooleanField(default=False)
   is_superuser = models.BooleanField(default=False)
+
+  # ranks
+  is_faculty_dean = models.BooleanField(default=False)
+  is_dept_hod = models.BooleanField(default=False)
+  is_training_coordinator = models.BooleanField(default=False)
+  is_supervisor = models.BooleanField(default=False)
+  is_student = models.BooleanField(default=False)
   
   objects = UserAccountManager()
   

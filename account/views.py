@@ -6,10 +6,11 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
-from .forms import (PasswordChangeForm, AdministratorSignupForm, FacultySignupForm, FacultyDeanSignupForm, DepartmentSignupForm, DepartmentHODSignupForm, DepartmentCoordinatorSignupForm, StudentSignupForm)
+from .forms import (PasswordChangeForm, AdministratorSignupForm, FacultySignupForm,
+  FacultyDeanSignupForm, DepartmentSignupForm, DepartmentHODSignupForm, DepartmentCoordinatorSignupForm, StudentSupervisorSignupForm, StudentSignupForm)
 from administrator.models import Administrator
 from faculty.models import Faculty, FacultyDean
-from department.models import Department, DepartmentHOD, DepartmentTrainingCoordinator
+from department.models import Department, DepartmentHOD, DepartmentTrainingCoordinator, StudentSupervisor
 from student.models import TrainingStudent, WeekReader
 from django.contrib.auth import get_user_model
 
@@ -47,7 +48,7 @@ class LogoutCustom(LoginRequiredMixin ,LogoutView):
 
 @login_required
 def changePassword(request):
-  """change password view"""
+  """change account password view"""
   if request.user.is_authenticated:
     form = PasswordChangeForm(user=request.user, data=request.POST or None)
     if form.is_valid():
@@ -61,6 +62,30 @@ def changePassword(request):
       }
       return render(request, 'auth/change_password.html', context)
   return False
+
+
+@login_required
+def generalProfile(request, id_no):
+  """general profile"""
+  
+  # querying user using identification number
+  user = User.objects.filter(identification_num=id_no).first()
+
+  if request.user.is_faculty_dean:
+    pass
+  if request.user.is_dept_hod:
+    pass
+  if request.user.is_training_coordinator:
+    pass
+  if request.user.is_supervisor:
+    pass
+  if request.user.is_student:
+    pass
+  
+  context = {
+    'user': user,
+  }
+  return render(request, 'auth/general_profile.html', context=context)
 
 
 class Register:
@@ -80,7 +105,10 @@ class Register:
     if request.method == 'POST':
       form = AdministratorSignupForm(request.POST)
       if form.is_valid():
-        form.save()
+        instance = form.save(commit=False)
+        instance.is_staff = True
+        instance.is_admin = True
+        instance.save()
         
         # grabbing user raw datas (from html form)
         raw_identification_num = form.cleaned_data['identification_num']
@@ -105,7 +133,8 @@ class Register:
         new_administrator.save()
         
         messages.success(request, f'Administrator with ID number of {raw_identification_num} has been registered as an administrator!')
-        return redirect('auth:register_administrator')
+        # return redirect('auth:register_administrator')
+        return redirect('auth:general_profile', id_no=raw_identification_num)
     else:
       form = AdministratorSignupForm()
     context = {
@@ -155,7 +184,10 @@ class Register:
     if request.method == 'POST':
       form = FacultyDeanSignupForm(request.POST)
       if form.is_valid():
-        form.save()
+        instance = form.save(commit=False)
+        instance.is_staff = True
+        instance.is_faculty_dean = True
+        instance.save()
         
         # grabbing user raw datas (from html form)
         raw_identification_num = form.cleaned_data['identification_num']
@@ -185,7 +217,8 @@ class Register:
         faculty = new_faculty_dean.faculty.name
         
         messages.success(request, f'Staff with ID number of {raw_identification_num} has been registered as new faculty of {faculty} dean!')
-        return redirect('auth:register_faculty_dean')
+        # return redirect('auth:register_faculty_dean')
+        return redirect('auth:general_profile', id_no=raw_identification_num)
     else:
       form = FacultyDeanSignupForm()
     context = {
@@ -236,7 +269,10 @@ class Register:
     if request.method == 'POST':
       form = DepartmentHODSignupForm(request.POST)
       if form.is_valid():
-        form.save()
+        instance = form.save(commit=False)
+        instance.is_staff = True
+        instance.is_dept_hod = True
+        instance.save()
         
         # grabbing user raw datas (from html form)
         raw_identification_num = form.cleaned_data['identification_num']
@@ -266,7 +302,8 @@ class Register:
         department = new_dept_hod.department.name
         
         messages.success(request, f'Staff with ID number of {raw_identification_num} has been registered as new department of {department} dean!')
-        return redirect('auth:register_department_hod')
+        # return redirect('auth:register_department_hod')
+        return redirect('auth:general_profile', id_no=raw_identification_num)
     else:
       form = DepartmentHODSignupForm()
     context = {
@@ -286,7 +323,10 @@ class Register:
     if request.method == 'POST':
       form = DepartmentCoordinatorSignupForm(request.POST)
       if form.is_valid():
-        form.save()
+        instance = form.save(commit=False)
+        instance.is_staff = True
+        instance.is_training_coordinator = True
+        instance.save()
 
         # grabbing user raw datas (from html form)
         all_department = request.POST['all_department']
@@ -307,7 +347,8 @@ class Register:
         new_training_coordinator.save() # saving
         
         messages.success(request, f'Staff with ID number of {raw_identification_num} has been registered as new department of {all_department} training coordinator!')
-        return redirect('auth:register_department_training_coordinator')
+        # return redirect('auth:register_department_training_coordinator')
+        return redirect('auth:general_profile', id_no=raw_identification_num)
     else:
       form = DepartmentCoordinatorSignupForm()
     context = {
@@ -315,6 +356,47 @@ class Register:
       'all_dept': all_dept,
     }
     return render(request, 'auth/register_training_coordinator.html', context)
+  
+
+  @login_required
+  @staticmethod
+  def studentTrainingSupervisor(request):
+    """register department training coordinator"""
+
+    # quering all department
+    all_dept = Department.objects.all()
+    if request.method == 'POST':
+      form = StudentSupervisorSignupForm(request.POST)
+      if form.is_valid():
+        instance = form.save(commit=False)
+        instance.is_staff = True
+        instance.is_supervisor = True
+        instance.save()
+
+        # grabbing user raw datas (from html form)
+        all_department = request.POST['all_department']
+        
+        # quering department, using the `all_department` variable above
+        dept = Department.objects.filter(name=all_department).first()
+        # quering department HOD, using the `dept` variable above
+        dept_hod = DepartmentHOD.objects.filter(department=dept, is_active=True).first()
+        # quering department training coordinator, using the `dept_hod` variable above
+        dept_training_coordinator = DepartmentTrainingCoordinator.objects.filter(dept_hod=dept_hod, is_active=True).first()
+        
+        # registering user to department training coordinator table
+        new_student_supervisor = StudentSupervisor(supervisor=instance, dept_training_coordinator=dept_training_coordinator, first_name=instance.first_name, last_name=instance.last_name, email=instance.email, phone_number=instance.phone_number, id_no=instance.identification_num)
+        new_student_supervisor.save() # saving
+        
+        messages.success(request, f'Staff with ID number of {instance.identification_num} has been registered as student supervisor of {all_department} department!')
+        # return redirect('auth:register_department_training_coordinator')
+        return redirect('auth:general_profile', id_no=instance.identification_num)
+    else:
+      form = StudentSupervisorSignupForm()
+    context = {
+      'form': form,
+      'all_dept': all_dept,
+    }
+    return render(request, 'auth/register_student_supervisor.html', context)
   
 
   @login_required
@@ -331,7 +413,9 @@ class Register:
     if request.method == 'POST':
       form = StudentSignupForm(request.POST)
       if form.is_valid():
-        form.save()
+        instance = form.save(commit=False)
+        instance.is_student = True
+        instance.save()
 
         # grabbing user raw datas (from html form)
         all_department = request.POST['all_department']
@@ -356,7 +440,8 @@ class Register:
         WR.save()
         
         messages.success(request, f'Student with admission number of {raw_identification_num} has been registered for training programme!')
-        return redirect('auth:register_student')
+        # return redirect('auth:register_student')
+        return redirect('auth:general_profile', id_no=raw_identification_num)
     else:
       form = StudentSignupForm()
     context = {

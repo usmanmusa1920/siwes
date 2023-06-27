@@ -2,15 +2,15 @@
 function automate_passwd(){
   /** 
    * this is a function that will automatically field in the value
-   * of (administrator, staff, or student) password
+   * of new (administrator, staff, or student) password
   */
 
   field = document.querySelector('#id_no').value
   f_name = document.querySelector('#first_name').value
   l_name = document.querySelector('#last_name').value
 
-  // here, we lower case the first name (f_name) and last name(l_name) of new register user
-  // then, captured (slice) first letter of his/her first name (f_name) and last name(l_name)
+  // here, we lower case the first name (f_name) and last name (l_name) of new register user
+  // then, captured (slice) first letter of his/her first name (f_name) and last name (l_name)
   /**
    * e.g
    * f_name = Usman

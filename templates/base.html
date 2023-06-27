@@ -21,7 +21,7 @@
   {% endblock title %}
 </head>
 
-<!-- the onmousover event is to be giving us the current time, just like an ajax implementation, also the onload too -->
+<!-- the onmousover event is to be giving us the current time (which is in the landing page i.e landing.html), just like an ajax implementation, also the onload too -->
 <body onmouseover="current_timing()" onload="current_timing()">
   <div class="container">
     <div class="left">
@@ -35,7 +35,7 @@
         <span class="logo_wrapper">
           <div class="logo">
             <div>
-              <img src="{% static 'media/logo.png' %}" alt="" srcset="">
+              <img src="{% static 'media/logo.png' %}" alt="Fugus logo" srcset="">
             </div>
           </div>
           {% if request.user.is_staff %}
@@ -67,30 +67,30 @@
 
         {% if request.user.is_staff == False %}
           <span class="link_ref">Fees</span>
-          <a href="#" class="dash_link">Pay Fees</a>
-          <a href="#" class="dash_link">Payment history</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Pay Fees</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Payment history</a>
           
           <span class="link_ref">Forms</span>
-          <a href="#" class="dash_link">Medical Form</a>
-          <a href="#" class="dash_link">Particulars Form</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Medical Form</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Particulars Form</a>
           
           <span class="link_ref">Hostel</span>
-          <a href="#" class="dash_link">Apply</a>
-          <a href="#" class="dash_link">Status</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Apply</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Status</a>
           
           <span class="link_ref">Course Registeration</span>
-          <a href="#" class="dash_link">Register Courses</a>
-          <a href="#" class="dash_link">Add Electives Courses</a>
-          <a href="#" class="dash_link">ViewCourses</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Register Courses</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Add Electives Courses</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">ViewCourses</a>
           
           <span class="link_ref">Exams and Result</span>
-          <a href="#" class="dash_link">Exam Card</a>
-          <a href="#" class="dash_link">View Result</a>
-          <a href="#" class="dash_link">Senate Approved Result</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Exam Card</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">View Result</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Senate Approved Result</a>
         {% else %}
           <span class="link_ref">Profile:</span>
           <a class="dash_link" href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Training Coordinator</a>
-          <a class="dash_link" href="{% url 'administrator:administrator_director_profile' %}">Training Director</a>
+          <a class="dash_link" href="{% url 'auth:general_profile' request.user.identification_num %}">General profile</a>
 
           <span class="link_ref">Register:</span>
           <a class="dash_link" href="{% url 'auth:register_administrator' %}">Administrator</a>
@@ -99,6 +99,7 @@
           <a class="dash_link" href="{% url 'auth:register_department' %}">Department</a>
           <a class="dash_link" href="{% url 'auth:register_department_hod' %}">Department HOD</a>
           <a class="dash_link" href="{% url 'auth:register_department_training_coordinator' %}">Department training coordinator</a>
+          <a class="dash_link" href="{% url 'auth:register_student_training_coordinatro' %}">Student training supervisor</a>
           <a class="dash_link" href="{% url 'auth:register_student' %}">Student</a>
 
           <span class="link_ref">Filter:</span>
@@ -138,7 +139,7 @@
 
           <div class="header_right">
             {% if request.user.is_staff %}
-              <a href="{% url 'administrator:administrator_manager' %}"><h4>Profile</h4></a>
+              <a href="{% url 'auth:general_profile' request.user.identification_num %}">General profile</a>
             {% else %}
               <a href="{% url 'student:profile' request.user.identification_num %}"><h4>Profile</h4></a>
             {% endif %}
