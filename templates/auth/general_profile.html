@@ -23,15 +23,19 @@
       <img src="{{user.profile.image.url}}" alt="">
     </div>
 
-    {% if request.user.is_faculty_dean %}
+    {% if request.user.is_admin %}
       <!-- pass -->
     {% endif %}
 
-    {% if request.user.is_dept_hod %}
+    {% if request.user.is_dean %}
       <!-- pass -->
     {% endif %}
 
-    {% if request.user.is_training_coordinator %}
+    {% if request.user.is_hod %}
+      <!-- pass -->
+    {% endif %}
+
+    {% if request.user.is_coordinator %}
       <!-- pass -->
     {% endif %}
 
@@ -69,9 +73,9 @@
         <p><b>Is admin:</b> {{user.is_admin}}</p>
         <p><b>Is superuser:</b> {{user.is_superuser}}</p>
         <!-- others -->
-        <p><b>Is faculty dean:</b> {{user.is_faculty_dean}}</p>
-        <p><b>Is department HOD:</b> {{user.is_dept_hod}}</p>
-        <p><b>Is training coordinator:</b> {{user.is_training_coordinator}}</p>
+        <p><b>Is faculty dean:</b> {{user.is_dean}}</p>
+        <p><b>Is department HOD:</b> {{user.is_hod}}</p>
+        <p><b>Is training coordinator:</b> {{user.is_coordinator}}</p>
         <p><b>Is training supervisor:</b> {{user.is_supervisor}}</p>
         <p><b>Is student:</b> {{user.is_student}}</p>
       </div>

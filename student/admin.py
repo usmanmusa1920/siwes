@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import (TrainingStudent, StudentLetterRequest, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook)
+from .models import (TrainingStudent, StudentLetterRequest,
+                     AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook)
 
 
 admin.site.register(TrainingStudent)
