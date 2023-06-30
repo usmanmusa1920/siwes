@@ -114,6 +114,7 @@ class Register:
                 instance.is_superuser = True
                 instance.is_staff = True
                 instance.is_admin = True
+                instance.is_schoolstaff = True
                 instance.save()
 
                 # grabbing user raw datas (from html form)
@@ -177,6 +178,7 @@ class Register:
             if form.is_valid():
                 instance = form.save(commit=False)
                 instance.is_dean = True
+                instance.is_schoolstaff = True
                 instance.save()
 
                 # grabbing user raw datas (from html form)
@@ -246,6 +248,7 @@ class Register:
                 instance = form.save(commit=False)
                 instance.is_staff = True
                 instance.is_hod = True
+                instance.is_schoolstaff = True
                 instance.save()
 
                 # grabbing user raw datas (from html form)
@@ -285,6 +288,7 @@ class Register:
             if form.is_valid():
                 instance = form.save(commit=False)
                 instance.is_coordinator = True
+                instance.is_schoolstaff = True
                 instance.save()
 
                 # grabbing user raw datas (from html form)
@@ -327,6 +331,7 @@ class Register:
                 instance = form.save(commit=False)
                 instance.is_staff = True
                 instance.is_supervisor = True
+                instance.is_schoolstaff = True
                 instance.save()
 
                 # grabbing user raw datas (from html form)

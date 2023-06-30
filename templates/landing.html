@@ -38,8 +38,9 @@
             {{request.user.last_name}} dashboard
           </a>
           {% if request.user.is_staff %}
-            <a href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Training Coordinator</a>
-            <a href="{% url 'auth:general_profile' request.user.identification_num %}">General profile</a>
+            <a href="{% url 'administrator:active_faculty_dean' %}">Active Deans</a>
+            <a href="{% url 'administrator:active_department_hod' %}">Active H O Ds</a>
+            <a href="{% url 'administrator:active_department_training_coord' %}">Active Training coordinators</a>
           {% else %}
             <a href="{% url 'student:profile' request.user.identification_num %}">Student profile</a>
             <a href="{% url 'student:placement_letter' %}">Placement letter</a>

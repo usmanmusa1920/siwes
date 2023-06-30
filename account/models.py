@@ -97,9 +97,9 @@ class UserAccount(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)  # administrator
     is_dean = models.BooleanField(default=False)  # faculty dean
     is_hod = models.BooleanField(default=False)  # department HOD
-    is_coordinator = models.BooleanField(
-        default=False)  # department training coordinator
+    is_coordinator = models.BooleanField(default=False)  # department training coordinator
     is_supervisor = models.BooleanField(default=False)  # student supervisor
+    is_schoolstaff = models.BooleanField(default=False)  # school staff
     is_student = models.BooleanField(default=False)  # training student
 
     objects = UserAccountManager()

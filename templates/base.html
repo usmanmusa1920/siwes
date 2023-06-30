@@ -111,7 +111,7 @@
         {% endif %}
         
         <span class="link_ref">Authentication</span>
-        {% if request.user.is_superuser %}
+        {% if request.user.is_staff %}
           <a href="/admin" class="dash_link">Admin</a>
         {% endif %}
         <a href="{% url 'auth:change_password' %}" class="dash_link">Change password</a>
