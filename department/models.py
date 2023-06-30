@@ -30,16 +30,13 @@ class DepartmentHOD(models.Model):
 
     # his/her rank or universities he/she get them e.g
     # B.Sc (Ed), (UDUSOK Nig); Msc, PhD (USIM Malaysia); CFTO
-    ranks = models.CharField(
-        max_length=100, unique=False, blank=True, null=True)
+    ranks = models.CharField(max_length=100, unique=False, blank=True, null=True)
 
     first_name = models.CharField(max_length=100, unique=False)
-    middle_name = models.CharField(
-        max_length=100, unique=False, blank=True, null=True)
+    middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
     last_name = models.CharField(max_length=100, unique=False)
     gender_choices = [('female', 'Female'), ('male', 'Male'),]
-    gender = models.CharField(
-        max_length=100, default='male', choices=gender_choices)
+    gender = models.CharField(max_length=100, default='male', choices=gender_choices)
     date_of_birth = models.DateField(max_length=100, blank=True, null=True)
     id_no = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, unique=False)
@@ -57,12 +54,10 @@ class DepartmentTrainingCoordinator(models.Model):
     coordinator = models.ForeignKey(User, on_delete=models.CASCADE)
     dept_hod = models.ForeignKey(DepartmentHOD, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100, unique=False)
-    middle_name = models.CharField(
-        max_length=100, unique=False, blank=True, null=True)
+    middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
     last_name = models.CharField(max_length=100, unique=False)
     gender_choices = [('female', 'Female'), ('male', 'Male'),]
-    gender = models.CharField(
-        max_length=100, default='male', choices=gender_choices)
+    gender = models.CharField(max_length=100, default='male', choices=gender_choices)
     date_of_birth = models.DateField(max_length=100, blank=True, null=True)
     id_no = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, unique=False)
@@ -70,8 +65,7 @@ class DepartmentTrainingCoordinator(models.Model):
     date_joined = models.DateTimeField(default=timezone.now)
     date_leave = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=False)
-    training_students = models.ManyToManyField(
-        User, blank=True, related_name='training_students')
+    training_students = models.ManyToManyField(User, blank=True, related_name='training_students')
 
     def __str__(self):
         return f'{self.dept_hod.department} {self.dept_hod.department.faculty.training} coordinator'
@@ -83,15 +77,12 @@ class StudentSupervisor(models.Model):
     training coordinator will assign a set of student to
     """
     supervisor = models.ForeignKey(User, on_delete=models.CASCADE)
-    dept_training_coordinator = models.ForeignKey(
-        DepartmentTrainingCoordinator, on_delete=models.CASCADE)
+    dept_training_coordinator = models.ForeignKey(DepartmentTrainingCoordinator, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100, unique=False)
-    middle_name = models.CharField(
-        max_length=100, unique=False, blank=True, null=True)
+    middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
     last_name = models.CharField(max_length=100, unique=False)
     gender_choices = [('female', 'Female'), ('male', 'Male'),]
-    gender = models.CharField(
-        max_length=100, default='male', choices=gender_choices)
+    gender = models.CharField(max_length=100, default='male', choices=gender_choices)
     date_of_birth = models.DateField(max_length=100, blank=True, null=True)
     id_no = models.CharField(max_length=255, unique=True)
     location = models.CharField(max_length=100, default='200')
@@ -100,8 +91,7 @@ class StudentSupervisor(models.Model):
     date_joined = models.DateTimeField(default=timezone.now)
     date_leave = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=False)
-    training_students = models.ManyToManyField(
-        User, blank=True, related_name='supervisor_training_students')  # students assign to him
+    training_students = models.ManyToManyField(User, blank=True, related_name='supervisor_training_students')  # students assign to him
     # training_students = models.ManyToManyField(User, blank=True) # students assign to him
 
     def __str__(self):
@@ -110,20 +100,14 @@ class StudentSupervisor(models.Model):
 
 class Letter(models.Model):
     """This is departmental training (siwes/tp) letter database table"""
-    coordinator = models.ForeignKey(
-        DepartmentTrainingCoordinator, on_delete=models.CASCADE)
+    coordinator = models.ForeignKey(DepartmentTrainingCoordinator, on_delete=models.CASCADE)
     release_date = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
-    letter_type = [('placement letter', 'Placement letter'),
-                   ('acceptance letter', 'Acceptance letter'),]
-    letter = models.CharField(
-        max_length=100, default='placement letter', choices=letter_type)
-    duration = models.CharField(
-        max_length=100, default='3', blank=False, null=False)
-    start_of_training = models.DateTimeField(
-        default=timezone.now)  # start date of the programm
-    end_of_training = models.DateTimeField(
-        default=timezone.now)  # end date of the programm
+    letter_type = [('placement letter', 'Placement letter'), ('acceptance letter', 'Acceptance letter'),]
+    letter = models.CharField(max_length=100, default='placement letter', choices=letter_type)
+    duration = models.CharField(max_length=100, default='3', blank=False, null=False)
+    start_of_training = models.DateTimeField(default=timezone.now)  # start date of the programm
+    end_of_training = models.DateTimeField(default=timezone.now)  # end date of the programm
     text = models.TextField(blank=True, null=True)
     viewers = models.ManyToManyField(User, blank=True, related_name='viewers')
     session = models.CharField(max_length=255, blank=False, null=False)

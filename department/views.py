@@ -19,10 +19,8 @@ class DepartmentCls:
         """department list of students"""
         depart = Department.objects.filter(name=dept_name).first()
         depart_hod = DepartmentHOD.objects.filter(department=depart).first()
-        depart_coord = DepartmentTrainingCoordinator.objects.filter(
-            dept_hod=depart_hod).first()
-        all_students = TrainingStudent.objects.filter(
-            student_training_coordinator=depart_coord).order_by('-date_joined')
+        depart_coord = DepartmentTrainingCoordinator.objects.filter(dept_hod=depart_hod).first()
+        all_students = TrainingStudent.objects.filter(student_training_coordinator=depart_coord).order_by('-date_joined')
 
         # for student
         paginator_student = Paginator(all_students, 10)
@@ -39,10 +37,8 @@ class DepartmentCls:
     @staticmethod
     def studentsLevel(request, level):
         """department list of students base on level"""
-        depart_coord = DepartmentTrainingCoordinator.objects.filter(
-            coordinator=request.user).first()
-        all_students = TrainingStudent.objects.filter(
-            student_training_coordinator=depart_coord, level=level).order_by('-date_joined')
+        depart_coord = DepartmentTrainingCoordinator.objects.filter(coordinator=request.user).first()
+        all_students = TrainingStudent.objects.filter(student_training_coordinator=depart_coord, level=level).order_by('-date_joined')
 
         # for student
         paginator_student = Paginator(all_students, 10)
@@ -63,24 +59,19 @@ class Coordinator:
     @staticmethod
     def profile(request, id_no):
         """coordinator profile"""
-        training_tutor = DepartmentTrainingCoordinator.objects.filter(
-            id_no=id_no).first()
+        training_tutor = DepartmentTrainingCoordinator.objects.filter(id_no=id_no).first()
 
         # filtering coordinator training student
-        coordinator_students = TrainingStudent.objects.filter(
-            student_training_coordinator=training_tutor)
+        coordinator_students = TrainingStudent.objects.filter(student_training_coordinator=training_tutor)
 
         # filtering coordinator training student that upload acceptance letter
-        students_acceptances = AcceptanceLetter.objects.filter(
-            receiver_acept=training_tutor)
+        students_acceptances = AcceptanceLetter.objects.filter(receiver_acept=training_tutor)
 
         # filtering coordinator training student whose their level is 200
-        student_of_200 = TrainingStudent.objects.filter(
-            student_training_coordinator=training_tutor, level='200')
+        student_of_200 = TrainingStudent.objects.filter(student_training_coordinator=training_tutor, level='200')
 
         # filtering coordinator training student whose their level is 300
-        student_of_300 = TrainingStudent.objects.filter(
-            student_training_coordinator=training_tutor, level='300')
+        student_of_300 = TrainingStudent.objects.filter(student_training_coordinator=training_tutor, level='300')
 
         # grab student filter base on level
         if request.method == 'POST':
@@ -102,12 +93,10 @@ class Coordinator:
     def sessionStudent(request):
         """coordinator list of student page"""
         coord_dept_request_user = request.user
-        training_tutor = DepartmentTrainingCoordinator.objects.filter(
-            coordinator=coord_dept_request_user).first()
+        training_tutor = DepartmentTrainingCoordinator.objects.filter(coordinator=coord_dept_request_user).first()
 
         # filtering coordinator training student
-        students_paginator = TrainingStudent.objects.filter(
-            student_training_coordinator=training_tutor)
+        students_paginator = TrainingStudent.objects.filter(student_training_coordinator=training_tutor)
 
         paginator = Paginator(students_paginator, 3)  # paginating by 3
         page = request.GET.get('page')
@@ -144,9 +133,7 @@ class Coordinator:
 
         # filtering coordinator in user model using id
         coord_in_usr = User.objects.get(id=request.user.id)
-        coord = DepartmentTrainingCoordinator.objects.filter(
-            id_no=coord_in_usr.identification_num).first()
+        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_in_usr.identification_num).first()
         coord.training_students.add(student_to_add)
-        messages.success(
-            request, f'You acknowledged ({student_to_add.identification_num}) into your this session student')
+        messages.success(request, f'You acknowledged ({student_to_add.identification_num}) into your this session student')
         return redirect('department:training_coordinator_session_student')

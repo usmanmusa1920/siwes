@@ -10,10 +10,8 @@ User = get_user_model()
 class Faculty(models.Model):
     date_joined = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
-    training_category = [
-        ('siwes', 'Student industrial work experience (SIWES)'), ('tp', 'Teaching practice (TP)')]
-    training = models.CharField(
-        max_length=100, default='siwes', choices=training_category)
+    training_category = [('siwes', 'Student industrial work experience (SIWES)'), ('tp', 'Teaching practice (TP)')]
+    training = models.CharField(max_length=100, default='siwes', choices=training_category)
     name = models.CharField(max_length=300, blank=True, null=True, unique=True)
     email = models.EmailField(max_length=255, unique=True)
     website = models.CharField(max_length=300, blank=True, null=True)
@@ -30,16 +28,13 @@ class FacultyDean(models.Model):
 
     # his/her rank or universities he/she get them e.g
     # B.Sc (Ed), (UDUSOK Nig); Msc, PhD (USIM Malaysia); CFTO
-    ranks = models.CharField(
-        max_length=100, unique=False, blank=True, null=True)
+    ranks = models.CharField(max_length=100, unique=False, blank=True, null=True)
 
     first_name = models.CharField(max_length=100, unique=False)
-    middle_name = models.CharField(
-        max_length=100, unique=False, blank=True, null=True)
+    middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
     last_name = models.CharField(max_length=100, unique=False)
     gender_choices = [('female', 'Female'), ('male', 'Male'),]
-    gender = models.CharField(
-        max_length=100, default='male', choices=gender_choices)
+    gender = models.CharField(max_length=100, default='male', choices=gender_choices)
     date_of_birth = models.DateField(max_length=100, blank=True, null=True)
     id_no = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, unique=False)

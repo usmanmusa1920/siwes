@@ -6,8 +6,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
-from .forms import (PasswordChangeForm, AdministratorSignupForm, FacultySignupForm,
-                    FacultyDeanSignupForm, DepartmentSignupForm, DepartmentHODSignupForm, DepartmentCoordinatorSignupForm, StudentSupervisorSignupForm, StudentSignupForm)
+from .forms import (
+    PasswordChangeForm, AdministratorSignupForm, FacultySignupForm, FacultyDeanSignupForm, DepartmentSignupForm, DepartmentHODSignupForm, DepartmentCoordinatorSignupForm, StudentSupervisorSignupForm, StudentSignupForm, UpdateStudentProfile)
 from administrator.models import Administrator
 from faculty.models import Faculty, FacultyDean
 from department.models import Department, DepartmentHOD, DepartmentTrainingCoordinator, StudentSupervisor
@@ -51,13 +51,13 @@ class LogoutCustom(LoginRequiredMixin, LogoutView):
 @login_required
 def changePassword(request):
     """change account password view"""
+
     if request.user.is_authenticated:
         form = PasswordChangeForm(user=request.user, data=request.POST or None)
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
-            messages.success(
-                request, f'That sound great {request.user.first_name}, your password has been changed')
+            messages.success(request, f'That sound great {request.user.first_name}, your password has been changed')
             return redirect(reverse('landing'))
         else:
             context = {
@@ -111,6 +111,7 @@ class Register:
             form = AdministratorSignupForm(request.POST)
             if form.is_valid():
                 instance = form.save(commit=False)
+                instance.is_superuser = True
                 instance.is_staff = True
                 instance.is_admin = True
                 instance.save()
@@ -119,28 +120,13 @@ class Register:
                 raw_identification_num = form.cleaned_data['identification_num']
                 raw_description = form.cleaned_data['description']
 
-                # filtering user you just create (from the general user table)
-                filtering_usr = User.objects.filter(
-                    identification_num=raw_identification_num).first()
-                filtering_usr.is_staff = True  # making him/her as staff
-                filtering_usr.save()
-
-                # grabbing user datas (from general user table)
-                raw_first_name = filtering_usr.first_name
-                raw_middle_name = filtering_usr.middle_name
-                raw_last_name = filtering_usr.last_name
-                raw_gender = filtering_usr.gender
-                raw_date_of_birth = filtering_usr.date_of_birth
-                raw_email = filtering_usr.email
-                raw_phone_number = filtering_usr.phone_number
-
                 # creating user (in the administrator table)
-                new_administrator = Administrator(director=filtering_usr, first_name=raw_first_name, middle_name=raw_middle_name, last_name=raw_last_name, gender=raw_gender,
-                                                  date_of_birth=raw_date_of_birth, id_no=raw_identification_num, email=raw_email, phone_number=raw_phone_number, description=raw_description)
+                new_administrator = Administrator(
+                    director=instance, first_name=instance.first_name, middle_name=instance.middle_name, last_name=instance.last_name, gender=instance.gender, date_of_birth=instance.date_of_birth, id_no=instance.identification_num, email=instance.email, phone_number=instance.phone_number, description=raw_description
+                )
                 new_administrator.save()
 
-                messages.success(
-                    request, f'Administrator with ID number of {raw_identification_num} has been registered as an administrator!')
+                messages.success(request, f'Administrator with ID number of {raw_identification_num} has been registered as an administrator!')
                 # return redirect('auth:register_administrator')
                 return redirect('auth:general_profile', id_no=raw_identification_num)
         else:
@@ -165,9 +151,7 @@ class Register:
 
                 # grabbing user raw datas (from html form)
                 raw_name = form.cleaned_data['name']
-
-                messages.success(
-                    request, f'New faculty with name of {raw_name} has been registered!')
+                messages.success(request, f'New faculty with name of {raw_name} has been registered!')
                 return redirect('auth:register_faculty')
         else:
             form = FacultySignupForm()
@@ -192,7 +176,6 @@ class Register:
             form = FacultyDeanSignupForm(request.POST)
             if form.is_valid():
                 instance = form.save(commit=False)
-                instance.is_staff = True
                 instance.is_dean = True
                 instance.save()
 
@@ -202,31 +185,15 @@ class Register:
                 raw_faculty = request.POST['raw_faculty']
                 db_faculty = Faculty.objects.filter(name=raw_faculty).first()
 
-                # filtering user you just create (from the general user table)
-                filtering_usr = User.objects.filter(
-                    identification_num=raw_identification_num).first()
-                filtering_usr.is_staff = True  # making him/her as staff
-                filtering_usr.save()
-
-                # grabbing user datas (from general user table)
-                raw_first_name = filtering_usr.first_name
-                raw_middle_name = filtering_usr.middle_name
-                raw_last_name = filtering_usr.last_name
-                raw_gender = filtering_usr.gender
-                raw_date_of_birth = filtering_usr.date_of_birth
-                raw_email = filtering_usr.email
-                raw_phone_number = filtering_usr.phone_number
-
                 # creating user (in the faculty dean table)
-                new_faculty_dean = FacultyDean(dean=filtering_usr, faculty=db_faculty, ranks=raw_ranks, first_name=raw_first_name, middle_name=raw_middle_name,
-                                               last_name=raw_last_name, gender=raw_gender, date_of_birth=raw_date_of_birth, id_no=raw_identification_num, email=raw_email, phone_number=raw_phone_number)
+                new_faculty_dean = FacultyDean(
+                    dean=instance, faculty=db_faculty, ranks=raw_ranks, first_name=instance.first_name, middle_name=instance.middle_name, last_name=instance.last_name, gender=instance.gender, date_of_birth=instance.date_of_birth, id_no=instance.identification_num, email=instance.email, phone_number=instance.phone_number
+                )
                 new_faculty_dean.save()
 
                 # grabbing faculty name
                 faculty = new_faculty_dean.faculty.name
-
-                messages.success(
-                    request, f'Staff with ID number of {raw_identification_num} has been registered as new faculty of {faculty} dean!')
+                messages.success(request, f'Staff with ID number of {raw_identification_num} has been registered as new faculty of {faculty} dean!')
                 # return redirect('auth:register_faculty_dean')
                 return redirect('auth:general_profile', id_no=raw_identification_num)
         else:
@@ -252,9 +219,7 @@ class Register:
 
                 # grabbing user raw datas (from html form)
                 raw_name = form.cleaned_data['name']
-
-                messages.success(
-                    request, f'New department with name of {raw_name} has been registered!')
+                messages.success(request, f'New department with name of {raw_name} has been registered!')
                 return redirect('auth:register_department')
         else:
             form = DepartmentSignupForm()
@@ -289,31 +254,15 @@ class Register:
                 raw_dept = request.POST['raw_dept']
                 db_dept = Department.objects.filter(name=raw_dept).first()
 
-                # filtering user you just create (from the general user table)
-                filtering_usr = User.objects.filter(
-                    identification_num=raw_identification_num).first()
-                filtering_usr.is_staff = True  # making him/her as staff
-                filtering_usr.save()
-
-                # grabbing user datas (from general user table)
-                raw_first_name = filtering_usr.first_name
-                raw_middle_name = filtering_usr.middle_name
-                raw_last_name = filtering_usr.last_name
-                raw_gender = filtering_usr.gender
-                raw_date_of_birth = filtering_usr.date_of_birth
-                raw_email = filtering_usr.email
-                raw_phone_number = filtering_usr.phone_number
-
                 # creating user (in the department hod table)
-                new_dept_hod = DepartmentHOD(hod=filtering_usr, department=db_dept, ranks=raw_ranks, first_name=raw_first_name, middle_name=raw_middle_name,
-                                             last_name=raw_last_name, gender=raw_gender, date_of_birth=raw_date_of_birth, id_no=raw_identification_num, email=raw_email, phone_number=raw_phone_number)
+                new_dept_hod = DepartmentHOD(
+                    hod=instance, department=db_dept, ranks=raw_ranks, first_name=instance.first_name, middle_name=instance.middle_name, last_name=instance.last_name, gender=instance.gender, date_of_birth=instance.date_of_birth, id_no=instance.identification_num, email=instance.email, phone_number=instance.phone_number
+                )
                 new_dept_hod.save()
 
                 # grabbing department name
                 department = new_dept_hod.department.name
-
-                messages.success(
-                    request, f'Staff with ID number of {raw_identification_num} has been registered as new department of {department} dean!')
+                messages.success(request, f'Staff with ID number of {raw_identification_num} has been registered as new department of {department} dean!')
                 # return redirect('auth:register_department_hod')
                 return redirect('auth:general_profile', id_no=raw_identification_num)
         else:
@@ -335,7 +284,6 @@ class Register:
             form = DepartmentCoordinatorSignupForm(request.POST)
             if form.is_valid():
                 instance = form.save(commit=False)
-                instance.is_staff = True
                 instance.is_coordinator = True
                 instance.save()
 
@@ -349,19 +297,13 @@ class Register:
                 dept_hod = DepartmentHOD.objects.filter(
                     department=dept, is_active=True).first()
 
-                # filtering user you just create (from the general user table)
-                filtering_usr = User.objects.filter(
-                    identification_num=raw_identification_num).first()
-                filtering_usr.is_staff = True  # making him/her as staff
-                filtering_usr.save()
-
                 # registering user to department training coordinator table
-                new_training_coordinator = DepartmentTrainingCoordinator(coordinator=filtering_usr, dept_hod=dept_hod, first_name=filtering_usr.first_name,
-                                                                         last_name=filtering_usr.last_name, email=filtering_usr.email, phone_number=filtering_usr.phone_number, id_no=raw_identification_num)
+                new_training_coordinator = DepartmentTrainingCoordinator(
+                    coordinator=instance, dept_hod=dept_hod, first_name=instance.first_name, last_name=instance.last_name, email=instance.email, phone_number=instance.phone_number, id_no=raw_identification_num
+                )
                 new_training_coordinator.save()  # saving
 
-                messages.success(
-                    request, f'Staff with ID number of {raw_identification_num} has been registered as new department of {all_department} training coordinator!')
+                messages.success(request, f'Staff with ID number of {raw_identification_num} has been registered as new department of {all_department} training coordinator!')
                 # return redirect('auth:register_department_training_coordinator')
                 return redirect('auth:general_profile', id_no=raw_identification_num)
         else:
@@ -400,12 +342,12 @@ class Register:
                     dept_hod=dept_hod, is_active=True).first()
 
                 # registering user to department training coordinator table
-                new_student_supervisor = StudentSupervisor(supervisor=instance, dept_training_coordinator=dept_training_coordinator, first_name=instance.first_name,
-                                                           last_name=instance.last_name, email=instance.email, phone_number=instance.phone_number, id_no=instance.identification_num)
+                new_student_supervisor = StudentSupervisor(
+                    supervisor=instance, dept_training_coordinator=dept_training_coordinator, first_name=instance.first_name, last_name=instance.last_name, email=instance.email, phone_number=instance.phone_number, id_no=instance.identification_num
+                )
                 new_student_supervisor.save()  # saving
 
-                messages.success(
-                    request, f'Staff with ID number of {instance.identification_num} has been registered as student supervisor of {all_department} department!')
+                messages.success(request, f'Staff with ID number of {instance.identification_num} has been registered as student supervisor of {all_department} department!')
                 # return redirect('auth:register_department_training_coordinator')
                 return redirect('auth:general_profile', id_no=instance.identification_num)
         else:
@@ -423,10 +365,13 @@ class Register:
         if request.user.is_staff == False:
             # block anyone from getting access to the register page of student if he/she is not a staff
             return False
+        
+        # querying all active departmental training coordinator
         all_dept = DepartmentTrainingCoordinator.objects.filter(is_active=True)
         """
-    We use `DepartmentTrainingCoordinator` table to grab departments name, because at some case, some department they will not register their siwes coordinator on time, if so happen and student of that department trying to register (the one incharge to register him), he will get an error even though his department name will show up in the drop down menu of the register page.
-    """
+        We use `DepartmentTrainingCoordinator` table to grab departments name instead of using the `Department` table direct, because we want to display only departments that have an active training coordinator. Reason at some case, some department they will not register their siwes coordinator on time (or they won`t have an active training coordinator), if so happen and if an administrator is about to register (students`) from a specific department (had it been we use the `Department` table direct), he will get an error even though his department name will show up in the drop down menu of the register page. One more thin is that for each student in the `TrainingStudent` table has a foreignkey of `DepartmentTrainingCoordinator`
+        """
+
         if request.method == 'POST':
             form = StudentSignupForm(request.POST)
             if form.is_valid():
@@ -437,31 +382,25 @@ class Register:
                 # grabbing user raw datas (from html form)
                 all_department = request.POST['all_department']
                 raw_identification_num = form.cleaned_data['identification_num']
-                student_level = form.cleaned_data['student_level']
 
                 # quering department, using the `all_department` variable above
                 dept = Department.objects.filter(name=all_department).first()
-                # quering department HOD, using the `dept` variable above
-                dept_hod = DepartmentHOD.objects.filter(
-                    department=dept).first()
-                dept_training_coord = DepartmentTrainingCoordinator.objects.filter(
-                    dept_hod=dept_hod).first()
+                
+                # quering an active department HOD, using the `dept` variable above
+                dept_hod = DepartmentHOD.objects.filter(department=dept, is_active=True).first()
 
-                # filtering user you just create (from the general user table)
-                filtering_usr = User.objects.filter(
-                    identification_num=raw_identification_num).first()
+                # quering an active department training coordinator, using the `dept_hod` variable above. So that we can assign the new register student to the active training coordinator of his department
+                dept_training_coord = DepartmentTrainingCoordinator.objects.filter(dept_hod=dept_hod, is_active=True).first()
 
                 # registering user to training student table
-                new_student = TrainingStudent(student=filtering_usr, student_training_coordinator=dept_training_coord, first_name=form.cleaned_data['first_name'], last_name=form.cleaned_data[
-                                              'last_name'], matrix_no=raw_identification_num, email=form.cleaned_data['email'], phone_number=form.cleaned_data['phone_number'], level=student_level, is_in_school=True)
+                new_student = TrainingStudent(student=instance, student_training_coordinator=dept_training_coord, matrix_no=raw_identification_num)
                 new_student.save()
 
-                # creating student weekly reader
+                # creating student weekly reader (for logbook entry for 200 level)
                 WR = WeekReader(student=new_student)
                 WR.save()
 
-                messages.success(
-                    request, f'Student with admission number of {raw_identification_num} has been registered for training programme!')
+                messages.success(request, f'Student with admission number of {raw_identification_num} has been registered for training programme!')
                 # return redirect('auth:register_student')
                 return redirect('auth:general_profile', id_no=raw_identification_num)
         else:
@@ -471,6 +410,59 @@ class Register:
             'form': form,
         }
         return render(request, 'auth/register_student.html', context)
+
+
+class UpdateProfile:
+
+    @login_required
+    @staticmethod
+    def student(request):
+        """student update profile"""
+        r_user = request.user
+        # querying student from student models
+        std = TrainingStudent.objects.filter(student=r_user).first()
+
+        # blocking student from updating his/her profile
+        if r_user.first_name != '' and r_user.first_name != None and r_user.last_name != '' and r_user.last_name != None and r_user.is_student == True:
+            messages.success(request, f'Your profile is already updated {r_user.first_name}!')
+            return redirect(reverse('student:profile', kwargs={'matrix_id': r_user.matrix_no}))
+        
+        if request.method == 'POST':
+            form = UpdateStudentProfile(request.POST, request.FILES, instance=request.user)
+            if form.is_valid():
+                form = form.save(commit=False)
+                form.save()
+
+                # grabbing raw datas (from html form)
+                level = request.POST['student_level']
+                
+                # assigning data to student model
+                std.first_name = form.first_name
+                std.middle_name = form.middle_name
+                std.last_name = form.last_name
+                std.gender = form.gender
+                std.date_of_birth = form.date_of_birth
+                std.matrix_no = form.identification_num
+                std.level = level
+                std.email = form.email
+                std.phone_number = form.phone_number
+                std.is_in_school = True
+                std.save()
+
+                # querying student week reader for updating his level. May be he is not in @00 level which is the default one
+                WR = WeekReader.objects.filter(student=std).first()
+                WR.level = level
+                WR.save()
+                
+                messages.success(request, f'Your profile has been updated!')
+                return redirect(reverse('student:profile', kwargs={'matrix_id': form.identification_num}))
+        else:
+            form = UpdateStudentProfile(instance=request.user)
+
+        context = {
+            'form': form,
+        }
+        return render(request, 'auth/student_update_profile.html', context=context)
 
 
 def error_400(request, exception):

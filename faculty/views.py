@@ -26,14 +26,16 @@ class FacultyCls:
 
         # querying a faculty
         faculty = Faculty.objects.filter(name=faculty_name).first()
+
         # querying all faculties
         faculties = Faculty.objects.all()
+
         # querying all departments
-        departments = Department.objects.filter(
-            faculty=faculty).order_by('-date_joined')
+        departments = Department.objects.filter(faculty=faculty).order_by('-date_joined')
+
         # querying all student that are currently in school using `TrainingStudent` models
-        all_students = TrainingStudent.objects.filter(
-            is_in_school=True).order_by('-date_joined')
+        all_students = TrainingStudent.objects.filter(is_in_school=True).order_by('-date_joined')
+        
         # querying all staff that are currently in school using `TrainingStudent` models
         all_staff = User.objects.filter(is_staff=True).order_by('-date_joined')
 

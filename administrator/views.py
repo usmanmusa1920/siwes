@@ -26,11 +26,9 @@ class Activate:
             # block anyone from getting access to the register page of
             # administrator if he/she is not a staff
             return False
-        new_active_dean = FacultyDean.objects.filter(
-            id_no=staff_user_id).first()
+        new_active_dean = FacultyDean.objects.filter(id_no=staff_user_id).first()
         if new_active_dean.is_active:
-            messages.success(
-                request, f'This ({new_active_dean.id_no}) is already the dean of faculty of {new_active_dean.faculty.name}')
+            messages.success(request, f'This ({new_active_dean.id_no}) is already the dean of faculty of {new_active_dean.faculty.name}')
             return redirect('administrator:filter_faculty_dean')
         new_active_dean.is_active = True
         new_active_dean.save()
@@ -53,11 +51,9 @@ class Activate:
             # block anyone from getting access to the register page of
             # administrator if he/she is not a staff
             return False
-        new_active_hod = DepartmentHOD.objects.filter(
-            id_no=staff_user_id).first()
+        new_active_hod = DepartmentHOD.objects.filter(id_no=staff_user_id).first()
         if new_active_hod.is_active == True:
-            messages.success(
-                request, f'This ({new_active_hod.id_no}) is already the {new_active_hod.department.name} department H.O.D')
+            messages.success(request, f'This ({new_active_hod.id_no}) is already the {new_active_hod.department.name} department H.O.D')
             return redirect('administrator:filter_department_hod')
         new_active_hod.is_active = True
         new_active_hod.save()
@@ -80,11 +76,9 @@ class Activate:
             # block anyone from getting access to the register page of
             # administrator if he/she is not a staff
             return False
-        new_active_coord = DepartmentTrainingCoordinator.objects.filter(
-            id_no=staff_user_id).first()
+        new_active_coord = DepartmentTrainingCoordinator.objects.filter(id_no=staff_user_id).first()
         if new_active_coord.is_active == True:
-            messages.success(
-                request, f'This ({new_active_coord.id_no}) is already the {new_active_coord.dept_hod.department.name} department training coordinator!')
+            messages.success(request, f'This ({new_active_coord.id_no}) is already the {new_active_coord.dept_hod.department.name} department training coordinator!')
             return redirect('administrator:filter_department_training_coordinator')
         new_active_coord.is_active = True
         new_active_coord.save()
@@ -115,11 +109,9 @@ class Filter:
 
         # quering all staff users
         try:
-            users_search = User.objects.filter(Q(identification_num__istartswith=search_panel) | Q(
-                identification_num__contains=search_panel), is_staff=True).order_by('-date_joined')
+            users_search = User.objects.filter(Q(identification_num__istartswith=search_panel) | Q(identification_num__contains=search_panel), is_staff=True).order_by('-date_joined')
         except:
-            users_search = User.objects.filter(
-                Q(identification_num=search_panel), is_staff=True).order_by('-date_joined')
+            users_search = User.objects.filter(Q(identification_num=search_panel), is_staff=True).order_by('-date_joined')
         paginator = Paginator(users_search, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
@@ -142,11 +134,9 @@ class Filter:
 
         # quering all registered faculty dean
         try:
-            deans_search = FacultyDean.objects.filter(Q(id_no__istartswith=search_panel) | Q(
-                id_no__contains=search_panel)).order_by('-date_joined')
+            deans_search = FacultyDean.objects.filter(Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
         except:
-            deans_search = FacultyDean.objects.filter(
-                Q(id_no=search_panel)).order_by('-date_joined')
+            deans_search = FacultyDean.objects.filter(Q(id_no=search_panel)).order_by('-date_joined')
         paginator = Paginator(deans_search, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
@@ -155,6 +145,24 @@ class Filter:
             'search_panel': search_panel,
         }
         return render(request, 'administrator/filter_faculty_dean.html', context=context)
+    
+    @login_required
+    @staticmethod
+    def activeFacultyDean(request):
+        """filter active faculty deans"""
+        if request.user.is_staff == False:
+            """restrict user access to certain pages"""
+            # block anyone from getting access to the register page of
+            # administrator if he/she is not a staff
+            return False
+        active_department_hod = FacultyDean.objects.filter(is_active=True).all()
+        paginator = Paginator(active_department_hod, 10)
+        page = request.GET.get('page')
+        users = paginator.get_page(page)
+        context = {
+            'users': users,
+        }
+        return render(request, 'administrator/active_faculty_dean.html', context=context)
 
     @login_required
     @staticmethod
@@ -169,11 +177,9 @@ class Filter:
 
         # quering all registered department HOD
         try:
-            deans_search = DepartmentHOD.objects.filter(Q(id_no__istartswith=search_panel) | Q(
-                id_no__contains=search_panel)).order_by('-date_joined')
+            deans_search = DepartmentHOD.objects.filter(Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
         except:
-            deans_search = DepartmentHOD.objects.filter(
-                Q(id_no=search_panel)).order_by('-date_joined')
+            deans_search = DepartmentHOD.objects.filter(Q(id_no=search_panel)).order_by('-date_joined')
         paginator = Paginator(deans_search, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
@@ -182,6 +188,24 @@ class Filter:
             'search_panel': search_panel,
         }
         return render(request, 'administrator/filter_department_hod.html', context=context)
+    
+    @login_required
+    @staticmethod
+    def activeDepartmentHod(request):
+        """filter active department HOD"""
+        if request.user.is_staff == False:
+            """restrict user access to certain pages"""
+            # block anyone from getting access to the register page of
+            # administrator if he/she is not a staff
+            return False
+        active_department_hod = DepartmentHOD.objects.filter(is_active=True).all()
+        paginator = Paginator(active_department_hod, 10)
+        page = request.GET.get('page')
+        users = paginator.get_page(page)
+        context = {
+            'users': users,
+        }
+        return render(request, 'administrator/active_department_hod.html', context=context)
 
     @login_required
     @staticmethod
@@ -196,11 +220,9 @@ class Filter:
 
         # quering all registered department training coordinator
         try:
-            deans_search = DepartmentTrainingCoordinator.objects.filter(
-                Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
+            deans_search = DepartmentTrainingCoordinator.objects.filter(Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
         except:
-            deans_search = DepartmentTrainingCoordinator.objects.filter(
-                Q(id_no=search_panel)).order_by('-date_joined')
+            deans_search = DepartmentTrainingCoordinator.objects.filter(Q(id_no=search_panel)).order_by('-date_joined')
         paginator = Paginator(deans_search, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
@@ -209,6 +231,24 @@ class Filter:
             'search_panel': search_panel,
         }
         return render(request, 'administrator/filter_department_training_coordinator.html', context=context)
+    
+    @login_required
+    @staticmethod
+    def activeDepartmentTrainingCoordinator(request):
+        """filter active departmenttraining coordinator"""
+        if request.user.is_staff == False:
+            """restrict user access to certain pages"""
+            # block anyone from getting access to the register page of
+            # administrator if he/she is not a staff
+            return False
+        active_department_coord = DepartmentTrainingCoordinator.objects.filter(is_active=True).all()
+        paginator = Paginator(active_department_coord, 10)
+        page = request.GET.get('page')
+        users = paginator.get_page(page)
+        context = {
+            'users': users,
+        }
+        return render(request, 'administrator/active_department_coord.html', context=context)
 
     @login_required
     @staticmethod
@@ -223,11 +263,9 @@ class Filter:
 
         # quering all staff users
         try:
-            users_search = User.objects.filter(Q(identification_num__istartswith=search_panel) | Q(
-                identification_num__contains=search_panel), is_staff=False).order_by('-date_joined')
+            users_search = User.objects.filter(Q(identification_num__istartswith=search_panel) | Q(identification_num__contains=search_panel), is_staff=False).order_by('-date_joined')
         except:
-            users_search = User.objects.filter(
-                Q(identification_num=search_panel), is_staff=False).order_by('-date_joined')
+            users_search = User.objects.filter(Q(identification_num=search_panel), is_staff=False).order_by('-date_joined')
         paginator = Paginator(users_search, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)

@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.conf.urls.static import static
@@ -35,6 +36,10 @@ def index(request):
     """this is landing page view"""
     from faculty.models import Faculty
     faculties = Faculty.objects.all()
+    if request.user.first_name == '' or request.user.first_name == None or request.user.last_name == '' or request.user.last_name == None and request.user.is_student == True:
+        # redirecting student to finish his/her profile registeration
+        messages.success(request, f'Complate your profile registeration')
+        return redirect('auth:student_profile_update')
     context = {
         'faculties': faculties,
     }
@@ -52,5 +57,4 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

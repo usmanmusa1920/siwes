@@ -41,63 +41,26 @@
     {% csrf_token %}
     <h2>Create student profile</h2>
     <p>Create student training profile with the student appropriate informations</p>
-    <input type="text" name="first_name" placeholder="First name" oninput="automate_passwd()" id="first_name" class="input" autofocus required>
-    <!-- <input type="text" name="middle_name" placeholder="Middle name (optional)" class="input"> -->
-    <input type="text" name="last_name" oninput="automate_passwd()" id="last_name" placeholder="Last name" class="input" required>
-    <input type="text" name="identification_num" oninput="automate_passwd()" placeholder="Matrix number (reg number)" class="input" id="id_no" required>
+    <!-- i use the type of the below matrix number field to be number in other to avoid wrong data type (string) -->
+    <input type="number" name="identification_num" oninput="automate_passwd(is_student=true)" placeholder="Matrix number (reg number)" class="input" id="id_no" required>
     {% if form.identification_num.errors %}
       <p><i><strong><small>{{form.identification_num.errors}}</small></strong></i></p>
     {% endif %}
-
-    <div class="radio">
-      <input type="radio" name="gender" value="female" required> Female
-      <input type="radio" name="gender" value="male" required> Male
-    </div>
-    <div class="calender">
-      <input type="date" name="date_of_birth" class="input" required>
-    </div>
-    {% if form.date_of_birth.errors %}
-      <div class="alert-warning">
-        <small>{{form.date_of_birth.errors}}</small>
-      </div>
-    {% endif %}
-
-    <input type="tel" name="phone_number" oninput="searchPlus()" placeholder="Phone number (e.g +12125552368)" class="input" required>
-    {% if form.phone_number.errors %}
-      <p><i><strong><small>{{form.phone_number.errors}}</small></strong></i></p>
-    {% endif %}
-
-    <div class="selection">
-      {{form.country}}
-    </div>
-    <div class="selection">
-      <select name="student_level" class="wrapp_select" required>
-        <option value="" selected="">Select your level</option>
-        <option value="200">200 level</option>
-        <option value="300">300 level</option>
-      </select>
-    </div>
-
+    
     <div class="selection">
       <select name="all_department" class="wrapp_select" required>
-        <option value="" selected="">Select your department</option>
+        <option value="" selected="">Select student department</option>
         {% for dept in all_dept %}
           <option value="{{dept.dept_hod.department.name}}">{{dept.dept_hod.department}}</option>
         {% endfor %}
       </select>
     </div>
-
-    <input type="text" name="email" placeholder="Email addres" class="input" required>
-    {% if form.email.errors %}
-      <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
-    {% endif %}
-    <small>Default password for new student is his/her (first name, first letter + reg number + last name, first letter), he/she can change it later</small>
+    
+    <small>Default password for new student is <b>FUG</b> plus his/her <b>matrix number</b> e.g let say a student admission number is <b>234578</b> so now his/her password will be <b>FUG234578</b>. Student can change it later</small>
     <!-- 
-      E.g
-      first_name = Usman
-      last_name = Musa
+      e.g
       admin_no = 234578
-      password = u234578m
+      pwd = FUG234578
     -->
 
     <!-- we hide these two password field using `auth.css`, because the value will be automatically field once we inputed student matrix number -->

@@ -68,7 +68,18 @@ class UserAccount(AbstractBaseUser):
     email = models.EmailField(max_length=255, unique=False)
     phone_number = PhoneNumberField(max_length=100, unique=False)
     country = CountryField(max_length=100, blank_label='Select your country',)
-    date_joined = models.DateTimeField(default=timezone.now)
+    date_joined = models.DateTimeField(auto_now_add=True) # date_joined (not editable)
+    last_modified = models.DateTimeField(auto_now=True) # last modified (not editable)
+
+    """
+    `date_joined` above is not editable, also
+    `last_modified` above is not editable too! but,
+
+    the default `last_login` for users is editable, like wise
+    the `pub_date` below is editable
+
+    pub_date = models.DateTimeField(default=timezone.now) # (editable)
+    """
 
     # Default django permissions (is_active, is_staff, is_superuser)
     is_active = models.BooleanField(default=True)
