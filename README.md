@@ -25,4 +25,6 @@ Datetime format:
     User = get_user_model()
   )
   use the below tricks (export DJANGO_SETTINGS_MODULE=fugus.settings)
+
+  The issue might result due to going into python interpretter with `python` instead of the recommended way that django gave us `python manage.py shell`
 ```
