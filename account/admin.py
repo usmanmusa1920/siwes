@@ -19,7 +19,7 @@ class UserAdminForm(UserAdmin):
     ordering = ('-date_joined',)
 
     # list to display
-    list_display = ('first_name', 'last_name', 'last_login', 'date_joined', 'last_modified', 'identification_num', 'email', 'is_active', 'is_superuser', 'is_staff')
+    list_display = ('first_name', 'last_name', 'last_login', 'date_joined', 'last_modified', 'identification_num', 'email', 'is_active', 'is_superuser', 'is_staff', 'is_schoolstaff')
 
     # These are the field that will display when you want to edit user account via admin
     '''
@@ -35,7 +35,7 @@ class UserAdminForm(UserAdmin):
         ('Permissions', {"fields": ('is_active',
          'is_staff', 'is_superuser')}),
         ('School permissions', {"fields": ('is_admin',
-         'is_dean', 'is_hod', 'is_coordinator', 'is_supervisor', 'is_student')}),
+         'is_dean', 'is_hod', 'is_coordinator', 'is_supervisor', 'is_schoolstaff', 'is_student')}),
     )
     
     # These are the field that will display when you want to create new user account via admin

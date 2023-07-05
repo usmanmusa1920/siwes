@@ -53,19 +53,24 @@
           <div class="wrapp_in_column">
             <div class="wrapp_div">
               <h4>
+                {% if hod.level_rank_title_1 != None %}
+                  <i>{{hod.level_rank_title_1}}. </i>
+                {% endif %}
+
                 {{hod.first_name|upper}}
                 {% if hod.middle_name %}
                   {{hod.middle_name|upper}}
                 {% endif %}
                 {{hod.last_name|upper}}
-                {% if hod.ranks != None %}
-                  , <i>{{hod.ranks}}.</i>
+
+                {% if hod.level_rank_title_2 != None %}
+                  , <i>{{hod.level_rank_title_2}}</i>
                 {% endif %}
               </h4>
 
-              {% if hod.universities %}
+              {% if hod.ranks %}
                 <span>
-                  <small class="danger">{{hod.universities}}</small>
+                  <small class="danger">{{hod.ranks}}</small>
                   <!-- <small class="danger">B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.);</small>
                   <small class="danger">Msc, PhD (USIM Malaysia); CFTO</small> -->
                 </span>

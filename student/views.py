@@ -4,7 +4,8 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from .models import (TrainingStudent, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook)
+from .models import (TrainingStudent, AcceptanceLetter, WeekReader,
+    WeekScannedLogbook, CommentOnLogbook)
 from .forms import (UploadAcceptanceLetter, UploadLogbookEntry, LogbookEntryComment)
 from toolkit import picture_name
 from faculty.models import FacultyDean
@@ -17,6 +18,13 @@ User = get_user_model()
 
 class Student:
     """Students' related views"""
+
+    # def __init__(self):
+    #     self.student = True
+
+    # def student_acceptance_route(self, train, faculty, department, level: str = False) -> str:
+    #     """student acceptance letter route"""
+    #     return f'{datetime.today().year}-acceptances' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
 
     @login_required
     @staticmethod
@@ -166,6 +174,7 @@ class Student:
     @staticmethod
     def updateAcceptanceLetter200(request):
         """update acceptance letter for 200 level student"""
+        
         stu_usr = User.objects.get(id=request.user.id)  # student user
         std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
         coord = std.student_training_coordinator
@@ -211,6 +220,7 @@ class Student:
     @staticmethod
     def updateAcceptanceLetter300(request):
         """update acceptance letter for 300 level student"""
+
         stu_usr = User.objects.get(id=request.user.id)  # student user
         std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
         coord = std.student_training_coordinator
@@ -269,16 +279,26 @@ class Student:
         level = std.level
         route = f'{datetime.today().year}-acceptances' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
 
+        # filtering student week reader
         WR = WeekReader.objects.filter(student=std).last()
+
         # increment week by one, but it doesn't save it into the database,
         # just to make it the start of our range below (w)
         a = WR.week_no + 1
 
         # Increment 12 by one, to make it the end of our range below (w)
         b = 12 + 1
+
+        # student week range (from week 1 to week 12) for 3 month training programme
         w = range(a, b)
-        weeks = list(w)  # convert range (w) to list
+
+        # convert range (w) to list in other to use it it for the loop in the template page
+        weeks = list(w)
+
+        # current week number taht student is in (for his training)
         week_no = WR.week_no + 1
+
+        # student logbook entry instance
         logbook_entries = WeekScannedLogbook.objects.filter(student_lg=std, week=WR).all()
 
         if request.method == 'POST':
@@ -289,11 +309,12 @@ class Student:
                 instance.image.name = route + pic_name
                 instance.student_lg = std
                 instance.week = WR
+
                 # incrementing the week number of (within logbook field)
                 instance.week_no = WR.week_no + 1
                 instance.save()
 
-                # increment week by one
+                # increment student week reader by one
                 WR.week_no += 1
                 WR.save()
                 messages.success(request, f'You just upload your logbook entry for {WR.week_no} week!')
@@ -313,6 +334,7 @@ class Student:
     @staticmethod
     def logbookComment(request, logbook_id):
         """supervisor comment on student logbook"""
+        
         logbook = WeekScannedLogbook.objects.get(id=logbook_id)
         stu_usr = User.objects.get(id=request.user.id)  # student user
         std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()

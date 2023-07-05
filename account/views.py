@@ -380,13 +380,26 @@ class Register:
         if request.method == 'POST':
             form = StudentSignupForm(request.POST)
             if form.is_valid():
-                instance = form.save(commit=False)
-                instance.is_student = True
-                instance.save()
 
                 # grabbing user raw datas (from html form)
                 all_department = request.POST['all_department']
                 raw_identification_num = form.cleaned_data['identification_num']
+
+                # restricting accepting identification number which type is any, apart from integer
+                try:
+                    if type(eval(raw_identification_num)) == int:
+                        # trying to see if the identification number type is `int` it will pass
+                        pass
+                except:
+                    # if the identification number type is not `int` then it will handle the error here by redirecting back to the student register page with a flash message
+                    messages.success(request, f'Invalid student admission number ({raw_identification_num}) it should be all number')
+                    # return redirect('auth:register_student')
+                    return redirect('auth:register_student')
+                
+                # user instance
+                instance = form.save(commit=False)
+                instance.is_student = True
+                instance.save()
 
                 # quering department, using the `all_department` variable above
                 dept = Department.objects.filter(name=all_department).first()
@@ -430,7 +443,7 @@ class UpdateProfile:
         # blocking student from updating his/her profile
         if r_user.first_name != '' and r_user.first_name != None and r_user.last_name != '' and r_user.last_name != None and r_user.is_student == True:
             messages.success(request, f'Your profile is already updated {r_user.first_name}!')
-            return redirect(reverse('student:profile', kwargs={'matrix_id': r_user.matrix_no}))
+            return redirect(reverse('student:profile', kwargs={'matrix_id': r_user.identification_num}))
         
         if request.method == 'POST':
             form = UpdateStudentProfile(request.POST, request.FILES, instance=request.user)

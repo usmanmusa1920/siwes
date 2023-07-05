@@ -1,7 +1,6 @@
 rm db.sqlite3 && pmake && pmigrate
 
-export DJANGO_SETTINGS_MODULE=fugus.settings
-python
+python manage.py shell
 
 import django
 django.setup()
@@ -28,7 +27,7 @@ os.system('cp dummy_img/education.jpg media/acceptance-letters/2023-acceptances/
 
 ### _______________________
 ### ADMINISTRATOR (6 admin)
-admin_user_1 = User.objects.create_superuser(first_name='Olagoke', last_name='Abdul', identification_num='19992000', email='olagokeabdul@yahoo.com', phone_number='+2348144807200', is_admin=True, date_of_birth=dob, password='19991125u')
+admin_user_1 = User.objects.create_superuser(first_name='Olagoke', last_name='Abdul', identification_num='19992000', email='olagokeabdul@yahoo.com', phone_number='+2348144807200', is_admin=True, date_of_birth=dob, is_schoolstaff=True, password='19991125u')
 admin_user_2 = User.objects.create_superuser(first_name='Ahmad', middle_name='Aliyu', last_name='Aminu', identification_num='20151889', email='ahmadaminu@yahoo.com', phone_number='+2348144807201', is_admin=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
 admin_user_3 = User.objects.create_superuser(first_name='Ashiru', last_name='Lamido', identification_num='20151890', email='ashirulamido@yahoo.com', phone_number='+2348144807202', is_admin=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
 admin_user_4 = User.objects.create_superuser(first_name='Ashiru', last_name='Lamido', identification_num='20151891', email='ashirulamido@yahoo.com', phone_number='+2348144807202', is_admin=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
@@ -216,7 +215,7 @@ hod_user_31.save()
 hod_user_32.save()
 
 #<!-- department hod -->
-hod_1 = DepartmentHOD(hod=hod_user_1, department=dept_1, first_name=hod_user_1.first_name, last_name=hod_user_1.last_name, email=hod_user_1.email, phone_number=hod_user_1.phone_number, id_no=hod_user_1.identification_num, ranks='B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO', is_active=True)
+hod_1 = DepartmentHOD(hod=hod_user_1, department=dept_1, first_name=hod_user_1.first_name, last_name=hod_user_1.last_name, email=hod_user_1.email, phone_number=hod_user_1.phone_number, id_no=hod_user_1.identification_num, ranks='B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO', level_rank_title_1='Dr', level_rank_title_2='Ph.D', is_active=True)
 hod_2 = DepartmentHOD(hod=hod_user_2, department=dept_2, first_name=hod_user_2.first_name, last_name=hod_user_2.last_name, email=hod_user_2.email, phone_number=hod_user_2.phone_number, id_no=hod_user_2.identification_num, is_active=True)
 hod_3 = DepartmentHOD(hod=hod_user_3, department=dept_3, first_name=hod_user_3.first_name, last_name=hod_user_3.last_name, email=hod_user_3.email, phone_number=hod_user_3.phone_number, id_no=hod_user_3.identification_num, is_active=True)
 hod_4 = DepartmentHOD(hod=hod_user_4, department=dept_4, first_name=hod_user_4.first_name, last_name=hod_user_4.last_name, email=hod_user_4.email, phone_number=hod_user_4.phone_number, id_no=hod_user_4.identification_num, is_active=True)
@@ -353,7 +352,7 @@ coord_user_32.save()
 #<!-- training coordinator models -->
 coord_1 = DepartmentTrainingCoordinator(coordinator=coord_user_1, dept_hod=hod_1, first_name=coord_user_1.first_name, last_name=coord_user_1.last_name, email=coord_user_1.email, phone_number=coord_user_1.phone_number, id_no=coord_user_1.identification_num, is_active=True)
 coord_2 = DepartmentTrainingCoordinator(coordinator=coord_user_2, dept_hod=hod_2, first_name=coord_user_2.first_name, last_name=coord_user_2.last_name, email=coord_user_2.email, phone_number=coord_user_2.phone_number, id_no=coord_user_2.identification_num, is_active=True)
-coord_3 = DepartmentTrainingCoordinator(coordinator=coord_user_3, dept_hod=hod_3, first_name=coord_user_3.first_name, last_name=coord_user_3.last_name, email=coord_user_3.email, phone_number=coord_user_3.phone_number, id_no=coord_user_3.identification_num, is_active=True)
+coord_3 = DepartmentTrainingCoordinator(coordinator=coord_user_3, dept_hod=hod_1, first_name=coord_user_3.first_name, last_name=coord_user_3.last_name, email=coord_user_3.email, phone_number=coord_user_3.phone_number, id_no=coord_user_3.identification_num, is_active=True)
 coord_4 = DepartmentTrainingCoordinator(coordinator=coord_user_4, dept_hod=hod_4, first_name=coord_user_4.first_name, last_name=coord_user_4.last_name, email=coord_user_4.email, phone_number=coord_user_4.phone_number, id_no=coord_user_4.identification_num, is_active=True)
 coord_5 = DepartmentTrainingCoordinator(coordinator=coord_user_5, dept_hod=hod_5, first_name=coord_user_5.first_name, last_name=coord_user_5.last_name, email=coord_user_5.email, phone_number=coord_user_5.phone_number, id_no=coord_user_5.identification_num, is_active=True)
 coord_6 = DepartmentTrainingCoordinator(coordinator=coord_user_6, dept_hod=hod_6, first_name=coord_user_6.first_name, last_name=coord_user_6.last_name, email=coord_user_6.email, phone_number=coord_user_6.phone_number, id_no=coord_user_6.identification_num, is_active=True)

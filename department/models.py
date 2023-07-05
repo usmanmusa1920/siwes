@@ -28,9 +28,15 @@ class DepartmentHOD(models.Model):
     hod = models.ForeignKey(User, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
 
-    # his/her rank or universities he/she get them e.g
-    # B.Sc (Ed), (UDUSOK Nig); Msc, PhD (USIM Malaysia); CFTO
+    # this is staff ranks or universities he/she attended them e.g
+    # B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO
     ranks = models.CharField(max_length=100, unique=False, blank=True, null=True)
+
+    # `level_rank_title_1` is the title that is prefix before the first name of a staff like `PROF` or `Dr` e.g  PROF. MU'AZU ABUBAKAR GUSAU  or  Dr Lawal Saad.
+    level_rank_title_1 = models.CharField(max_length=100, unique=False, blank=True, null=True)
+
+    # `level_rank_title_2` is the title that is prefix after the name of a staff like `Ph.D.` e.g  Lawal Saad Ph.D.
+    level_rank_title_2 = models.CharField(max_length=100, unique=False, blank=True, null=True)
 
     first_name = models.CharField(max_length=100, unique=False)
     middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)

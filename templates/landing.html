@@ -61,7 +61,7 @@
       <div class="img">
         <img src="{{request.user.profile.image.url}}" alt="">
       </div>
-      {% if request.user.is_staff %}
+      {% if request.user.is_schoolstaff %}
         <a><h4>{{request.user}}</h4></a>
         {% for faculty in faculties %}
           <a href="{% url 'faculty:profile' faculty.name %}">{{faculty}} profile</a>
@@ -75,4 +75,27 @@
       {% endif %}
     </div>
   </div>
+
+  <!-- for admin only -->
+  {% if request.user.is_staff %}
+    <div class="wrapp_all">
+      <div class="wrapp_right_admin">
+        <a href="/admin">Admin page</a>
+        <a href="/admin">Admin page</a>
+        <a href="{% url 'administrator:active_faculty_dean' %}">Active Deans</a>
+        <a href="{% url 'administrator:active_department_hod' %}">Active H O Ds</a>
+        <a href="{% url 'administrator:active_department_training_coord' %}">Active Training coordinators</a>
+      </div>
+      <div class="wrapp_left">
+        <div class="wrapp_top_left_admin">
+          <div class="straight_admin">
+            <a href="{% url 'administrator:active_faculty_dean' %}">Active Deans</a>
+            <a href="{% url 'administrator:active_faculty_dean' %}">Active Deans</a>
+            <a href="{% url 'administrator:active_department_hod' %}">Active H O Ds</a>
+            <a href="{% url 'administrator:active_department_training_coord' %}">Active Training coordinators</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
 {% endblock main %}

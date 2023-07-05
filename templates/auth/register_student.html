@@ -41,8 +41,7 @@
     {% csrf_token %}
     <h2>Create student profile</h2>
     <p>Create student training profile with the student appropriate informations</p>
-    <!-- i use the type of the below matrix number field to be number in other to avoid wrong data type (string) -->
-    <input type="number" name="identification_num" oninput="automate_passwd(is_student=true)" placeholder="Matrix number (reg number)" class="input" id="id_no" required>
+    <input type="text" name="identification_num" oninput="automate_passwd(is_student=true)" placeholder="Matrix number (reg number)" class="input" id="id_no" minlength="10" required>
     {% if form.identification_num.errors %}
       <p><i><strong><small>{{form.identification_num.errors}}</small></strong></i></p>
     {% endif %}
