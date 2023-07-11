@@ -1,3 +1,4 @@
+#!/bin/bash
 rm db.sqlite3 && pmake && pmigrate
 
 python manage.py shell
@@ -60,20 +61,20 @@ admin_6.save()
 ### _____________________
 ### FACULTY (4 faculties)
 
-with open('faculty_and_dept.json') as f:
-  r = json.load(f)
+with open('faculty_and_department.json') as f:
+    r = json.load(f)
 
 for i in r:
-  if i['faculty'] == 'Education':
-    ff = Faculty(name=i['faculty'], email=i['faculty']+'@mail.com', phone_number=i['phone'], training='tp')
-  else:
-    ff = Faculty(name=i['faculty'], email=i['faculty']+'@mail.com', phone_number=i['phone'])
-  ff.save()
+    if i['faculty'] == 'Education':
+        faculty_training = Faculty(name=i['faculty'], email=i['faculty']+'@mail.com', phone_number=i['phone'], training='tp')
+    else:
+        faculty_training = Faculty(name=i['faculty'], email=i['faculty']+'@mail.com', phone_number=i['phone'])
+    faculty_training.save()
 
 faculty_1 = Faculty.objects.filter(name='Science').first()
 faculty_2 = Faculty.objects.filter(name='Humanities').first()
 faculty_3 = Faculty.objects.filter(name='Education').first()
-faculty_4 = Faculty.objects.filter(name='Management & Social science').first()
+faculty_4 = Faculty.objects.filter(name='Management & social science').first()
 
 
 ### _____________________
@@ -103,11 +104,11 @@ dean_4.save()
 ### DEPARTMENT (32 departments)
 
 for idx, i in enumerate(r):
-  gf = Faculty.objects.filter(name=r[idx]['faculty']).first()
-  for g in r[idx]['dept']:
-    rr = random.randrange(300, 3000)
-    dd = Department(name=g, email=g+'@mail.com', phone_number='+234'+str(rr)+g, faculty=gf)
-    dd.save()
+    filt_faculty = Faculty.objects.filter(name=r[idx]['faculty']).first()
+    for g in r[idx]['department']:
+        rr = random.randrange(300, 3000)
+        dd = Department(name=g, email=g+'@mail.com', phone_number='+234'+str(rr)+g, faculty=filt_faculty)
+        dd.save()
 
 # Science
 dept_1 = Department.objects.filter(name='Physics').first()
@@ -117,7 +118,7 @@ dept_4 = Department.objects.filter(name='Chemistry').first()
 dept_5 = Department.objects.filter(name='Biochemistry').first()
 dept_6 = Department.objects.filter(name='Geology').first()
 dept_7 = Department.objects.filter(name='Microbiology').first()
-dept_8 = Department.objects.filter(name='Plant science & Biotechnology').first()
+dept_8 = Department.objects.filter(name='Plant science & biotechnology').first()
 dept_9 = Department.objects.filter(name='Zoology').first()
 dept_10 = Department.objects.filter(name='Biology').first()
 # Humanities
@@ -138,7 +139,7 @@ dept_23 = Department.objects.filter(name='Education History').first()
 dept_24 = Department.objects.filter(name='Education Islamic Studies').first()
 dept_25 = Department.objects.filter(name='Education Mathematics').first()
 dept_26 = Department.objects.filter(name='Education Physics').first()
-# Management & Social science
+# Management & social science
 dept_27 = Department.objects.filter(name='Accounting').first()
 dept_28 = Department.objects.filter(name='Business Administration').first()
 dept_29 = Department.objects.filter(name='Economics').first()

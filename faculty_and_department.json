@@ -1,0 +1,58 @@
+[
+  {
+      "faculty": "Science",
+      "phone": "+2348144907261",
+      "department": [
+          "Chemistry",
+          "Biochemistry",
+          "Biology",
+          "Computer Science",
+          "Geology",
+          "Mathematics",
+          "Microbiology",
+          "Physics",
+          "Plant science & biotechnology",
+          "Zoology"
+      ]
+  },
+  {
+      "faculty": "Education",
+      "phone": "+2348144907263",
+      "department": [
+          "Education Arabic",
+          "Education Biology",
+          "Education Chemistry",
+          "Education Economics",
+          "Education English",
+          "Education Hausa",
+          "Education History",
+          "Education Islamic Studies",
+          "Education Mathematics",
+          "Education Physics"
+      ]
+  },
+  {
+      "faculty": "Humanities",
+      "phone": "+2348144907262",
+      "department": [
+          "Arabic Language",
+          "English Language",
+          "French",
+          "Hausa Language",
+          "History",
+          "Islamic Studies"
+      ]
+  },
+  {
+      "faculty": "Management & social science",
+      "phone": "+2348144907264",
+      "department": [
+          "Accounting",
+          "Business Administration",
+          "Economics",
+          "Political science",
+          "Public Administration",
+          "Sociology"
+      ]
+  }
+]
