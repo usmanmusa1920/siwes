@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth import get_user_model
 
 
@@ -17,7 +16,7 @@ class Administrator(models.Model):
     date_of_birth = models.DateField(max_length=100, blank=True, null=True)
     id_no = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, unique=False)
-    phone_number = PhoneNumberField(max_length=100, unique=False)
+    phone_number = models.CharField(max_length=100, unique=False)
     date_joined = models.DateTimeField(default=timezone.now)
     date_leave = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=False)

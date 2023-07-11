@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Department, DepartmentHOD, DepartmentTrainingCoordinator, Letter
+from .models import (Department, DepartmentHOD, DepartmentTrainingCoordinator, Letter)
 
 
 admin.site.register(Department)

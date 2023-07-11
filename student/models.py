@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from phonenumber_field.modelfields import PhoneNumberField
 from department.models import DepartmentTrainingCoordinator
 from django.contrib.auth import get_user_model
 
@@ -21,7 +20,7 @@ class TrainingStudent(models.Model):
     level_choices = [('200', '200 level'), ('300', '300 level'),]
     level = models.CharField(max_length=100, default='200', choices=level_choices)
     email = models.EmailField(max_length=255, unique=False)
-    phone_number = PhoneNumberField(max_length=100, unique=False)
+    phone_number = models.CharField(max_length=100, unique=False)
     date_joined = models.DateTimeField(auto_now_add=True) # date_joined (not editable)
     last_modified = models.DateTimeField(auto_now=True) # last modified (not editable)
     is_in_school = models.BooleanField(default=False)

@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 from faculty.models import Faculty
-from phonenumber_field.modelfields import PhoneNumberField
 from django.contrib.auth import get_user_model
 
 
@@ -16,7 +15,7 @@ class Department(models.Model):
     name = models.CharField(max_length=300, blank=True, null=True, unique=True)
     email = models.EmailField(max_length=255, unique=True)
     website = models.CharField(max_length=300, blank=True, null=True)
-    phone_number = PhoneNumberField(max_length=100, unique=True)
+    phone_number = models.CharField(max_length=100, unique=False)
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -46,7 +45,7 @@ class DepartmentHOD(models.Model):
     date_of_birth = models.DateField(max_length=100, blank=True, null=True)
     id_no = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, unique=False)
-    phone_number = PhoneNumberField(max_length=100, unique=False)
+    phone_number = models.CharField(max_length=100, unique=False)
     date_joined = models.DateTimeField(default=timezone.now)
     date_leave = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=False)
@@ -67,7 +66,7 @@ class DepartmentTrainingCoordinator(models.Model):
     date_of_birth = models.DateField(max_length=100, blank=True, null=True)
     id_no = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, unique=False)
-    phone_number = PhoneNumberField(max_length=100, unique=False)
+    phone_number = models.CharField(max_length=100, unique=False)
     date_joined = models.DateTimeField(default=timezone.now)
     date_leave = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=False)
@@ -93,7 +92,7 @@ class StudentSupervisor(models.Model):
     id_no = models.CharField(max_length=255, unique=True)
     location = models.CharField(max_length=100, default='200')
     email = models.EmailField(max_length=255, unique=False)
-    phone_number = PhoneNumberField(max_length=100, unique=False)
+    phone_number = models.CharField(max_length=100, unique=False)
     date_joined = models.DateTimeField(default=timezone.now)
     date_leave = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=False)

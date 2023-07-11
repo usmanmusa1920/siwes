@@ -6,6 +6,7 @@ from .models import Faculty
 from department.models import Department
 from student.models import TrainingStudent
 from django.contrib.auth import get_user_model
+from toolkit.decorators import (validate_staff_user)
 
 
 User = get_user_model()
@@ -14,15 +15,11 @@ User = get_user_model()
 class FacultyCls:
     """Faculties related views"""
 
+    @validate_staff_user
     @login_required
     @staticmethod
     def profile(request, faculty_name):
         """faculty profile page"""
-        if request.user.is_staff == False:
-            """restrict user access to certain pages"""
-            # block anyone from getting access to the register page of
-            # administrator if he/she is not a staff
-            return False
 
         # querying a faculty
         faculty = Faculty.objects.filter(name=faculty_name).first()

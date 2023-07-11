@@ -370,7 +370,7 @@ body{
   align-items: center;
 }
 
-.alert_success{
+.alert_success, .alert_info{
   background: lightgreen;
   color: green;
   border-radius: 5px;
@@ -395,7 +395,7 @@ body{
   margin-top: 10px;
 }
 
-.alert_warn{
+.alert_warning{
   background: rgb(245, 238, 136);;
   border-radius: 5px;
   width: 100%;

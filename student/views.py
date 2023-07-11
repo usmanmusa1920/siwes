@@ -11,6 +11,7 @@ from toolkit import picture_name
 from faculty.models import FacultyDean
 from department.models import DepartmentHOD, Letter
 from django.contrib.auth import get_user_model
+from toolkit.decorators import (restrict_access_student_profile)
 
 
 User = get_user_model()
@@ -19,12 +20,19 @@ User = get_user_model()
 class Student:
     """Students' related views"""
 
-    # def __init__(self):
-    #     self.student = True
+    def __init__(self):
+        self.student = True
 
-    # def student_acceptance_route(self, train, faculty, department, level: str = False) -> str:
-    #     """student acceptance letter route"""
-    #     return f'{datetime.today().year}-acceptances' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
+    def student_acceptance_route(self, train, faculty, department, level: str = '200', logbook=False) -> str:
+        """
+        this method costruct a route for media files (student uploaded acceptance letter),
+        when you upload a media file via admin page this method will not run,
+        so don`t try changing or uploading any media file via admin, to avoid
+        route mis-functioning
+        """
+        if logbook:
+            return f'{datetime.today().year}-logbook' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
+        return f'{datetime.today().year}-acceptances' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
 
     @login_required
     @staticmethod
@@ -32,10 +40,10 @@ class Student:
         """student profile"""
         std = TrainingStudent.objects.filter(matrix_no=matrix_id).first()
 
-        if request.user.is_staff == False and request.user.identification_num != std.matrix_no:
-            # restricting any student from getting access to other students` profile
-            # but allowing himself and staff user to get access to it
-            return False
+        # restricting any student from getting access to other students` profile
+        block_other_stu = restrict_access_student_profile(request, std.matrix_no)
+        if block_other_stu:
+            return block_other_stu
 
         dean = FacultyDean.objects.filter(faculty=std.student_training_coordinator.dept_hod.department.faculty).last()
         hod = DepartmentHOD.objects.filter(department=std.student_training_coordinator.dept_hod.department).last()
@@ -130,7 +138,7 @@ class Student:
         faculty = std.student_training_coordinator.dept_hod.department.faculty.name
         department = std.student_training_coordinator.dept_hod.department.name
         level = std.level
-        route = f'{datetime.today().year}-acceptances' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
+        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
 
         form = UploadAcceptanceLetter(request.POST, request.FILES)
         if form.is_valid():
@@ -156,7 +164,7 @@ class Student:
         faculty = std.student_training_coordinator.dept_hod.department.faculty.name
         department = std.student_training_coordinator.dept_hod.department.name
         level = std.level
-        route = f'{datetime.today().year}-acceptances' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
+        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
 
         form = UploadAcceptanceLetter(request.POST, request.FILES)
         if form.is_valid():
@@ -184,7 +192,7 @@ class Student:
         faculty = std.student_training_coordinator.dept_hod.department.faculty.name
         department = std.student_training_coordinator.dept_hod.department.name
         level = std.level
-        route = f'{datetime.today().year}-acceptances' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
+        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
 
         if not acceptance_200:
             return False
@@ -230,7 +238,7 @@ class Student:
         faculty = std.student_training_coordinator.dept_hod.department.faculty.name
         department = std.student_training_coordinator.dept_hod.department.name
         level = std.level
-        route = f'{datetime.today().year}-acceptances' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
+        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
 
         if not acceptance_300:
             return False
@@ -277,7 +285,7 @@ class Student:
         faculty = std.student_training_coordinator.dept_hod.department.faculty.name
         department = std.student_training_coordinator.dept_hod.department.name
         level = std.level
-        route = f'{datetime.today().year}-acceptances' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
+        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level, logbook=True)
 
         # filtering student week reader
         WR = WeekReader.objects.filter(student=std).last()

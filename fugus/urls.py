@@ -25,10 +25,10 @@ from django.conf.urls.static import static
     there are 4 already defined handler
     methods in `django.urls` functions.
 """
-handler400 = 'account.views.error_400'
-handler403 = 'account.views.error_403'
-handler404 = 'account.views.error_404'
-handler500 = 'account.views.error_500'
+handler400 = 'account.err_views.error_400'
+handler403 = 'account.err_views.error_403'
+handler404 = 'account.err_views.error_404'
+handler500 = 'account.err_views.error_500'
 
 
 @login_required

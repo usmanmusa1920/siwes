@@ -57,7 +57,7 @@
           {% endif %}
         </span>
         
-        {% if request.user.is_staff %}
+        {% if request.user.is_schoolstaff %}
           <h3 class="category">Campus Staff</h3>
           <a class="dash_link">Staff on student SIWES</a>
         {% else %}
@@ -65,7 +65,7 @@
           <a class="dash_link">Student SIWES</a>
         {% endif %}
 
-        {% if request.user.is_staff == False %}
+        {% if request.user.is_student %}
           <span class="link_ref">Fees</span>
           <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Pay Fees</a>
           <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Payment history</a>
@@ -152,8 +152,8 @@
           
           <div class="main_top">
             {% if messages %}
-              {% for message in messages %}
-                <div class="alert_success">{{message}}</div>
+              {% for flash_msg in messages %}
+                <div class="alert_{{flash_msg.tags}}">{{flash_msg}}</div>
               {% endfor %}
             {% endif %}
           </div>

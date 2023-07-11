@@ -87,14 +87,14 @@
 
     <!-- phone number -->
     {% if form.phone_number.value == None or form.phone_number.value == '' %}
-      <input type="tel" name="phone_number" oninput="searchPlus()" placeholder="Phone number (e.g +12125552368)" class="input" required>
+      <input type="tel" name="phone_number" oninput="searchPlus()" placeholder="Phone number" class="input" required>
     {% else %}
-      <input type="tel" name="phone_number" oninput="searchPlus()" placeholder="Phone number (e.g +12125552368)" class="input" value="{{form.phone_number.value}}" required>
+      <input type="tel" name="phone_number" oninput="searchPlus()" placeholder="Phone number" class="input" value="{{form.phone_number.value}}" required>
     {% endif %}
-
-    {% if form.phone_number.errors %}
-      <p><i><strong><small>{{form.phone_number.errors}}</small></strong></i></p>
-    {% endif %}
+    
+    <div class="wrapp_warn">
+      <p><i><strong><small>The phone number should be in international format e.g +12125552368</small></strong></i></p>
+    </div>
 
     <!-- country -->
     <div class="selection">

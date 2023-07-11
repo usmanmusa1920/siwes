@@ -2,7 +2,6 @@ from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-from phonenumber_field.modelfields import PhoneNumberField
 from django_countries.fields import CountryField
 from django.conf import settings
 
@@ -66,7 +65,7 @@ class UserAccount(AbstractBaseUser):
     date_of_birth = models.DateField(max_length=100, blank=True, null=True)
     identification_num = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, unique=False)
-    phone_number = PhoneNumberField(max_length=100, unique=False)
+    phone_number = models.CharField(max_length=100, unique=False)
     country = CountryField(max_length=100, blank_label='Select your country',)
     date_joined = models.DateTimeField(auto_now_add=True) # date_joined (not editable)
     last_modified = models.DateTimeField(auto_now=True) # last modified (not editable)

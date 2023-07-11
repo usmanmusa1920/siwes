@@ -6,9 +6,10 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from .models import Administrator
 from faculty.models import Faculty, FacultyDean
-from department.models import Department, DepartmentHOD, DepartmentTrainingCoordinator, Letter
+from department.models import (Department, DepartmentHOD, DepartmentTrainingCoordinator, Letter)
 from student.models import TrainingStudent
 from django.contrib.auth import get_user_model
+from toolkit.decorators import validate_staff_user
 
 
 User = get_user_model()
@@ -17,6 +18,7 @@ User = get_user_model()
 class Activate:
     """Activate (and also deactivate previous) related views"""
 
+    # @validate_staff_user
     @login_required
     @staticmethod
     def facultyDean(request, staff_user_id):

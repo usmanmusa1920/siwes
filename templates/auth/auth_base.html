@@ -39,8 +39,8 @@
         <div class="main_right">
           <div class="main_top">
             {% if messages %}
-              {% for message in messages %}
-                <div class="alert_success">{{message}}</div>
+              {% for flash_msg in messages %}
+                <div class="alert_{{flash_msg.tags}}">{{flash_msg}}</div>
               {% endfor %}
             {% endif %}
           </div>

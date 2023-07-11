@@ -1,5 +1,5 @@
 from django.urls import reverse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
@@ -10,9 +10,12 @@ from .forms import (
     PasswordChangeForm, AdministratorSignupForm, FacultySignupForm, FacultyDeanSignupForm, DepartmentSignupForm, DepartmentHODSignupForm, DepartmentCoordinatorSignupForm, StudentSupervisorSignupForm, StudentSignupForm, UpdateStudentProfile)
 from administrator.models import Administrator
 from faculty.models import Faculty, FacultyDean
-from department.models import Department, DepartmentHOD, DepartmentTrainingCoordinator, StudentSupervisor
+from department.models import (
+    Department, DepartmentHOD, DepartmentTrainingCoordinator, StudentSupervisor)
 from student.models import TrainingStudent, WeekReader
 from django.contrib.auth import get_user_model
+from toolkit.decorators import (
+    val_id_num, validate_staff_user, check_phone_number, block_student_update_profile)
 
 
 User = get_user_model()
@@ -99,14 +102,12 @@ class Register:
     (administrator, faculty, faculty dean, department, department HOD, department training coordinator, and student) profiles
     """
 
+    @check_phone_number(redirect_where='auth:register_administrator')
+    @validate_staff_user
     @login_required
     @staticmethod
     def administrator(request):
         """register administrator"""
-        if request.user.is_staff == False:
-            # block anyone from getting access to the register page of
-            # administrator if he/she is not a staff
-            return False
         if request.method == 'POST':
             form = AdministratorSignupForm(request.POST)
             if form.is_valid():
@@ -134,9 +135,12 @@ class Register:
             form = AdministratorSignupForm()
         context = {
             'form': form,
+            'who_to': 'administrator',
         }
-        return render(request, 'auth/register_administrator.html', context)
+        return render(request, 'auth/register.html', context)
 
+    @check_phone_number(redirect_where='auth:register_faculty')
+    @validate_staff_user
     @login_required
     @staticmethod
     def faculty(request):
@@ -158,18 +162,16 @@ class Register:
             form = FacultySignupForm()
         context = {
             'form': form,
+            'who_to': 'faculty',
         }
-        return render(request, 'auth/register_faculty.html', context)
+        return render(request, 'auth/register.html', context)
 
+    @check_phone_number(redirect_where='auth:register_faculty_dean')
+    @validate_staff_user
     @login_required
     @staticmethod
     def facultyDean(request):
         """register faculty dean"""
-        if request.user.is_staff == False:
-            # block anyone from getting access to the register page of
-            # administrator if he/she is not a staff
-            return False
-
         # quering faculties names, which we will be rendering in templates
         faculties = Faculty.objects.all()
 
@@ -184,12 +186,14 @@ class Register:
                 # grabbing user raw datas (from html form)
                 raw_identification_num = form.cleaned_data['identification_num']
                 raw_ranks = form.cleaned_data['ranks']
+                raw_level_rank_title_1 = form.cleaned_data['level_rank_title_1']
+                raw_level_rank_title_2 = form.cleaned_data['level_rank_title_2']
                 raw_faculty = request.POST['raw_faculty']
                 db_faculty = Faculty.objects.filter(name=raw_faculty).first()
 
                 # creating user (in the faculty dean table)
                 new_faculty_dean = FacultyDean(
-                    dean=instance, faculty=db_faculty, ranks=raw_ranks, first_name=instance.first_name, middle_name=instance.middle_name, last_name=instance.last_name, gender=instance.gender, date_of_birth=instance.date_of_birth, id_no=instance.identification_num, email=instance.email, phone_number=instance.phone_number
+                    dean=instance, faculty=db_faculty, ranks=raw_ranks, first_name=instance.first_name, middle_name=instance.middle_name, last_name=instance.last_name, gender=instance.gender, date_of_birth=instance.date_of_birth, id_no=instance.identification_num, email=instance.email, phone_number=instance.phone_number, level_rank_title_1=raw_level_rank_title_1, level_rank_title_2=raw_level_rank_title_2
                 )
                 new_faculty_dean.save()
 
@@ -203,17 +207,16 @@ class Register:
         context = {
             'form': form,
             'faculties': faculties,
+            'who_to': 'faculty dean',
         }
-        return render(request, 'auth/register_faculty_dean.html', context)
+        return render(request, 'auth/register.html', context)
 
+    @check_phone_number(redirect_where='auth:register_department')
+    @validate_staff_user
     @login_required
     @staticmethod
     def department(request):
         """register department"""
-        if request.user.is_staff == False:
-            # block anyone from getting access to the register page of
-            # administrator if he/she is not a staff
-            return False
         if request.method == 'POST':
             form = DepartmentSignupForm(request.POST)
             if form.is_valid():
@@ -227,18 +230,16 @@ class Register:
             form = DepartmentSignupForm()
         context = {
             'form': form,
+            'who_to': 'department',
         }
-        return render(request, 'auth/register_department.html', context)
+        return render(request, 'auth/register.html', context)
 
+    @check_phone_number(redirect_where='auth:register_department_hod')
+    @validate_staff_user
     @login_required
     @staticmethod
     def departmentHOD(request):
         """register department hod"""
-        if request.user.is_staff == False:
-            # block anyone from getting access to the register page of
-            # administrator if he/she is not a staff
-            return False
-
         # quering departments names, which we will be rendering in templates
         departments = Department.objects.all()
 
@@ -254,12 +255,14 @@ class Register:
                 # grabbing user raw datas (from html form)
                 raw_identification_num = form.cleaned_data['identification_num']
                 raw_ranks = form.cleaned_data['ranks']
+                raw_level_rank_title_1 = form.cleaned_data['level_rank_title_1']
+                raw_level_rank_title_2 = form.cleaned_data['level_rank_title_2']
                 raw_dept = request.POST['raw_dept']
                 db_dept = Department.objects.filter(name=raw_dept).first()
 
                 # creating user (in the department hod table)
                 new_dept_hod = DepartmentHOD(
-                    hod=instance, department=db_dept, ranks=raw_ranks, first_name=instance.first_name, middle_name=instance.middle_name, last_name=instance.last_name, gender=instance.gender, date_of_birth=instance.date_of_birth, id_no=instance.identification_num, email=instance.email, phone_number=instance.phone_number
+                    hod=instance, department=db_dept, ranks=raw_ranks, first_name=instance.first_name, middle_name=instance.middle_name, last_name=instance.last_name, gender=instance.gender, date_of_birth=instance.date_of_birth, id_no=instance.identification_num, email=instance.email, phone_number=instance.phone_number, level_rank_title_1=raw_level_rank_title_1, level_rank_title_2=raw_level_rank_title_2
                 )
                 new_dept_hod.save()
 
@@ -273,9 +276,12 @@ class Register:
         context = {
             'form': form,
             'departments': departments,
+            'who_to': 'department hod',
         }
-        return render(request, 'auth/register_department_hod.html', context)
+        return render(request, 'auth/register.html', context)
 
+    @check_phone_number(redirect_where='auth:register_department_training_coordinator')
+    @validate_staff_user
     @login_required
     @staticmethod
     def departmentTrainingCoordinator(request):
@@ -315,13 +321,16 @@ class Register:
         context = {
             'form': form,
             'all_dept': all_dept,
+            'who_to': 'training coordinator',
         }
-        return render(request, 'auth/register_training_coordinator.html', context)
+        return render(request, 'auth/register.html', context)
 
+    @check_phone_number(redirect_where='auth:register_student_training_coordinatro')
+    @validate_staff_user
     @login_required
     @staticmethod
     def studentTrainingSupervisor(request):
-        """register department training coordinator"""
+        """register department student training supervisor"""
 
         # quering all department
         all_dept = Department.objects.all()
@@ -336,6 +345,7 @@ class Register:
 
                 # grabbing user raw datas (from html form)
                 all_department = request.POST['all_department']
+                raw_location = form.cleaned_data['location']
 
                 # quering department, using the `all_department` variable above
                 dept = Department.objects.filter(name=all_department).first()
@@ -348,7 +358,7 @@ class Register:
 
                 # registering user to department training coordinator table
                 new_student_supervisor = StudentSupervisor(
-                    supervisor=instance, dept_training_coordinator=dept_training_coordinator, first_name=instance.first_name, last_name=instance.last_name, email=instance.email, phone_number=instance.phone_number, id_no=instance.identification_num
+                    supervisor=instance, dept_training_coordinator=dept_training_coordinator, first_name=instance.first_name, last_name=instance.last_name, email=instance.email, phone_number=instance.phone_number, id_no=instance.identification_num, location=raw_location
                 )
                 new_student_supervisor.save()  # saving
 
@@ -360,16 +370,15 @@ class Register:
         context = {
             'form': form,
             'all_dept': all_dept,
+            'who_to': 'student supervisor',
         }
-        return render(request, 'auth/register_student_supervisor.html', context)
+        return render(request, 'auth/register.html', context)
 
+    @validate_staff_user
     @login_required
     @staticmethod
     def student(request):
         """register student"""
-        if request.user.is_staff == False:
-            # block anyone from getting access to the register page of student if he/she is not a staff
-            return False
         
         # querying all active departmental training coordinator
         all_dept = DepartmentTrainingCoordinator.objects.filter(is_active=True)
@@ -385,16 +394,10 @@ class Register:
                 all_department = request.POST['all_department']
                 raw_identification_num = form.cleaned_data['identification_num']
 
-                # restricting accepting identification number which type is any, apart from integer
-                try:
-                    if type(eval(raw_identification_num)) == int:
-                        # trying to see if the identification number type is `int` it will pass
-                        pass
-                except:
-                    # if the identification number type is not `int` then it will handle the error here by redirecting back to the student register page with a flash message
-                    messages.success(request, f'Invalid student admission number ({raw_identification_num}) it should be all number')
-                    # return redirect('auth:register_student')
-                    return redirect('auth:register_student')
+                # validate id number
+                val_usr_id = val_id_num(request, raw_identification_num)
+                if val_usr_id:
+                    return val_usr_id
                 
                 # user instance
                 instance = form.save(commit=False)
@@ -432,6 +435,7 @@ class Register:
 
 class UpdateProfile:
 
+    @check_phone_number(redirect_where='auth:student_profile_update')
     @login_required
     @staticmethod
     def student(request):
@@ -441,9 +445,9 @@ class UpdateProfile:
         std = TrainingStudent.objects.filter(student=r_user).first()
 
         # blocking student from updating his/her profile
-        if r_user.first_name != '' and r_user.first_name != None and r_user.last_name != '' and r_user.last_name != None and r_user.is_student == True:
-            messages.success(request, f'Your profile is already updated {r_user.first_name}!')
-            return redirect(reverse('student:profile', kwargs={'matrix_id': r_user.identification_num}))
+        block_stu = block_student_update_profile(request, r_user)
+        if block_stu:
+            return block_stu
         
         if request.method == 'POST':
             form = UpdateStudentProfile(request.POST, request.FILES, instance=request.user)
@@ -481,23 +485,3 @@ class UpdateProfile:
             'form': form,
         }
         return render(request, 'auth/student_update_profile.html', context=context)
-
-
-def error_400(request, exception):
-    """this view handle 403 error"""
-    return render(request, 'error/403.html')
-
-
-def error_403(request, exception):
-    """this view handle 403 error"""
-    return render(request, 'error/403.html')
-
-
-def error_404(request, exception):
-    """this view handle 404 error"""
-    return render(request, 'error/404.html')
-
-
-def error_500(request):
-    """this view handle 500 error"""
-    return render(request, 'error/500.html')
