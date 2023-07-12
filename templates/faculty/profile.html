@@ -127,7 +127,7 @@
       </div>
     {% endif %}
 
-    <form action="{% url 'administrator:filter_student_user' %}" method="get" class="search">
+    <form action="{% url 'administrator:filter_student' %}" method="get" class="search">
       {% csrf_token %}
       <input type="search" name="search_q" placeholder="Filter student by ID" required>
       <button type="submit">search</button>
@@ -174,7 +174,7 @@
         </div>
       </div>
     {% endif %}
-    <form action="{% url 'administrator:filter_staff_user' %}" method="get" class="search">
+    <form action="{% url 'administrator:filter_staff' %}" method="get" class="search">
       {% csrf_token %}
       <input type="search" name="search_q" placeholder="Filter staff by ID" required>
       <button type="submit">search</button>

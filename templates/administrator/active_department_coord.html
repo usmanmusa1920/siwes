@@ -32,23 +32,16 @@
   {% if users %}
     <div class="main_wrapp">
       <div class="wrapp_form">
-        <h2>Department training coordinator found</h2>
-        <small>We found the following result for your search, click activate to make him/her the new department training coordinator</small>
+        <h2>{{users.paginator.count}} active department training coordinator</h2>
+        <small>These are current active departmental training coordinator</small>
       </div>
       {% for user in users %}
         <div class="wrapp_form">
           <div class="wrapp_list">
             <a>{{user.dept_hod.department}}</a>
-            <small>
-              {{user.first_name}}
-              {% if user.middle_name %}
-                {{user.middle_name}}
-              {% endif %}
-              {{user.last_name}}
-            </small>
-            <form action="{% url 'administrator:activate_department_hod' user.id_no %}" method="post">
+            <form action="{% url 'auth:general_profile' user.id_no %}">
               {% csrf_token %}
-              <button type="submit">Activate</button>
+              <button type="submit">{{user.first_name}}`s profile</button>
             </form>
           </div>
           <small>
@@ -65,6 +58,18 @@
           </small>
         </div>
       {% endfor %}
+    </div>
+  {% else %}
+    <div class="main_wrapp">
+      <div class="wrapp_form">
+        <div class="wrapp_null">
+          <div class="wrapp_in_null">
+            <div class="main_wrapp_null">
+              <p>There is no any active departmental training coordinator</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   {% endif %}
   

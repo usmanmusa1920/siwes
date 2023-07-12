@@ -20,6 +20,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.conf.urls.static import static
+from faculty.models import Faculty
 
 """
     there are 4 already defined handler
@@ -34,7 +35,6 @@ handler500 = 'account.err_views.error_500'
 @login_required
 def index(request):
     """this is landing page view"""
-    from faculty.models import Faculty
     faculties = Faculty.objects.all()
     if request.user.first_name == '' or request.user.first_name == None or request.user.last_name == '' or request.user.last_name == None and request.user.is_student == True:
         # redirecting student to finish his/her profile registeration

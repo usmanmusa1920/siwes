@@ -1,9 +1,11 @@
 from django import forms
 from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
-from faculty.models import Faculty
-from department.models import Department, DepartmentTrainingCoordinator, StudentSupervisor
-from student.models import TrainingStudent
 from django.contrib.auth import get_user_model
+from faculty.models import Faculty
+from department.models import (
+    Department, DepartmentTrainingCoordinator, StudentSupervisor)
+from student.models import (
+    TrainingStudent)
 
 
 User = get_user_model()

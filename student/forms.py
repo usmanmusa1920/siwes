@@ -1,6 +1,6 @@
 from django import forms
-from .models import AcceptanceLetter, WeekScannedLogbook, CommentOnLogbook
 from django.contrib.auth import get_user_model
+from .models import AcceptanceLetter, WeekScannedLogbook, CommentOnLogbook
 
 
 User = get_user_model()

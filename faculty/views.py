@@ -2,11 +2,17 @@ from django.shortcuts import render, redirect, reverse
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from .models import Faculty
-from department.models import Department
-from student.models import TrainingStudent
 from django.contrib.auth import get_user_model
-from toolkit.decorators import (validate_staff_user)
+from .models import (
+    Faculty, FacultyDean)
+from department.models import (
+    Department, DepartmentHOD, DepartmentTrainingCoordinator, StudentSupervisor, Letter)
+from administrator.models import (
+    Administrator)
+from student.models import (
+    TrainingStudent, StudentLetterRequest, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook)
+from toolkit.decorators import (
+    admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, check_phone_number, block_student_update_profile, restrict_access_student_profile, val_id_num)
 
 
 User = get_user_model()
@@ -15,8 +21,7 @@ User = get_user_model()
 class FacultyCls:
     """Faculties related views"""
 
-    @validate_staff_user
-    @login_required
+    @admin_required
     @staticmethod
     def profile(request, faculty_name):
         """faculty profile page"""

@@ -14,28 +14,30 @@
 
 <!-- page title -->
 {% block title %}
-  <title>New {{who_to}} page</title>
+  <title>New {{who_to_reg}} page</title>
 {% endblock title %}
 
 <!-- content of the page -->
 {% block main %}
   <div class="wrapper">
     <div class="wrapp_head">
-      <h1>Register new {{who_to}} page</h1>
+      <h1>Register new {{who_to_reg}} page</h1>
     </div>
     <div class="wrapp_main">
       <div class="wrapp_top_greynish">
-        <small>New {{who_to}} creation page</small>
+        <small>New {{who_to_reg}} creation page</small>
       </div>
       <form method="post">
         {% csrf_token %}
-        <!-- fields -->
-        {% if who_to == 'administrator' or who_to == 'faculty dean' or who_to == 'department hod' or who_to == 'training coordinator' or who_to == 'student supervisor' %}
+        
+        <!-- only administrator, faculty dean, department hod, 
+          training coordinator, and student supervisor will fall into this (below) condition -->
+        {% if who_to_reg == 'administrator' or who_to_reg == 'faculty dean' or who_to_reg == 'department hod' or who_to_reg == 'training coordinator' or who_to_reg == 'student supervisor' %}
           <title>New administrator page</title>
           <div class="wrapp_form">
             <h2>Fill in user information</h2>
             <div class="wrapp_info">
-              <p>Register new {{who_to}} page</p>
+              <p>Register new {{who_to_reg}} page</p>
             </div>
             <input type="text" name="first_name" oninput="automate_passwd()" id="first_name" class="wrapp_input" placeholder="First name" autofocus required>
             <input type="text" name="middle_name" class="wrapp_input" placeholder="Middle name (optional)">
@@ -46,6 +48,7 @@
                 <p><i><strong><small>{{form.identification_num.errors}}</small></strong></i></p>
               </div>
             {% endif %}
+
             <p><b>Select gender:</b></p>
             <span class="wrapp_radio">
               <input type="radio" name="gender" value="female" name="rad" required> Female
@@ -63,10 +66,9 @@
               </div>
             {% endif %}
         
-            <input type="tel" name="phone_number" placeholder="Phone number" class="wrapp_input" required>
-              
+            <input type="tel" name="phone_number" placeholder="Phone number (e.g +2348012345678)" class="wrapp_input" minlength="14" required>
             <div class="wrapp_warn">
-              <p><i><strong><small>The phone number should be in international format e.g +12125552368</small></strong></i></p>
+              <p><i><strong><small>The phone number should be in international format e.g +2348012345678</small></strong></i></p>
             </div>
 
             <input type="text" name="email" class="wrapp_input" placeholder="Email addres" required>
@@ -79,18 +81,27 @@
               {{form.country}}
             </div>
           </div>
-          {% if who_to == 'administrator' %}
+
+          {% if who_to_reg == 'administrator' %}
             <div class="wrapp_form">
               <p><b>Description:</b></p>
               <textarea name="description" class="wrapp_text" placeholder="Write small description about new administrator user (optional)"></textarea>
             </div>
-          {% elif who_to == 'faculty dean' %}
+          {% elif who_to_reg == 'faculty dean' %}
             <div class="wrapp_form">
               <p><b>Select faculty:</b></p>
               <select name="raw_faculty" class="wrapp_select" required>
                 <option value="" selected="">Select faculty</option>
                 {% for faculty in faculties %}
                   <option value="{{faculty.name}}">{{faculty.name}}</option>
+                {% endfor %}
+              </select>
+
+              <p><b>Select department:</b></p>
+              <select name="raw_dept" class="wrapp_select" required>
+                <option value="" selected="">Select department</option>
+                {% for dept in departments %}
+                  <option value="{{dept.name}}">{{dept.name}}</option>
                 {% endfor %}
               </select>
     
@@ -107,7 +118,7 @@
               <small>`level_rank_title_2` is the title that is prefix after the name of a staff like `Ph.D.` e.g  Lawal Saad Ph.D</small>
               <textarea name="level_rank_title_2" class="wrapp_text" placeholder="Level rank title 1 e.g Ph.D (optional)"></textarea>
             </div>
-          {% elif who_to == 'department hod' %}
+          {% elif who_to_reg == 'department hod' %}
             <div class="wrapp_form">
               <p><b>Select department:</b></p>
               <select name="raw_dept" class="wrapp_select" required>
@@ -122,12 +133,13 @@
                 # B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO</small>
               <textarea name="ranks" class="wrapp_text" placeholder="Ranks e.g B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO (optional)"></textarea>
             </div>
-          {% elif who_to == 'training coordinator' or who_to == 'student supervisor' %}
+          {% elif who_to_reg == 'training coordinator' or who_to_reg == 'student supervisor' %}
             <div class="wrapp_form">
-              {% if who_to == 'student supervisor' %}
+              {% if who_to_reg == 'student supervisor' %}
                 <p><b>Location:</b></p>
-                <textarea name="location" class="wrapp_text" placeholder="Supervisor location" required></textarea>
+                <textarea name="location" class="wrapp_text" placeholder="Supervisor location (address)" required></textarea>
               {% endif %}
+
               <p><b>Select department:</b></p>
               <select name="all_department" class="wrapp_select" required>
                 <option value="" selected="">Select department</option>
@@ -137,7 +149,9 @@
               </select>
             </div>
           {% endif %}
-        {% elif who_to == 'faculty' %}
+          
+        <!-- faculty -->
+        {% elif who_to_reg == 'faculty' %}
           <div class="wrapp_form">
             <h2>Fill in faculty information</h2>
             <div class="wrapp_info">
@@ -147,24 +161,26 @@
             <div class="wrapp_select">
               {{form.training}}
             </div>
+
             <input type="text" name="name" class="wrapp_input" placeholder="Faculty name" autofocus required>
             <input type="text" name="email" class="wrapp_input" placeholder="Faculty email" required>
             {% if form.email.errors %}
               <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
             {% endif %}
+
             <input type="text" name="website" class="wrapp_input" placeholder="Faculty website">
-            <input type="tel" name="phone_number" placeholder="Phone number (e.g +12125552368)" class="wrapp_input" required>
-            {% if form.phone_number.errors %}
-              <div class="wrapp_warn">
-                <p><i><strong><small>{{form.phone_number.errors}}</small></strong></i></p>
-              </div>
-            {% endif %}
+            <input type="tel" name="phone_number" placeholder="Phone number (e.g +2348012345678)" class="wrapp_input" minlength="14"  required>
+            <div class="wrapp_warn">
+              <p><i><strong><small>The phone number should be in international format e.g +2348012345678</small></strong></i></p>
+            </div>
           </div>
           <div class="wrapp_form">
             <p><b>Description:</b></p>
             <textarea name="description" class="wrapp_text" placeholder="Write small description about new faculty (optional)"></textarea>
           </div>
-        {% elif who_to == 'department' %}
+
+        <!-- department -->
+        {% elif who_to_reg == 'department' %}
           <div class="wrapp_form">
             <h2>Fill in department information</h2>
             <div class="wrapp_info">
@@ -174,29 +190,30 @@
             <div class="wrapp_select">
               {{form.faculty}}
             </div>
+
             <input type="text" name="name" class="wrapp_input" placeholder="Department name" autofocus required>
             <input type="text" name="email" class="wrapp_input" placeholder="Department email" required>
             {% if form.email.errors %}
               <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
             {% endif %}
+
             <input type="text" name="website" class="wrapp_input" placeholder="Department website">
-            <input type="tel" name="phone_number" placeholder="Phone number (e.g +12125552368)" class="wrapp_input" required>
-            {% if form.phone_number.errors %}
-              <div class="wrapp_warn">
-                <p><i><strong><small>{{form.phone_number.errors}}</small></strong></i></p>
-              </div>
-            {% endif %}
+            <input type="tel" name="phone_number" placeholder="Phone number (e.g +2348012345678)" class="wrapp_input" minlength="14"  required>
+            <div class="wrapp_warn">
+              <p><i><strong><small>The phone number should be in international format e.g +2348012345678</small></strong></i></p>
+            </div>
           </div>
+          
           <div class="wrapp_form">
             <p><b>Description:</b></p>
             <textarea name="description" class="wrapp_text" placeholder="Write small description about new department (optional)"></textarea>
           </div>
         {% endif %}
 
-        {% if who_to == 'administrator' or who_to == 'faculty dean' or who_to == 'training coordinator' or who_to == 'student supervisor' %}
+        {% if who_to_reg == 'administrator' or who_to_reg == 'faculty dean' or who_to_reg == 'department hod' or who_to_reg == 'training coordinator' or who_to_reg == 'student supervisor' %}
           <div class="wrapp_form">
             <p><b>Security:</b></p>
-            <small>Default password for new {{who_to}} is his/her (first name, first letter + ID number + last name, first letter), he/she can change it later</small>
+            <small>Default password for new {{who_to_reg}} is his/her (first name, first letter + ID number + last name, first letter), he/she can change it later</small>
             <!-- 
               E.g
               first_name = Usman

@@ -1,7 +1,8 @@
 from django.db import models
 from django.utils import timezone
-from department.models import DepartmentTrainingCoordinator
 from django.contrib.auth import get_user_model
+from faculty.models import Faculty
+from department.models import Department, DepartmentTrainingCoordinator
 
 
 User = get_user_model()
@@ -9,7 +10,10 @@ User = get_user_model()
 
 class TrainingStudent(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
     student_training_coordinator = models.ForeignKey(DepartmentTrainingCoordinator, on_delete=models.CASCADE)
+    
     first_name = models.CharField(max_length=100, unique=False)
     middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
     last_name = models.CharField(max_length=100, unique=False)

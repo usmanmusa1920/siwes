@@ -33,37 +33,30 @@
     <div class="main_wrapp">
       <div class="wrapp_form">
         <h2>Department HOD found</h2>
-        <small>We found the following result for your search, click activate to make him/her the new department HOD</small>
+        <small>We found the following result for your search</small>
       </div>
       {% for user in users %}
-      <div class="wrapp_form">
-        <div class="wrapp_list">
-          <a>{{user.department}}</a>
+        <div class="wrapp_form">
+          <div class="wrapp_list">
+            <a>{{user.department}}</a>
+            <form action="{% url 'auth:general_profile' user.id_no %}">
+              {% csrf_token %}
+              <button type="submit">{{user.first_name}}`s profile</button>
+            </form>
+          </div>
           <small>
             {{user.first_name}}
             {% if user.middle_name %}
               {{user.middle_name}}
             {% endif %}
-            {{user.last_name}}
+            {{user.last_name}} is
+            {% if user.is_active %}
+              the <span class="req_new_dodger">active</span> HOD of <span class="req_new_dodger">{{user.department}}</span>
+            {% else %}
+              <span class="req_new_dodger">not the active</span> HOD of <span class="req_new_dodger">{{user.department}}</span>
+            {% endif %}
           </small>
-          <form action="{% url 'administrator:activate_department_hod' user.id_no %}" method="post">
-            {% csrf_token %}
-            <button type="submit">Activate</button>
-          </form>
         </div>
-        <small>
-          {{user.first_name}}
-          {% if user.middle_name %}
-            {{user.middle_name}}
-          {% endif %}
-          {{user.last_name}} is
-          {% if user.is_active %}
-            the <span class="req_new_dodger">active</span> HOD of <span class="req_new_dodger">{{user.department}}</span>
-          {% else %}
-            <span class="req_new_dodger">not the active</span> HOD of <span class="req_new_dodger">{{user.department}}</span>
-          {% endif %}
-        </small>
-      </div>
       {% endfor %}
     </div>
   {% elif search_panel == None %}

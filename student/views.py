@@ -4,14 +4,15 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from .models import (TrainingStudent, AcceptanceLetter, WeekReader,
     WeekScannedLogbook, CommentOnLogbook)
 from .forms import (UploadAcceptanceLetter, UploadLogbookEntry, LogbookEntryComment)
 from toolkit import picture_name
 from faculty.models import FacultyDean
 from department.models import DepartmentHOD, Letter
-from django.contrib.auth import get_user_model
-from toolkit.decorators import (restrict_access_student_profile)
+from toolkit.decorators import (
+    admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, check_phone_number, block_student_update_profile, restrict_access_student_profile, val_id_num)
 
 
 User = get_user_model()
@@ -34,7 +35,7 @@ class Student:
             return f'{datetime.today().year}-logbook' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
         return f'{datetime.today().year}-acceptances' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
 
-    @login_required
+    @student_required
     @staticmethod
     def profile(request, matrix_id):
         """student profile"""
@@ -60,7 +61,7 @@ class Student:
         }
         return render(request, 'student/profile.html', context=context)
 
-    @login_required
+    @student_required
     @staticmethod
     def placementLetter(request):
         """student placement letter"""
@@ -78,7 +79,7 @@ class Student:
         }
         return render(request, 'student/placement_letter.html', context=context)
 
-    @login_required
+    @student_required
     @staticmethod
     def acceptanceLetter(request):
         """student placement letter"""
@@ -96,7 +97,7 @@ class Student:
         }
         return render(request, 'student/acceptance_letter.html', context=context)
 
-    @login_required
+    @student_required
     @staticmethod
     def uploadedAcceptanceLetter200(request):
         """This view show 200 level student acceptance letter"""
@@ -111,7 +112,7 @@ class Student:
         }
         return render(request, 'student/upload_acceptance_letter_200.html', context=context)
 
-    @login_required
+    @student_required
     @staticmethod
     def uploadedAcceptanceLetter300(request):
         """This view show 300 level student acceptance letter"""
@@ -126,7 +127,7 @@ class Student:
         }
         return render(request, 'student/upload_acceptance_letter_300.html', context=context)
 
-    @login_required
+    @student_required
     @staticmethod
     def uploadAcceptanceLetter200(request):
         """upload (the view that will upload) acceptance letter for 200 level student"""
@@ -152,7 +153,7 @@ class Student:
             messages.success(request, f'Your 200 level acceptance letter image has been uploaded!')
             return redirect(reverse('student:uploaded_acceptance_letter_200'))
 
-    @login_required
+    @student_required
     @staticmethod
     def uploadAcceptanceLetter300(request):
         """upload (the view that will upload) acceptance letter for 300 level student"""
@@ -178,7 +179,7 @@ class Student:
             messages.success(request, f'Your 300 level acceptance letter image has been uploaded!')
             return redirect(reverse('student:uploaded_acceptance_letter_300'))
 
-    @login_required
+    @student_required
     @staticmethod
     def updateAcceptanceLetter200(request):
         """update acceptance letter for 200 level student"""
@@ -224,7 +225,7 @@ class Student:
         }
         return render(request, 'student/update_acceptance_letter_200.html', context)
 
-    @login_required
+    @student_required
     @staticmethod
     def updateAcceptanceLetter300(request):
         """update acceptance letter for 300 level student"""
@@ -271,7 +272,7 @@ class Student:
         }
         return render(request, 'student/update_acceptance_letter_300.html', context)
 
-    @login_required
+    @student_required
     @staticmethod
     def logbookEntry(request):
         """
@@ -338,7 +339,7 @@ class Student:
         }
         return render(request, 'student/logbook_entry.html', context)
 
-    @login_required
+    @coordinator_required
     @staticmethod
     def logbookComment(request, logbook_id):
         """supervisor comment on student logbook"""

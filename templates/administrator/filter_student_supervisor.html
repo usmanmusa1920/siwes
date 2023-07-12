@@ -9,19 +9,19 @@
 
 <!-- page title -->
 {% block title %}
-  <title>Search staff user</title>
+  <title>Search student supervisor user</title>
 {% endblock title %}
 
 <!-- content of the page -->
 {% block main %}
   <div class="main_wrapp_head">
-    <p>Search staff user by identification number (ID number)</p>
+    <p>Search student supervisor user by identification number (ID number)</p>
   </div>
   <div class="main_wrapp">
     <div class="wrapp_form">
-      <p><b>Filter staff user:</b></p>
-      <small>Search staff user by identification number (staff ID)</small>
-      <form action="{% url 'administrator:filter_staff_user' %}" method="get" class="search">
+      <p><b>Filter student supervisor user:</b></p>
+      <small>Search student supervisor user by identification number (student supervisor ID)</small>
+      <form action="{% url 'administrator:filter_student' %}" method="get" class="search">
         {% csrf_token %}
         <input type="search" name="search_q" placeholder="Filter ID" required>
         <button type="submit">search</button>
@@ -32,23 +32,31 @@
   {% if users %}
     <div class="main_wrapp">
       <div class="wrapp_form">
-        <h2>Staff user found</h2>
+        <h2>Student supervisor user found</h2>
         <small>We found the following result for your search</small>
       </div>
       {% for user in users %}
-        <div class="wrapp_list">
-          <a>{{user}}</a>
+        <div class="wrapp_form">
+          <div class="wrapp_list">
+            <a>
+              {{user.first_name}}
+              {% if user.middle_name %}
+                {{user.middle_name}}
+              {% endif %}
+              {{user.last_name}} ({{user.matrix_no}})</a>
+            <form action="{% url 'auth:general_profile' user.matrix_no %}">
+              {% csrf_token %}
+              <button type="submit">{{user.first_name}}`s profile</button>
+            </form>
+          </div>
           <small>
             {{user.first_name}}
             {% if user.middle_name %}
               {{user.middle_name}}
             {% endif %}
-            {{user.last_name}}
+            {{user.last_name}} is student of faculty of <span class="req_new_dodger">{{user.student_training_coordinator.dept_hod.department.faculty.name}}</span> department of
+            <span class="req_new_dodger">{{user.student_training_coordinator.dept_hod.department.name}}</span>
           </small>
-          <form action="#" method="post">
-            {% csrf_token %}
-            <button type="submit">View</button>
-          </form>
         </div>
       {% endfor %}
     </div>
@@ -58,7 +66,7 @@
         <div class="wrapp_null">
           <div class="wrapp_in_null">
             <div class="main_wrapp_null">
-              <p>We can't find that staff user ({{search_panel}})</p>
+              <p>We can't find that student supervisor ({{search_panel}})</p>
             </div>
           </div>
         </div>
@@ -88,7 +96,7 @@
     </div>
   {% endif %}
   <div class="main_wrapp_what">
-    <p>Search staff user by identification number (ID number)</p>
+    <p>Search student user by identification number (ID number)</p>
   </div>
   </div>
 {% endblock main %}

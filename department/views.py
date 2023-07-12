@@ -2,9 +2,17 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
-from .models import Department, DepartmentHOD, DepartmentTrainingCoordinator
-from student.models import TrainingStudent, StudentLetterRequest, AcceptanceLetter
 from django.contrib.auth import get_user_model
+from .models import (
+    Department, DepartmentHOD, DepartmentTrainingCoordinator, StudentSupervisor, Letter)
+from administrator.models import (
+    Administrator)
+from faculty.models import (
+    Faculty, FacultyDean)
+from student.models import (
+    TrainingStudent, StudentLetterRequest, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook)
+from toolkit.decorators import (
+    admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, check_phone_number, block_student_update_profile, restrict_access_student_profile, val_id_num)
 
 
 User = get_user_model()
@@ -13,14 +21,15 @@ User = get_user_model()
 class DepartmentCls:
     """department related views"""
 
-    @login_required
+    @admin_required
     @staticmethod
     def students(request, dept_name):
         """department list of students"""
         depart = Department.objects.filter(name=dept_name).first()
-        depart_hod = DepartmentHOD.objects.filter(department=depart).first()
-        depart_coord = DepartmentTrainingCoordinator.objects.filter(dept_hod=depart_hod).first()
-        all_students = TrainingStudent.objects.filter(student_training_coordinator=depart_coord).order_by('-date_joined')
+        depart_hod = DepartmentHOD.objects.filter(department=depart, is_active=True).first()
+        depart_coord = DepartmentTrainingCoordinator.objects.filter(dept_hod=depart_hod, is_active=True).first()
+        all_students = TrainingStudent.objects.filter(department=depart).order_by('-date_joined')
+        # all_students = TrainingStudent.objects.filter(student_training_coordinator=depart_coord).order_by('-date_joined')
 
         # for student
         paginator_student = Paginator(all_students, 10)
@@ -33,7 +42,7 @@ class DepartmentCls:
         }
         return render(request, 'department/students_list.html', context=context)
 
-    @login_required
+    @admin_required
     @staticmethod
     def studentsLevel(request, level):
         """department list of students base on level"""
@@ -55,7 +64,7 @@ class DepartmentCls:
 class Coordinator:
     """Trianing coordinator related views"""
 
-    @login_required
+    @coordinator_required
     @staticmethod
     def profile(request, id_no):
         """coordinator profile"""
@@ -88,7 +97,7 @@ class Coordinator:
         }
         return render(request, 'department/training_coordinator_profile.html', context=context)
 
-    @login_required
+    @coordinator_required
     @staticmethod
     def sessionStudent(request):
         """coordinator list of student page"""
@@ -108,7 +117,7 @@ class Coordinator:
         }
         return render(request, 'department/training_coordinator_session_student.html', context=context)
 
-    @login_required
+    @coordinator_required
     @staticmethod
     def viewStudentLetter(request, letter_id):
         """
@@ -124,7 +133,7 @@ class Coordinator:
         }
         return render(request, 'department/student_upload_acceptance_letter.html', context=context)
 
-    @login_required
+    @coordinator_required
     @staticmethod
     def acknowledgeStudent(request, student_id):
         """accept student as (coordinator add student in his list)"""

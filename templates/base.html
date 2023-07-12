@@ -92,6 +92,20 @@
           <a class="dash_link" href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Training Coordinator</a>
           <a class="dash_link" href="{% url 'auth:general_profile' request.user.identification_num %}">General profile</a>
 
+          <span class="link_ref">Incumbent:</span>
+          <a class="dash_link" href="{% url 'administrator:active_faculty_dean' %}">Incumbent dean of faculties</a>
+          <a class="dash_link" href="{% url 'administrator:active_department_hod' %}">Incumbent departments HOD</a>
+          <a class="dash_link" href="{% url 'administrator:active_department_training_coord' %}">Incumbent department training coordinators</a>
+
+          <span class="link_ref">Filter:</span>
+          <a class="dash_link" href="{% url 'administrator:filter_staff' %}">Staff</a>
+          <a class="dash_link" href="{% url 'administrator:filter_administrator' %}">Administrator</a>
+          <a class="dash_link" href="{% url 'administrator:filter_faculty_dean' %}">Faculty dean</a>
+          <a class="dash_link" href="{% url 'administrator:filter_department_hod' %}">Department HOD</a>
+          <a class="dash_link" href="{% url 'administrator:filter_department_training_coordinator' %}">Department training coordinator</a>
+          <a class="dash_link" href="{% url 'administrator:filter_student_supervisor' %}">Student training supervisor</a>
+          <a class="dash_link" href="{% url 'administrator:filter_student' %}">Student</a>
+
           <span class="link_ref">Register:</span>
           <a class="dash_link" href="{% url 'auth:register_administrator' %}">Administrator</a>
           <a class="dash_link" href="{% url 'auth:register_faculty' %}">Faculty</a>
@@ -101,13 +115,6 @@
           <a class="dash_link" href="{% url 'auth:register_department_training_coordinator' %}">Department training coordinator</a>
           <a class="dash_link" href="{% url 'auth:register_student_training_coordinatro' %}">Student training supervisor</a>
           <a class="dash_link" href="{% url 'auth:register_student' %}">Student</a>
-
-          <span class="link_ref">Filter:</span>
-          <a class="dash_link" href="{% url 'administrator:filter_staff_user' %}">Staff user</a>
-          <a class="dash_link" href="{% url 'administrator:filter_faculty_dean' %}">Faculty dean</a>
-          <a class="dash_link" href="{% url 'administrator:filter_department_hod' %}">Department HOD</a>
-          <a class="dash_link" href="{% url 'administrator:filter_department_training_coordinator' %}">Department training coordinator</a>
-          <a class="dash_link" href="{% url 'administrator:filter_student_user' %}">Student user</a>
         {% endif %}
         
         <span class="link_ref">Authentication</span>

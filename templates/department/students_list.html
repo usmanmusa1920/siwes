@@ -21,7 +21,7 @@
     <div class="wrapp_form">
       <p><b>Filter student user:</b></p>
       <small>Search student user by identification number (student ID)</small>
-      <form action="{% url 'administrator:filter_student_user' %}" method="get" class="search">
+      <form action="{% url 'administrator:filter_student' %}" method="get" class="search">
         {% csrf_token %}
         <input type="search" name="search_q" placeholder="Filter by ID" required>
         <button type="submit">search</button>

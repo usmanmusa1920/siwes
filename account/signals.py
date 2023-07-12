@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Profile
 from django.conf import settings
+from .models import Profile
 
 
 User = settings.AUTH_USER_MODEL

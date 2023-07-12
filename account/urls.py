@@ -1,5 +1,6 @@
 from django.urls import path, include
-from .views import LoginCustom, LogoutCustom, changePassword, generalProfile, Register, UpdateProfile
+from .views import (
+    LoginCustom, LogoutCustom, changePassword, generalProfile, Register, UpdateProfile)
 
 
 app_name = 'auth'
