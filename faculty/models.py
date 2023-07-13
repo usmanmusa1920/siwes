@@ -19,13 +19,14 @@ class Faculty(models.Model):
 
     def __str__(self):
         return f'Faculty of {self.name}'
+    
+
+from department.models import Department
 
 
 class FacultyDean(models.Model):
     dean = models.ForeignKey(User, on_delete=models.CASCADE)
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
-    
-    from department.models import Department
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
 
     # this is staff ranks or universities he/she attended them e.g

@@ -26,10 +26,7 @@ class DepartmentCls:
     def students(request, dept_name):
         """department list of students"""
         depart = Department.objects.filter(name=dept_name).first()
-        depart_hod = DepartmentHOD.objects.filter(department=depart, is_active=True).first()
-        depart_coord = DepartmentTrainingCoordinator.objects.filter(dept_hod=depart_hod, is_active=True).first()
         all_students = TrainingStudent.objects.filter(department=depart).order_by('-date_joined')
-        # all_students = TrainingStudent.objects.filter(student_training_coordinator=depart_coord).order_by('-date_joined')
 
         # for student
         paginator_student = Paginator(all_students, 10)

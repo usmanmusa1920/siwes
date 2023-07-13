@@ -280,7 +280,6 @@ class Student:
         """
         stu_usr = User.objects.get(id=request.user.id)  # student user
         std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
-        coord = std.student_training_coordinator
 
         train = std.student_training_coordinator.dept_hod.department.faculty.training
         faculty = std.student_training_coordinator.dept_hod.department.faculty.name

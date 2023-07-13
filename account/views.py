@@ -257,12 +257,9 @@ class Register:
                 raw_ranks = form.cleaned_data['ranks']
                 raw_level_rank_title_1 = form.cleaned_data['level_rank_title_1']
                 raw_level_rank_title_2 = form.cleaned_data['level_rank_title_2']
-                # raw_faculty = request.POST['raw_faculty']
                 raw_dept = request.POST['raw_dept']
-
-                # db_faculty = Department.objects.filter(name=raw_faculty).first()
+                
                 db_dept = Department.objects.filter(name=raw_dept).first()
-
                 faculty_name = db_dept.faculty.name
                 db_faculty = Faculty.objects.filter(name=faculty_name).first()
 
@@ -304,14 +301,11 @@ class Register:
                 # grabbing user raw datas (from html form)
                 all_department = request.POST['all_department']
                 raw_identification_num = form.cleaned_data['identification_num']
-                # raw_faculty = request.POST['raw_faculty']
-                # db_faculty = Faculty.objects.filter(name=raw_faculty).first()
 
                 # quering department, using the `all_department` variable above
                 dept = Department.objects.filter(name=all_department).first()
                 # quering department HOD, using the `dept` variable above
-                dept_hod = DepartmentHOD.objects.filter(
-                    department=dept, is_active=True).first()
+                dept_hod = DepartmentHOD.objects.filter(department=dept, is_active=True).first()
                 
                 faculty_name = dept.faculty.name
                 db_faculty = Faculty.objects.filter(name=faculty_name).first()
@@ -357,12 +351,12 @@ class Register:
 
                 # quering department, using the `all_department` variable above
                 dept = Department.objects.filter(name=all_department).first()
+
                 # quering department HOD, using the `dept` variable above
-                dept_hod = DepartmentHOD.objects.filter(
-                    department=dept, is_active=True).first()
+                dept_hod = DepartmentHOD.objects.filter(department=dept, is_active=True).first()
+
                 # quering department training coordinator, using the `dept_hod` variable above
-                dept_training_coordinator = DepartmentTrainingCoordinator.objects.filter(
-                    dept_hod=dept_hod, is_active=True).first()
+                dept_training_coordinator = DepartmentTrainingCoordinator.objects.filter(dept_hod=dept_hod, is_active=True).first()
 
                 # registering user to department training coordinator table
                 new_student_supervisor = StudentSupervisor(
