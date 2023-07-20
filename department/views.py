@@ -10,52 +10,14 @@ from administrator.models import (
 from faculty.models import (
     Faculty, FacultyDean)
 from student.models import (
-    TrainingStudent, StudentLetterRequest, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook)
+    TrainingStudent, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult)
 from toolkit.decorators import (
     admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, check_phone_number, block_student_update_profile, restrict_access_student_profile, val_id_num)
+from toolkit import y_session
+from administrator.all_models import Session
 
 
 User = get_user_model()
-
-
-class DepartmentCls:
-    """department related views"""
-
-    @admin_required
-    @staticmethod
-    def students(request, dept_name):
-        """department list of students"""
-        depart = Department.objects.filter(name=dept_name).first()
-        all_students = TrainingStudent.objects.filter(department=depart).order_by('-date_joined')
-
-        # for student
-        paginator_student = Paginator(all_students, 10)
-        page_student = request.GET.get('page')
-        students = paginator_student.get_page(page_student)
-
-        context = {
-            'depart': depart,
-            'students': students,
-        }
-        return render(request, 'department/students_list.html', context=context)
-
-    @admin_required
-    @staticmethod
-    def studentsLevel(request, level):
-        """department list of students base on level"""
-        depart_coord = DepartmentTrainingCoordinator.objects.filter(coordinator=request.user).first()
-        all_students = TrainingStudent.objects.filter(student_training_coordinator=depart_coord, level=level).order_by('-date_joined')
-
-        # for student
-        paginator_student = Paginator(all_students, 10)
-        page_student = request.GET.get('page')
-        students = paginator_student.get_page(page_student)
-
-        context = {
-            'level': level,
-            'students': students,
-        }
-        return render(request, 'department/students_level.html', context=context)
 
 
 class Coordinator:
@@ -65,46 +27,52 @@ class Coordinator:
     @staticmethod
     def profile(request, id_no):
         """coordinator profile"""
-        training_tutor = DepartmentTrainingCoordinator.objects.filter(id_no=id_no).first()
+        training_tutor = User.objects.filter(identification_num=id_no).first()
+        training_tutor_tab = DepartmentTrainingCoordinator.objects.filter(
+            id_no=training_tutor.identification_num).first()
 
         # filtering coordinator training student
-        coordinator_students = TrainingStudent.objects.filter(student_training_coordinator=training_tutor)
+        coordinator_students = TrainingStudent.objects.filter(student_training_coordinator=training_tutor).order_by('-date_joined')
 
         # filtering coordinator training student that upload acceptance letter
-        students_acceptances = AcceptanceLetter.objects.filter(receiver_acept=training_tutor)
+        students_acceptances = AcceptanceLetter.objects.filter(receiver_acept=training_tutor_tab).order_by('-timestamp')
+
+        # filtering coordinator training student base on session
+        student_session = TrainingStudent.objects.filter(
+            student_training_coordinator=training_tutor, session=y_session()).order_by('-date_joined')
 
         # filtering coordinator training student whose their level is 200
-        student_of_200 = TrainingStudent.objects.filter(student_training_coordinator=training_tutor, level='200')
+        student_of_200 = TrainingStudent.objects.filter(
+            student_training_coordinator=training_tutor, level='200')
 
         # filtering coordinator training student whose their level is 300
-        student_of_300 = TrainingStudent.objects.filter(student_training_coordinator=training_tutor, level='300')
-
-        # grab student filter base on level
-        if request.method == 'POST':
-            level_raw = request.POST['filter_level']
-            return redirect('department:department_students_level', level=level_raw)
-            # return redirect(reverse('department:department_students_level', kwargs={'level': level_raw}))
-
+        student_of_300 = TrainingStudent.objects.filter(
+            student_training_coordinator=training_tutor, level='300')
+        
         context = {
-            'training_tutor': training_tutor,
+            'training_tutor': training_tutor_tab,
             'coordinator_students': coordinator_students,
             'students_acceptances': students_acceptances,
             'student_of_200': student_of_200,
             'student_of_300': student_of_300,
+            'student_session': student_session,
         }
         return render(request, 'department/training_coordinator_profile.html', context=context)
 
     @coordinator_required
     @staticmethod
-    def sessionStudent(request):
+    def sessionStudent(request, which_session=y_session()):
         """coordinator list of student page"""
         coord_dept_request_user = request.user
-        training_tutor = DepartmentTrainingCoordinator.objects.filter(coordinator=coord_dept_request_user).first()
+        training_tutor = DepartmentTrainingCoordinator.objects.filter(
+            coordinator=coord_dept_request_user).first()
+        training_tutor_tab = User.objects.filter(
+            identification_num=training_tutor.id_no).first()
 
         # filtering coordinator training student
-        students_paginator = TrainingStudent.objects.filter(student_training_coordinator=training_tutor)
+        students_paginator = TrainingStudent.objects.filter(student_training_coordinator=training_tutor_tab, session=which_session).order_by('-date_joined')
 
-        paginator = Paginator(students_paginator, 3)  # paginating by 3
+        paginator = Paginator(students_paginator, 10)  # paginating by 10
         page = request.GET.get('page')
         coordinator_students = paginator.get_page(page)
 
@@ -116,9 +84,32 @@ class Coordinator:
 
     @coordinator_required
     @staticmethod
+    def students_acceptance_letter(request):
+        """
+        coordinator list of student that upload acceptance letter, whether viwed or not
+        """
+        coord_dept_request_user = request.user
+        training_tutor = DepartmentTrainingCoordinator.objects.filter(coordinator=coord_dept_request_user).first()
+
+        # filtering students acceptance letter
+        students_acceptances = AcceptanceLetter.objects.filter(receiver_acept=training_tutor).order_by('timestamp')
+
+        # paginating by 10
+        paginator = Paginator(students_acceptances, 10)
+        page = request.GET.get('page')
+        students_letters = paginator.get_page(page)
+
+        context = {
+            'training_tutor': training_tutor,
+            'students_letters': students_letters,
+        }
+        return render(request, 'department/training_coordinator_student_accpetance_letter.html', context=context)
+    
+    @coordinator_required
+    @staticmethod
     def viewStudentLetter(request, letter_id):
         """
-        If student departmental training coordinator view his/her acceptance letter,
+        If student `active` departmental training coordinator view student acceptance letter,
         it will automatically mark it as reviewed using this view
         """
         letter = AcceptanceLetter.objects.get(id=letter_id)
@@ -135,11 +126,171 @@ class Coordinator:
     def acknowledgeStudent(request, student_id):
         """accept student as (coordinator add student in his list)"""
         # filtering student in user model using id
-        student_to_add = User.objects.get(id=student_id)
+        student_to_add_usr = User.objects.get(id=student_id)
+        student_to_add = TrainingStudent.objects.filter(
+            matrix_no=student_to_add_usr).first()
 
         # filtering coordinator in user model using id
         coord_in_usr = User.objects.get(id=request.user.id)
         coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_in_usr.identification_num).first()
         coord.training_students.add(student_to_add)
-        messages.success(request, f'You acknowledged ({student_to_add.identification_num}) into your this session student')
+        if student_to_add in coord.training_students.all():
+            messages.success(request, f'You alrady acknowledged ({student_to_add.matrix_no}) into your this session student')
+        else:
+            messages.success(request, f'You acknowledged ({student_to_add.matrix_no}) into your this session student')
         return redirect('department:training_coordinator_session_student')
+    
+    @coordinator_required
+    @staticmethod
+    def assign_supervisor(request, id_no):
+        """for 200 level"""
+
+        # departmental training coordinator instance
+        training_tutor = DepartmentTrainingCoordinator.objects.filter(id_no=id_no).first()
+
+        if request.method == 'POST':
+            
+            # grabbing data from html form
+            req_supervisor = request.POST['raw_supervisors']
+            supervisor = StudentSupervisor.objects.filter(id_no=req_supervisor).first()
+            
+            # convert request data to python dictionary, since if
+            # we use `request.POST['raw_students']` will only capture the last
+            # item, but we, we want all
+            req_dict = dict(request.POST)
+            req_student = req_dict['raw_students']
+            
+            # looping over the req_student data in other to add them to a supervisor
+            for student in req_student:
+                student_user = TrainingStudent.objects.filter(matrix_no=student).first()
+                student_user.is_assign_supervisor_200
+                student_user.save()
+                supervisor.training_students.add(student_user)
+            messages.success(
+                request, f'You just assign ({req_student}) to a supervisor `{supervisor.first_name} {supervisor.last_name}` ({supervisor.id_no})')
+            return redirect('department:assign_supervisor', id_no=id_no)
+        context = {
+            'training_tutor': training_tutor,
+        }
+        return render(request, 'department/assign_supervisor.html', context=context)
+    
+
+    @coordinator_required
+    @staticmethod
+    def release_student_result(request, matrix_no):
+        """this is view that create student result"""
+        student_user = TrainingStudent.objects.filter(matrix_no=matrix_no).first()
+        student_coord = student_user.student_training_coordinator
+        student_supervisor = student_user.student_training_coordinator
+
+        is_result = StudentResult.objects.filter(
+            student=student_user, level=student_user.level).first()
+        # checking result
+        if is_result:
+            messages.warning(
+                request, f'You already released out this student ({student_user.first_name}) result of {student_user.level} level')
+            return redirect(
+                'department:student_result_page', matrix_no=matrix_no, level=student_user.level)
+        # student training result
+        new_result = StudentResult(
+            student=student_user, c_first_name=student_coord.first_name, c_middle_name=student_coord.middle_name, c_last_name=student_coord.last_name, c_id_no=student_coord.identification_num, c_email=student_coord.email, c_phone_number=student_coord.phone_number, s_first_name=student_supervisor.first_name, s_middle_name=student_supervisor.middle_name, s_last_name=student_supervisor.last_name, s_id_no=student_supervisor.identification_num, s_email=student_supervisor.email, s_phone_number=student_supervisor.phone_number, level=student_user.level, session=student_user.session
+            )
+        new_result.save()
+
+        # incrementing student level by 100, if it is 200
+        if student_user.level == 200:
+            # finish 200 level training
+            student_user.is_finish_200 = True
+            student_user.level += 100
+            student_user.save()
+
+        # deactivating any `is_current_session` which is True to False
+        prev_sess = Session.objects.filter(is_current_session=True)
+        last_prev_sess = Session.objects.filter(is_current_session=True).last()
+        for sess in prev_sess:
+            sess.is_current_session = False
+            sess.save()
+
+        # if we find the query, we will use it for the following tricks
+        if last_prev_sess:
+            # grabing data from `last_prev_sess`
+            a_sess = last_prev_sess.session
+            b_sess = a_sess.split('/') # making it a list
+            c_sess = int(b_sess[0])+1 # taking index 0 of the list and plus it with one
+            d_sess = int(b_sess[1])+1 # taking index 1 of the list and plus it with one
+            e_sess = '/'.join([str(c_sess), str(d_sess)]) # new session
+            final_sess = e_sess
+            # creating new session
+            new_sess = Session(session=final_sess, is_current_session=True)
+            new_sess.save()
+        else:
+            # if we don`t find the query we, will create new one
+            new_sess = Session(is_current_session=True)
+            new_sess.save()
+
+        messages.success(
+            request, f'You just released ({student_user}) result for {student_user.level})')
+        return redirect(
+            'department:student_result_page', matrix_no=matrix_no, level=student_user.level)
+    
+
+    # @coordinator_required
+    @staticmethod
+    def student_result(request, matrix_no, level):
+        student_user = TrainingStudent.objects.filter(matrix_no=matrix_no).first()
+        result = StudentResult.objects.filter(student=student_user, level=level).first()
+
+        # checking result
+        if not result:
+            messages.success(
+                request, f'The result is not out for ({student_user}) of {student_user.level})')
+            return redirect(
+                'student:logbook_entry', matrix_no=matrix_no, student_level=student_user.level)
+        
+        context = {
+            'result': result,
+            'student_user': student_user,
+        }
+        return render(request, 'student/student_result.html', context=context)
+    
+
+    @coordinator_required
+    @staticmethod
+    def new_letter(request):
+        usr_tab = request.user
+        usr = DepartmentTrainingCoordinator.objects.filter(
+            coordinator=usr_tab).first()
+            
+        # current school session
+        current_sch_sess = Session.objects.filter(is_current_session=True).last()
+        
+        if request.method == 'POST':
+
+            # level
+            level = request.POST['level']
+
+            # letter
+            placement_lett = Letter(
+                coordinator=usr, session=current_sch_sess.session, text='This is our students placement letter')
+            acceptance_lett = Letter(
+                coordinator=usr, session=current_sch_sess.session, text='This is our students acceptance letter', letter='acceptance letter')
+            
+            # assigning level
+            if level == '200':
+                placement_lett.is_200 = True
+                acceptance_lett.is_200 = True
+            elif level == '300':
+                placement_lett.is_300 = True
+                acceptance_lett.is_300 = True
+
+            placement_lett.save()
+            acceptance_lett.save()
+            messages.success(
+                request, f'Your releaser new 200 level acceptance and placement letter of your student for {y_session()} session')
+            return redirect(reverse(
+                'department:training_coordinator_profile', kwargs={'id_no': usr.id_no}))
+        context = {
+            'usr': usr,
+            'school_session': current_sch_sess.session,
+        }
+        return render(request, 'department/new_letter.html', context=context)
