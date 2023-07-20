@@ -1,0 +1,36 @@
+<!-- extending from base.html file -->
+{% extends 'base.html' %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>New school session</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="wrapper">
+    <div class="wrapp_head">
+      <h1>New session</h1>
+    </div>
+    <div class="wrapp_main">
+      <div class="wrapp_top_greynish">
+        <small>This is new session</small>
+      </div>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="wrapp_form">
+          <p><b>Enter new session:</b></p>
+          <input type="text" name="session" class="wrapp_input" placeholder="Enter session" value="{{date_sess}}" required>
+          <button type="submit">Release</button>
+        </div>
+        &nbsp; <input type="checkbox" name="agree" required> Do you agree to release new school session?
+      </form>
+    </div>
+  </div>
+{% endblock main %}

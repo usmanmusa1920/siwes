@@ -1,0 +1,256 @@
+<!-- extending from base.html file -->
+{% extends 'base.html' %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock css %}
+
+<!-- js file link -->
+{% block js %}
+  <script src="{% static 'js/auth.js' %}"></script>
+{% endblock js %}
+
+<!-- page title -->
+{% block title %}
+  <title>New {{who_to_reg}} page</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="wrapper">
+    <div class="wrapp_head">
+      <h1>Register new {{who_to_reg}} page</h1>
+    </div>
+    <div class="wrapp_main">
+      <div class="wrapp_top_greynish">
+        <small>New {{who_to_reg}} creation page</small>
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        
+        <!-- only administrator, faculty dean, department hod, 
+          training coordinator, and student supervisor will fall into this (below) condition -->
+        {% if who_to_reg == 'administrator' or who_to_reg == 'faculty dean' or who_to_reg == 'department hod' or who_to_reg == 'training coordinator' or who_to_reg == 'student supervisor' %}
+          <title>New administrator page</title>
+          <div class="wrapp_form">
+            <h2>Fill in user information</h2>
+            <div class="wrapp_info">
+              <p>Register new {{who_to_reg}} page</p>
+            </div>
+            <input type="text" name="first_name" oninput="automate_passwd()" id="first_name" class="wrapp_input" placeholder="First name" autofocus required>
+            <input type="text" name="middle_name" class="wrapp_input" placeholder="Middle name (optional)">
+            <input type="text" name="last_name" oninput="automate_passwd()" id="last_name" class="wrapp_input" placeholder="Last name" required>
+            <input type="text" name="identification_num" oninput="automate_passwd()" id="id_no" class="wrapp_input" placeholder="ID number" required>
+            {% if form.identification_num.errors %}
+              <div class="wrapp_danger">
+                <p><i><strong><small>{{form.identification_num.errors}}</small></strong></i></p>
+              </div>
+            {% endif %}
+
+            <p><b>Select gender:</b></p>
+            <span class="wrapp_radio">
+              <input type="radio" name="gender" value="female" class="rad" required> Female
+            </span>
+            <span class="wrapp_radio">
+              <input type="radio" name="gender" value="male" class="rad" required> Male
+            </span>
+
+            <div class="calender">
+              <input type="date" name="date_of_birth" class="wrapp_input" required>
+            </div>
+            {% if form.date_of_birth.errors %}
+              <div class="wrapp_warn">
+                <small>{{form.date_of_birth.errors}}</small>
+              </div>
+            {% endif %}
+        
+            <input type="tel" name="phone_number" placeholder="Phone number (e.g +2348012345678)" class="wrapp_input" minlength="14" required>
+            <div class="wrapp_warn">
+              <p><i><strong><small>The phone number should be in international format e.g +2348012345678</small></strong></i></p>
+            </div>
+
+            <input type="text" name="email" class="wrapp_input" placeholder="Email addres" required>
+            {% if form.email.errors %}
+              <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
+            {% endif %}
+
+            <p><b>Select country:</b></p>
+            <div class="wrapp_select">
+              {{form.country}}
+            </div>
+          </div>
+
+          {% if who_to_reg == 'administrator' %}
+            <div class="wrapp_form">
+              <p><b>Description:</b></p>
+              <textarea name="description" class="wrapp_text" placeholder="Write small description about new administrator user (optional)"></textarea>
+            </div>
+          {% elif who_to_reg == 'faculty dean' %}
+            <div class="wrapp_form">
+              <!-- <p><b>Select faculty:</b></p>
+              <select name="raw_faculty" class="wrapp_select" required>
+                <option value="" selected="">Select faculty</option>
+                {% for faculty in faculties %}
+                  <option value="{{faculty.name}}">{{faculty.name}}</option>
+                {% endfor %}
+              </select> -->
+
+              <p><b>Select his/her department:</b></p>
+              <select name="raw_dept" class="wrapp_select" required>
+                <option value="" selected="">Select department</option>
+                {% for dept in departments %}
+                  <option value="{{dept.name}}">{{dept.name}}</option>
+                {% endfor %}
+              </select>
+    
+              <p><b>Ranks:</b></p>
+              <small>This is staff ranks or universities he/she attended them e.g
+                # B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO</small>
+              <textarea name="ranks" class="wrapp_text" placeholder="Ranks e.g B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO (optional)"></textarea>
+
+              <p><b>Level rank title 1:</b></p>
+              <small>`level_rank_title_1` is the title that is prefix before the first name of a staff like `PROF` or `Dr` e.g  PROF. MU'AZU ABUBAKAR GUSAU  or  Dr Lawal Saad.</small>
+              <textarea name="level_rank_title_1" class="wrapp_text" placeholder="Level rank title 1 e.g PROF or Dr (optional)"></textarea>
+
+              <p><b>Level rank title 2:</b></p>
+              <small>`level_rank_title_2` is the title that is prefix after the name of a staff like `Ph.D.` e.g  Lawal Saad Ph.D</small>
+              <textarea name="level_rank_title_2" class="wrapp_text" placeholder="Level rank title 1 e.g Ph.D (optional)"></textarea>
+            </div>
+          {% elif who_to_reg == 'department hod' %}
+            <div class="wrapp_form">
+              <p><b>Select department:</b></p>
+              <select name="raw_dept" class="wrapp_select" required>
+                <option value="" selected="">Select department</option>
+                {% for dept in departments %}
+                  <option value="{{dept.name}}">{{dept.name}}</option>
+                {% endfor %}
+              </select>
+    
+              <p><b>Ranks:</b></p>
+              <small>This is staff ranks or universities he/she attended them e.g
+                # B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO</small>
+              <textarea name="ranks" class="wrapp_text" placeholder="Ranks e.g B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO (optional)"></textarea>
+            </div>
+          {% elif who_to_reg == 'training coordinator' or who_to_reg == 'student supervisor' %}
+            <div class="wrapp_form">
+              {% if who_to_reg == 'student supervisor' %}
+                <p><b>small_desc:</b></p>
+                <textarea name="small_desc" class="wrapp_text" placeholder="Supervisor small_desc (address)" required></textarea>
+
+                <p><b>Select departmental training coordinator to assign to new supervisor:</b></p>
+                <select name="all_coord" class="wrapp_select" required>
+                  <option value="" selected="">Select coordinator</option>
+                  {% for coord in all_coord %}
+                    <option value="{{coord.id_no}}">Coordinator of {{coord.department.name}}</option>
+                  {% endfor %}
+                </select>
+              {% else %}
+                <p><b>Select department:</b></p>
+                <select name="all_department" class="wrapp_select" required>
+                  <option value="" selected="">Select department</option>
+                  {% for hod in all_dept_hod %}
+                    <option value="{{hod.department.name}}">{{hod.department.name}}</option>
+                  {% endfor %}
+                </select>
+              {% endif %}
+            </div>
+          {% endif %}
+          
+        <!-- faculty -->
+        {% elif who_to_reg == 'faculty' %}
+          <div class="wrapp_form">
+            <h2>Fill in faculty information</h2>
+            <div class="wrapp_info">
+              <p>Register new faculty.</p>
+            </div>
+            <p><b>Select faculty training:</b></p>
+            <div class="wrapp_select">
+              {{form.training}}
+            </div>
+
+            <input type="text" name="name" class="wrapp_input" placeholder="Faculty name" autofocus required>
+            <input type="text" name="email" class="wrapp_input" placeholder="Faculty email" required>
+            {% if form.email.errors %}
+              <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
+            {% endif %}
+
+            <input type="text" name="website" class="wrapp_input" placeholder="Faculty website">
+            <input type="tel" name="phone_number" placeholder="Phone number (e.g +2348012345678)" class="wrapp_input" minlength="14"  required>
+            <div class="wrapp_warn">
+              <p><i><strong><small>The phone number should be in international format e.g +2348012345678</small></strong></i></p>
+            </div>
+          </div>
+          <div class="wrapp_form">
+            <p><b>Description:</b></p>
+            <textarea name="description" class="wrapp_text" placeholder="Write small description about new faculty (optional)"></textarea>
+          </div>
+
+        <!-- department -->
+        {% elif who_to_reg == 'department' %}
+          <div class="wrapp_form">
+            <h2>Fill in department information</h2>
+            <div class="wrapp_info">
+              <p>Register new department.</p>
+            </div>
+            <p><b>Select department faculty:</b></p>
+            <!-- <p><b>Select faculty:</b></p> -->
+            <select name="raw_faculty" class="wrapp_select" required>
+              <option value="" selected="">Select faculty</option>
+              {% for faculty in faculties %}
+                <option value="{{faculty.name}}">{{faculty.name}}</option>
+              {% endfor %}
+            </select>
+
+            <input type="text" name="name" class="wrapp_input" placeholder="Department name" autofocus required>
+            <input type="text" name="email" class="wrapp_input" placeholder="Department email" required>
+            {% if form.email.errors %}
+              <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
+            {% endif %}
+
+            <input type="text" name="website" class="wrapp_input" placeholder="Department website">
+            <input type="tel" name="phone_number" placeholder="Phone number (e.g +2348012345678)" class="wrapp_input" minlength="14"  required>
+            <div class="wrapp_warn">
+              <p><i><strong><small>The phone number should be in international format e.g +2348012345678</small></strong></i></p>
+            </div>
+          </div>
+          
+          <div class="wrapp_form">
+            <p><b>Description:</b></p>
+            <textarea name="description" class="wrapp_text" placeholder="Write small description about new department (optional)"></textarea>
+          </div>
+        {% endif %}
+
+        {% if who_to_reg == 'administrator' or who_to_reg == 'faculty dean' or who_to_reg == 'department hod' or who_to_reg == 'training coordinator' or who_to_reg == 'student supervisor' %}
+          <div class="wrapp_form">
+            <p><b>Security:</b></p>
+            <small>Default password for new {{who_to_reg}} is his/her (first name, first letter + ID number + last name, first letter), he/she can change it later</small>
+            <!-- 
+              E.g
+              first_name = Usman
+              last_name = Musa
+              admin_no = 234578
+              password = u234578m
+            -->
+            
+            <!-- we hide these two passwords field using `form.css`, because the value will be automatically field once we inputed student matrix number -->
+            <input type="password" name="password1" id="pwd1" placeholder="Enter password" class="wrapp_input" minlength="8" required>
+            {% if form.password1.errors %}
+              <p><i><strong><small>{{form.new_password2.errors}}</small></strong></i></p>
+            {% endif %}
+            <input type="password" name="password2" id="pwd2" placeholder="Confirm password" class="wrapp_input" minlength="8" required>
+            {{form.errors}}
+            {% if form.password2.errors %}
+              <p><i><strong><small>{{form.password2.errors}}</small></strong></i></p>
+              <p><i><strong><small>Password should not be similar to your account information, with a min-length of 8 character and avoid using numeric password entirely. Include symbols to make it strong like (?/@.^*) etc.</small></strong></i></p>
+            {% endif %}
+          </div>
+        {% endif %}
+        <div class="wrapp_form">
+          <button type="submit">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock main %}

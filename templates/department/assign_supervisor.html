@@ -1,0 +1,89 @@
+<!-- extending from base.html file -->
+{% extends 'base.html' %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock css %}
+
+<!-- js file link -->
+{% block js %}
+  <script src="{% static 'js/auth.js' %}"></script>
+{% endblock js %}
+
+<!-- page title -->
+{% block title %}
+  <title>Assign students supervisor for 200 page</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="wrapper">
+    <div class="wrapp_head">
+      <h1>Assign students supervisor for 200 page</h1>
+    </div>
+    <div class="wrapp_main">
+      <div class="wrapp_top_greynish">
+        <small>Assign students supervisor for 200</small>
+      </div>
+
+      <form method="post">
+        {% csrf_token %}
+        {% if training_tutor.training_students.all.count > 0 %}
+          <div class="wrapp_form">
+            <p><b>Select students:</b></p>
+            <small>
+              <i>
+                Hold down “Control”, or “Command” on a Mac, to select more than one.
+              </i>
+            </small>
+            <select name="raw_students" class="wrapp_select_multiple" multiple required>
+              {% for student in training_tutor.training_students.all %}
+                <option value="{{student.matrix_no}}">{{student.first_name}} {{student.last_name}} ({{student.matrix_no}}) {{student.department}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        {% endif %}
+
+        <!-- suprvisor -->
+        {% if training_tutor.training_supervisors.all.count > 0 %}
+          <div class="wrapp_form">
+
+            <p><b>Select supervisor for the selected students above:</b></p>
+            {% for supp in training_tutor.training_supervisors.all %}
+              <span class="wrapp_radio">
+                <input type="radio" name="raw_supervisors" value="{{supp.id_no}}" onclick="get_supervisor(this)" required> {{supp.first_name}} {{supp.last_name}} ({{supp.id_no}})
+              </span>
+
+              <!-- looping supervisor student if grather than one -->
+              {% if supp.training_students.all.count > 0 %}
+                <li>
+                  <i>Student that {{supp.first_name}} will suprvise</i>
+                </li>
+                {% for student in supp.training_students.all %}
+                  <!-- only show student that are from thesame department with the coordinator -->
+                  {% if student.department == training_tutor.department %}
+                    {% if student.is_assign_supervisor_200 %}
+                      <small>&nbsp; &nbsp; <b>{{student.first_name}} {{student.last_name}}</b> ({{student}}) {{student.department}}</small>
+                    {% else %}
+                      <!-- pass -->
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                <li>
+                  <i>{{supp.first_name}} have zero student to supervise</i>
+                </li>
+              {% endif %}
+              <br>
+            {% endfor %}
+          </div>
+        {% endif %}
+        <div class="wrapp_form">
+          <button type="submit">Assign</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock main %}

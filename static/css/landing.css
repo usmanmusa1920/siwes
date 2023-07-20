@@ -1,0 +1,245 @@
+.main{
+  background: whitesmoke;
+}
+
+.main_column{
+  background: transparent;
+}
+/* the above are override from the base.html */
+
+.main_wrapp_head{
+  width: 100%;
+  background: darkgrey;
+  color: white;
+  padding: 10px;
+}
+
+.wrapp_all{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+@media only screen and (max-width: 700px){
+  .wrapp_all{
+    flex-direction: column;
+  }
+}
+
+.wrapp_left{
+  width: 70%;
+}
+
+@media only screen and (max-width: 700px){
+  .wrapp_left{
+    width: 100%;
+  }
+}
+
+.wrapp_top_left{
+  background: url(dash_img_2.jpg) no-repeat center center/cover;
+  width: 100%;
+  min-height: 200px;
+  border-radius: 20px;
+  padding: 10px;
+  margin: 3px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wrapp_top_left_admin{
+  background: wheat;
+  width: 100%;
+  min-height: 200px;
+  border-radius: 20px;
+  padding: 10px;
+  margin: 3px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: solid rgb(235, 207, 157) 1px;
+}
+
+@media only screen and (max-width: 700px){
+  .wrapp_top_left{
+    margin: 10px 0;
+    flex-direction: column;
+  }
+}
+
+.round{
+  width: 45%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media only screen and (max-width: 700px){
+  .round{
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+.round_in{
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: whitesmoke;
+}
+
+.round_in div{
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: conic-gradient(
+    #5483b9 0%,
+    rgb(192, 214, 255) 50%,
+    #69bcc7 60%,
+    rgb(110, 113, 247) 100%
+  );
+  color: white;
+}
+
+.straight{
+  width: 50%;
+  height: 150px;
+  border-radius: 10px;
+  background: rgb(6, 6, 58);
+  display: flex;
+  padding: 0 10px;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.straight_admin {
+  width: 90%;
+  height: 150px;
+  border-radius: 10px;
+  background: whitesmoke;
+  display: flex;
+  padding: 0 10px;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.straight_admin a {
+  background: wheat;
+  color: black;
+  text-decoration: none;
+  padding: 3px 5px;
+}
+
+@media only screen and (max-width: 700px){
+  .straight{
+    width: 100%;
+  }
+}
+
+.straight a{
+  background: white;
+  color: rgb(6, 6, 58);
+  text-decoration: none;
+  padding: 3px 5px;
+}
+
+.wrapp_bot_left{
+  width: 100%;
+  min-height: 250px;
+  background: url(dash_img_1.jpg) no-repeat center center/cover;
+  border-radius: 20px;
+  padding: 10px;
+  margin: 3px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+@media only screen and (max-width: 700px){
+  .wrapp_bot_left{
+    margin: 10px 0;
+  }
+}
+
+.wrapp_bot_left h2{
+  color: white;
+  text-align: center;
+}
+
+.wrapp_right{
+  width: 25%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  background: rgb(202, 241, 202);
+  border: solid lightgreen 1px;
+  border-radius: 20px;
+}
+
+.wrapp_right_admin {
+  width: 25%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  background: rgb(102, 102, 126);
+  border: solid rgb(6, 6, 58) 1px;
+  border-radius: 20px;
+}
+
+@media only screen and (max-width: 700px){
+  .wrapp_right{
+    width: 100%;
+    margin: 5px 0;
+    padding: 5px 0;
+  }
+}
+
+.wrapp_right a{
+  color: rgb(6, 6, 58);
+  background: white;
+  border-radius: 5px;
+  padding: 3px 5px;
+  width: 70%;
+  text-decoration: none;
+}
+
+.wrapp_right_admin a {
+  color: rgb(6, 6, 58);
+  background: white;
+  border-radius: 5px;
+  padding: 3px 5px;
+  width: 70%;
+  text-decoration: none;
+}
+
+@media only screen and (max-width: 700px){
+  .wrapp_right a{
+    width: 90%;
+    margin: 5px 0;
+    padding: 5px 7px;
+    font-size: large;
+  }
+}
+
+.img{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.img img{
+  width: 90%;
+}

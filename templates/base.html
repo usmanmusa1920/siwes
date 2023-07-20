@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="{% static 'media/favicon.ico' %}" type="image/x-icon">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  {% block css %}
+    <!-- page css here -->
+  {% endblock css %}
+
+  <script src="{% static 'js/base.js' %}"></script>
+  {% block js %}
+    <!-- page js here -->
+  {% endblock js %}
+  
+  {% block title %}
+    <!-- page title here -->
+  {% endblock title %}
+</head>
+
+<!-- the onmousover event is to be giving us the current time (which is in the landing page i.e landing.html), just like an ajax implementation, also the onload too -->
+<body onmouseover="current_timing()" onload="current_timing()">
+  <div class="container">
+    <div class="left">
+      <div class="dash_side">
+        <h1 class="dash">
+          <!-- <span>Fugus SIWES</span> -->
+        </h1>
+        <span class="close" onclick="setTimeout(hideMenu, 300)">
+          <span>&times;</span>
+        </span>
+        <span class="logo_wrapper">
+          <div class="logo">
+            <div>
+              <!-- <img src="{% static 'media/logo.png' %}" alt="Fugus logo" srcset=""> -->
+            </div>
+          </div>
+          {% if request.user.is_staff %}
+            <a href="{% url 'department:training_coordinator_profile' request.user.identification_num %}" class="dash_link">
+              {{request.user.first_name}}
+              {% if request.user.middle_name %}
+                {{request.user.middle_name}}
+              {% endif %}
+              {{request.user.last_name}}
+            </a>
+          {% elif request.user.is_coordinator %}
+            <a href="{% url 'department:training_coordinator_profile' request.user.identification_num %}" class="dash_link">
+              {{request.user.first_name}}
+              {% if request.user.middle_name %}
+                {{request.user.middle_name}}
+              {% endif %}
+              {{request.user.last_name}}
+            </a>
+          {% else %}
+            <a href="{% url 'student:profile' request.user.identification_num %}" class="dash_link">
+              {{request.user.first_name}}
+              {% if request.user.middle_name %}
+                {{request.user.middle_name}}
+              {% endif %}
+              {{request.user.last_name}}
+            </a>
+          {% endif %}
+        </span>
+        
+        {% if request.user.is_admin %}
+          <h3 class="category">Campus Admin</h3>
+          <a class="dash_link">Admin on student SIWES</a>
+        {% elif request.user.is_coordinator %}
+          <h3 class="category">Training Coordinator</h3>
+          <a class="dash_link">Coordinator on student SIWES</a>
+        {% elif request.user.is_student %}
+          <h3 class="category">200/300 level</h3>
+          <a class="dash_link">Student SIWES</a>
+        {% else %}
+          <h3 class="category">200/300 level</h3>
+          <a class="dash_link">Student SIWES</a>
+        {% endif %}
+
+        {% if request.user.is_student %}
+          <span class="link_ref">Fees</span>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Pay Fees</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Payment history</a>
+          
+          <span class="link_ref">Forms</span>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Medical Form</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Particulars Form</a>
+          
+          <span class="link_ref">Hostel</span>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Apply</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Status</a>
+          
+          <span class="link_ref">Course Registeration</span>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Register Courses</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Add Electives Courses</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">ViewCourses</a>
+          
+          <span class="link_ref">Exams and Result</span>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Exam Card</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">View Result</a>
+          <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Senate Approved Result</a>
+        {% elif request.user.is_coordinator %}
+          <!-- pass -->
+        {% elif request.user.is_admin %}
+          <span class="link_ref">Profile:</span>
+          <a class="dash_link" href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Training Coordinator</a>
+          <a class="dash_link" href="{% url 'auth:general_profile' request.user.identification_num %}">General profile</a>
+
+          <span class="link_ref">Incumbent:</span>
+          <a class="dash_link" href="{% url 'administrator:active_faculty_dean' %}">Incumbent dean of faculties</a>
+          <a class="dash_link" href="{% url 'administrator:active_department_hod' %}">Incumbent departments HOD</a>
+          <a class="dash_link" href="{% url 'administrator:active_department_training_coord' %}">Incumbent department training coordinators</a>
+
+          <span class="link_ref">Filter:</span>
+          <a class="dash_link" href="{% url 'administrator:filter_staff' %}">Staff</a>
+          <a class="dash_link" href="{% url 'administrator:filter_administrator' %}">Administrator</a>
+          <a class="dash_link" href="{% url 'administrator:filter_faculty_dean' %}">Faculty dean</a>
+          <a class="dash_link" href="{% url 'administrator:filter_department_hod' %}">Department HOD</a>
+          <a class="dash_link" href="{% url 'administrator:filter_department_training_coordinator' %}">Department training coordinator</a>
+          <a class="dash_link" href="{% url 'administrator:filter_student_supervisor' %}">Student training supervisor</a>
+          <a class="dash_link" href="{% url 'administrator:filter_student' %}">Student</a>
+
+          <span class="link_ref">Register:</span>
+          <a class="dash_link" href="{% url 'auth:new_session' %}">New session</a>
+          <a class="dash_link" href="{% url 'auth:register_administrator' %}">Administrator</a>
+          <a class="dash_link" href="{% url 'auth:register_faculty' %}">Faculty</a>
+          <a class="dash_link" href="{% url 'auth:register_department' %}">Department</a>
+          <a class="dash_link" href="{% url 'auth:register_faculty_dean' %}">Faculty dean</a>
+          <a class="dash_link" href="{% url 'auth:register_department_hod' %}">Department HOD</a>
+          <a class="dash_link" href="{% url 'auth:register_department_training_coordinator' %}">Department training coordinator</a>
+          <a class="dash_link" href="{% url 'auth:register_student_training_coordinatro' %}">Student training supervisor</a>
+          <a class="dash_link" href="{% url 'auth:register_student' %}">Student</a>
+        {% endif %}
+        
+        <span class="link_ref">Authentication</span>
+        {% if request.user.is_staff %}
+          <a href="/admin" class="dash_link">Admin</a>
+        {% endif %}
+        <a href="{% url 'auth:change_password' %}" class="dash_link">Change password</a>
+        <a href="{% url 'auth:logout' %}" class="dash_link">Logout</a>
+        <br>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="header">
+        <div class="header_column">
+
+          <div class="header_left">
+            <a onclick="setTimeout(showMenu, 300)">
+              <h1 class="showmenu">
+                <img src="{% static 'media/show_menu.png' %}" alt="">
+              </h1>
+            </a>
+            <a href="/">
+              <h1 class="fugus">
+                <!-- Fugus -->
+              </h1>
+            </a>
+          </div>
+
+          <div class="header_right">
+            {% if request.user.is_staff %}
+              <a href="{% url 'auth:general_profile' request.user.identification_num %}">Profile</a>
+            {% elif request.user.is_coordinator %}
+              <a href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Profile</a>
+            {% elif request.user.is_student %}
+              <a href="{% url 'student:profile' request.user.identification_num %}"><h4>Profile</h4></a>
+            {% else %}
+              <a href="#"><h4>Profile</h4></a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="main_column">
+          
+          <div class="main_top">
+            {% if messages %}
+              {% for flash_msg in messages %}
+                <div class="alert_{{flash_msg.tags}}">{{flash_msg}}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+          {% block main %}
+            <!-- content of main block -->
+          {% endblock main %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

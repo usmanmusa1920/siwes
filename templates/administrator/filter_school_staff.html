@@ -1,0 +1,94 @@
+<!-- extending from base.html file -->
+{% extends 'base.html' %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>Search staff user</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="main_wrapp_head">
+    <p>Search staff user by identification number (ID number)</p>
+  </div>
+  <div class="main_wrapp">
+    <div class="wrapp_form">
+      <p><b>Filter staff user:</b></p>
+      <small>Search staff user by identification number (staff ID)</small>
+      <form action="{% url 'administrator:filter_staff' %}" method="get" class="search">
+        {% csrf_token %}
+        <input type="search" name="search_q" placeholder="Filter ID" required>
+        <button type="submit">search</button>
+      </form>
+    </div>
+  </div>
+
+  {% if users %}
+    <div class="main_wrapp">
+      <div class="wrapp_form">
+        <h2>Staff user found</h2>
+        <small>We found the following result for your search</small>
+      </div>
+      {% for user in users %}
+        <div class="wrapp_list">
+          <a>
+            Staff
+            {{user.first_name}}
+            {% if user.middle_name %}
+              {{user.middle_name}}
+            {% endif %}
+            {{user.last_name}} ({{user.identification_num}})
+          </a>
+          <form action="{% url 'auth:general_profile' user.identification_num %}">
+            {% csrf_token %}
+            <button type="submit">{{user.first_name}}`s profile</button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="main_wrapp">
+      <div class="wrapp_form">
+        <div class="wrapp_null">
+          <div class="wrapp_in_null">
+            <div class="main_wrapp_null">
+              <p>We can't find that staff user ({{search_panel}})</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  
+  {% if users.paginator.count > 10 %}
+    <div class="wrapp_pages">
+      <div class="wrapp_pages_column">
+        {% if users.has_previous %}
+          <a href="?page={{users.previous_page_number}}&search_q={{search_panel}}" class="surf">previous</a>
+          <a>...</a>
+        {% endif %}
+        {% for num in users.paginator.page_range %}
+          {% if users.number == num %}
+            <a href="?page={{num}}&search_q={{search_panel}}" class="current">{{num}}</a>
+          {% elif num > users.number|add:'-3' and num < users.number|add:'3' %}
+            <a href="?page={{num}}&search_q={{search_panel}}" class="page_link">{{num}}</a>
+          {% endif %}
+        {% endfor %}
+        {% if users.has_next %}
+          <a>...</a>
+          <a href="?page={{users.next_page_number}}&search_q={{search_panel}}" class="surf">next</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+  <div class="main_wrapp_what">
+    <p>Search staff user by identification number (ID number)</p>
+  </div>
+  </div>
+{% endblock main %}

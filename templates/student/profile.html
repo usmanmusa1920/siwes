@@ -1,0 +1,197 @@
+<!-- extending from base.html file -->
+{% extends 'base.html' %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>Student profile page</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="main_wrapp_head">
+    {% if std.matrix_no == request.user.identification_num %}
+      <p>Your {{std.faculty.training}} profile</p>
+    {% else %}
+      <p>{{std.student.first_name}}`s {{std.faculty.training}} profile</p>
+    {% endif %}
+  </div>
+
+  <div class="main_wrapp">
+    <div class="wrapp_img">
+      <img src="{{std.student.profile.image.url}}" alt="">
+    </div>
+
+    <div class="wrapp_info">
+      <div class="wrapp_info_left">
+        <p>
+          <b>Name:</b>
+          {{std.student.first_name}}
+          {% if std.middle_name %}
+            {{std.student.middle_name}}
+          {% endif %}
+          {{std.student.last_name}}
+        </p>
+        <p>
+          <b>Matrix no:</b> {{std.matrix_no}}
+        </p>
+        <p>
+          <b>Faculty:</b> {{std.faculty.name}}
+        </p>
+        <p>
+          <b>Level:</b> {{std.level}}
+        </p>
+        <p>
+          {% if std.faculty.name == "Science" %}
+            <b>Department:</b> B.Sc {{std.department.name}}
+          {% elif std.department.faculty.name == "Education" %}
+            <b>Department:</b> B.Ed {{std.department.name}}
+          {% else %}
+            <b>Department:</b> {{std.department.name}}
+          {% endif %}
+        </p>
+        {% if std.matrix_no == request.user.identification_num %}
+          <br>
+          <a class="delete_me">Report problem</a>
+        {% endif %}
+        <br>
+        <a href="#" class="me_good">View result</a>
+      </div>
+
+      {% if std.matrix_no == request.user.identification_num %}
+        <div class="wrapp_info_right">
+          {% if acceptance_200 %}
+            <a href="{% url 'student:uploaded_acceptance_letter_200' %}" class="good_me">View acceptance letter for 200</a>
+            <br>
+            <br>
+            {% if wr_200 %}
+              <a href="{% url 'student:logbook_entry' request.user.identification_num 200 %}" class="good_me">Logbook entry 200</a>
+            {% endif %}
+          {% else %}
+            {% if wr_200 %}
+              <a href="{% url 'student:uploaded_acceptance_letter_200' %}" class="good_me">Upload acceptance letter for 200</a>
+              <br>
+              <br>
+            {% else %}
+              <!-- pass -->
+            {% endif %}
+          {% endif %}
+          
+          {% if acceptance_300 %}
+            <a href="{% url 'student:uploaded_acceptance_letter_300' %}" class="me_good">View acceptance letter for 300</a>
+            <br>
+            <br>
+            {% if wr_300 %}
+              <a href="{% url 'student:logbook_entry' request.user.identification_num 300 %}" class="good_me">Logbook entry 300</a>
+            {% endif %}
+          {% else %}
+            {% if wr_300 %}
+              <a href="{% url 'student:uploaded_acceptance_letter_300' %}" class="me_good">Upload acceptance letter for 300</a>
+              <br>
+              <br>
+            {% else %}
+              <!-- pass -->
+            {% endif %}
+          {% endif %}
+          
+          {% if wr_200 %}
+            <!-- <a href="{% url 'student:logbook_entry' request.user.identification_num 200 %}" class="good_me">Logbook entry 200</a> -->
+          {% else %}
+            <a href="{% url 'student:apply_training' 200 %}" class="good_me">Apply training for 200</a>
+            <br>
+            <br>
+          {% endif %}
+
+          {% if std.level == '300' %}
+            {% if wr_300 %}
+              <!-- <a href="{% url 'student:logbook_entry' request.user.identification_num 300 %}" class="me_good">Logbook entry 300</a> -->
+            {% else %}
+              <a href="{% url 'student:apply_training' 300 %}" class="me_good">Apply training for 300</a>
+              <br>
+              <br>
+            {% endif %}
+          {% endif %}
+
+          {% if std.is_finish_200 %}
+            <!-- pass -->
+          {% else %}
+            {% if letter_a_200 or letter_p_200 %}
+              <a href="{% url 'student:placement_letter_200' %}" class="good_me">Placement letter for 200</a>
+              <a href="{% url 'student:acceptance_letter_200' %}" class="good_me">Acceptance letter for 200</a>
+              <br>
+              <br>
+            {% endif %}
+          {% endif %}
+
+          {% if std.is_finish_200 %}
+            {% if std.is_finish_300 %}
+              <!-- pass -->
+            {% else %}
+              {% if letter_a_300 or letter_p_300 %}
+                <a href="{% url 'student:placement_letter_200' %}" class="me_good">Placement letter for 300</a>
+                <a href="{% url 'student:acceptance_letter_200' %}" class="me_good">Acceptance letter for 300</a>
+                <br>
+                <br>
+              {% endif %}
+            {% endif %}
+          {% endif %}
+          
+          <hr>
+          <br>
+          <a href="{% url 'auth:student_profile_update' %}" class="good_me">Edit profile</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="wrapp_level">
+      {% if std.matrix_no == request.user.identification_num %}
+        <div>
+          {% if acceptance_200 %}
+            Your 200 level acceptance is available
+          {% else %}
+            Your 200 level acceptance is pending
+          {% endif %}
+        </div>
+        {% if std.level == "300" %}
+          <div>
+            {% if acceptance_300 %}
+              Your 300 level acceptance is available
+            {% else %}
+              Your 300 level acceptance is pending
+            {% endif %}
+          </div>
+        {% endif %}
+      {% else %}
+        <div>
+          {% if acceptance_200 %}
+            {{std.student.first_name}}`s 200 level acceptance is available
+          {% else %}
+            {{std.student.first_name}}`s 200 level acceptance is pending
+          {% endif %}
+        </div>
+        {% if std.level == "300" %}
+          <div>
+            {% if acceptance_300 %}
+              {{std.student.first_name}}`s 300 level acceptance is available
+            {% else %}
+              {{std.student.first_name}}`s 300 level acceptance is pending
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <div class="main_wrapp_what">
+      {% if std.matrix_no == request.user.identification_num %}
+        <p>This is your {{std.faculty.training}} profile</p>
+      {% else %}
+        <p>This is {{std.student.first_name}}`s {{std.faculty.training}} profile</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock main %}

@@ -1,0 +1,186 @@
+<!-- extending from base.html file -->
+{% extends 'base.html' %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+  <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>Staff profile page</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="main_wrapp_head">
+    <p>Departmental training coordinator profile</p>
+  </div>
+
+  <div class="main_wrapp">
+    <div class="section">
+      <a href="{% url 'department:training_coordinator_profile' training_tutor.id_no %}" class="sec_current">Your profile</a>
+      <a href="{% url 'department:training_coordinator_session_student' %}" class="sec_link">{{training_tutor.faculty.training|upper}} student</a>
+      <a href="{% url 'department:training_coordinator_student_acceptance_letter' %}" class="sec_link">student acceptance letter</a>
+      <a href="{% url 'department:assign_supervisor' training_tutor.id_no %}" class="sec_link">Assign supervisor</a>
+    </div>
+
+    <!-- departmental training supervisors -->
+    {% if training_tutor.training_supervisors.all.count > 0 %}
+      <div class="main_wrapp_head">
+        <p>Your current department supervisors ({{training_tutor.training_supervisors.all.count}})</p>
+      </div>
+      {%  for supp in training_tutor.training_supervisors.all %}
+        <div class="wrapp_list">
+          <a href="{% url 'auth:general_profile' supp.id_no %}">
+            {{supp.first_name}}
+            {% if usr.middle_name %}
+              {{supp.middle_name}}
+            {% endif %}
+            {{supp.last_name}}
+          </a>
+          <small>Active: {{supp.is_active}}</small>
+          <form action="{% url 'auth:general_profile' supp.id_no %}" method="post">
+            {% csrf_token %}
+            <button type="submit">profile</button>
+          </form>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- filtering coordinator training student -->
+    {% if coordinator_students %}
+      <div class="main_wrapp_head">
+        <p>Student that will do IT this year ({{student_session.all.count}})</p>
+      </div>
+      {%  for student in coordinator_students|slice:":3" %}
+        <div class="wrapp_list">
+          <a href="{% url 'auth:general_profile' student.matrix_no %}">
+            {{student.first_name}}
+            {% if usr.middle_name %}
+              {{student.middle_name}}
+            {% endif %}
+            {{student.last_name}}
+          </a>
+          <small>{{student.level}} level student</small>
+
+          <!-- checking if the current student in the loop is in the training coordinator list of student, so that to give link to add him or not -->
+          {% if student.student in training_tutor.training_students.all %}
+            <form method="post">
+              <button type="button">Acknowledged</button>
+            </form>
+          {% else %}
+            <form action="{% url 'department:coordinator_acknowledge_student' student.matrix_no %}" method="post">
+              <button type="button">ADD</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endfor %}
+      {% if coordinator_students.all.count > 3 %}
+        <div class="wrapp_pages">
+          <div class="wrapp_pages_column">
+            <a href="{% url 'department:training_coordinator_session_student' %}" class="page_link">View all this year {{training_tutor.faculty.training|upper}} student</a>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+
+    <!-- Student request for IT letter -->
+    <!-- <div class="main_wrapp_head">
+      <p>Student request for IT letter</p>
+    </div>
+    <div class="request">
+      <a href="#">Usman Musa</a>
+      <small>25, March 2019</small>
+      <form action="#" method="post" class="form_peace">
+        <button type="submit">Accept</button>
+      </form>
+      <form action="#" method="post" class="form_danger">
+        <button type="submit">Decline</button>
+      </form>
+    </div> -->
+
+    <!-- filtering coordinator training student that upload acceptance letter -->
+    {% if students_acceptances %}
+      <div class="main_wrapp_head">
+        <p>Student that upload acceptance letter</p>
+      </div>
+      {% for student in students_acceptances %}
+        <div class="wrapp_list">
+          <a href="{% url 'auth:general_profile' student.sender_acept.matrix_no %}">
+            {{student.sender_acept.first_name}}
+            {% if usr.middle_name %}
+              {{student.sender_acept.middle_name}}
+            {% endif %}
+            {{student.sender_acept.last_name}}
+          </a>
+          <small>{{student.sender_acept.level}} level</small>
+          {% if student.is_reviewed %}
+            <a href="{% url 'department:training_coordinator_view_student_letter' student.id %}" class="good_me">View letter (<small>is viewd</small>)</a>
+          {% else %}
+            <a href="{% url 'department:training_coordinator_view_student_letter' student.id %}" class="good_me">View letter (<small>is not viewd</small>)</a>
+          {% endif %}
+        </div>
+      {% endfor %}
+      {% if students_acceptances.all.count > 0 %}
+        <div class="wrapp_pages">
+          <div class="wrapp_pages_column">
+            <a href="{% url 'department:training_coordinator_student_acceptance_letter' %}" class="page_link">View all new upload student acceptance letter</a>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+
+    <!-- Coordinator information -->
+    <div class="main_wrapp_head">
+      <p>Coordinator information</p>
+    </div>
+    <div class="wrapp_info">
+      <div class="wrapp_info_left">
+        <p>
+          <b>Name:</b> {{training_tutor.first_name}} {{training_tutor.middle_name}} {{training_tutor.last_name}}
+        </p>
+        <p>
+          <b>Matrix no:</b> {{training_tutor.id_no}}
+        </p>
+        <p>
+          <b>Faculty:</b> {{training_tutor.faculty.name}}
+        </p>
+        <p>
+          {% if training_tutor.faculty.name == "Science" %}
+            <b>Department:</b> B.Sc {{training_tutor.department.name}}
+          {% elif training_tutor.faculty.name == "Education" %}
+            <b>Department:</b> B.Ed {{training_tutor.department.name}}
+          {% else %}
+            <b>Department:</b> {{training_tutor.department.name}}
+          {% endif %}
+        </p>
+
+        <!-- is he the current department training coordinator -->
+        <p>
+          <b>Status (is active):</b> {{training_tutor.is_active}}
+        </p>
+      </div>
+
+      <div class="wrapp_info_right">
+        <a href="#">Edit profile</a>
+        <br>
+        <a href="#">Request for IT letter</a>
+      </div>
+    </div>
+
+    <div class="wrapp_level">
+      <div>
+        You have a total of {{student_of_200.all.count}} IT student in 200 level
+      </div>
+      <div>
+        You have a total of {{student_of_300.all.count}} IT student in 300 level
+      </div>
+    </div>
+
+    <div class="main_wrapp_what">
+      <p>Departmental training coordinator profile</p>
+    </div>
+  </div>
+{% endblock main %}

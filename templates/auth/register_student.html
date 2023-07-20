@@ -1,0 +1,83 @@
+<!-- extending from auth/auth_base.html file -->
+{% extends 'auth/auth_base.html' %}
+{% load static %}
+
+<!-- page title -->
+{% block title %}
+  Register student
+{% endblock title %}
+
+{% block access_link %}
+  <a href="{% url 'auth:logout' %}" id="access_link">Logout</a>
+{% endblock access_link %}
+
+<!-- content of the page -->
+{% block main_left %}
+  <h1>Federal university gusau</h1>
+  <p class="txt_info">
+    Along Zaria - Sokoto Road, P.M.B 1001, Gusau, Zamfara State, Nigeria</p>
+  <img src="{% static 'media/logo.png' %}" alt="">
+  <p class="p_sub">
+    Students skills training programme designed to expose and prepare students of universities and other tertiary institutions for the Industrial Work situation they are likely to meet after graduation.
+  </p>
+{% endblock main_left %}
+
+
+{% block main_right %}
+  <div class="summary">
+    <h2>Federal university gusau</h2>
+    <p class="txt_info">
+      Students skills training programme designed to expose and prepare students of universities and other tertiary institutions for the Industrial Work situation they are likely to meet after graduation.</p>
+    <img src="{% static 'media/logo.png' %}" alt="">
+  </div>
+  <h2 class="title">
+    Student training (IT & TP) portal
+  </h2>
+  <span class="title_p">
+    Student training (IT & TP) portal
+  </span>
+
+  <form method="post">
+    {% csrf_token %}
+    <h2>Create student profile</h2>
+    <p>Create student training profile with the student appropriate informations</p>
+    <input type="text" name="identification_num" oninput="automate_passwd(is_student=true)" placeholder="Matrix number (reg number)" class="input" id="id_no" minlength="10" autofocus required>
+    {% if form.identification_num.errors %}
+      <p><i><strong><small>{{form.identification_num.errors}}</small></strong></i></p>
+    {% endif %}
+    
+    <div class="selection">
+      <select name="all_department" class="wrapp_select" required>
+        <option value="" selected="">Select student department</option>
+        {% for dept in all_dept %}
+          <option value="{{dept.dept_hod.department.name}}">{{dept.dept_hod.department}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    
+    <small>Default password for new student is <b>FUG</b> plus his/her <b>matrix number</b> e.g let say a student admission number is <b>234578</b> so now his/her password will be <b>FUG234578</b>. Student can change it later</small>
+    <!-- 
+      e.g
+      admin_no = 234578
+      pwd = FUG234578
+    -->
+
+    <!-- we hide these two password field using `auth.css`, because the value will be automatically field once we inputed student matrix number -->
+    <input type="password" name="password1" id="pwd1" placeholder="Enter password" class="input" minlength="8" required>
+    {% if form.password1.errors %}
+      <p><i><strong><small>{{form.new_password2.errors}}</small></strong></i></p>
+    {% endif %}
+    <input type="password" name="password2" id="pwd2" placeholder="Confirm password" class="input" minlength="8" required>
+    {{form.errors}}
+    {% if form.password2.errors %}
+      <p><i><strong><small>{{form.password2.errors}}</small></strong></i></p>
+      <p><i><strong><small>Password should not be similar to your account information, with a min-length of 8 character and avoid using numeric password entirely. Include symbols to make it strong like (?/@.^*) etc.</small></strong></i></p>
+    {% endif %}
+    
+    <button type="submit">Register</button>
+    <div class="links">
+      <a href="{% url 'auth:logout' %}">Logout</a>
+      <a>Forgot password</a>
+    </div>
+  </form>
+{% endblock main_right %}
