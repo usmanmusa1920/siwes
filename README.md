@@ -28,3 +28,11 @@ Datetime format:
 
     The issue might result due to going into python interpretter with `python` instead of the recommended way that django gave us `python manage.py shell`
 ```
+
+Landing page
+
+![snippet_theme](screen/landing.png)
+
+Login page
+
+![snippet_theme](screen/login.png)

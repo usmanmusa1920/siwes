@@ -10,7 +10,7 @@ from department.models import (
 from administrator.models import (
     Administrator)
 from student.models import (
-    TrainingStudent, StudentLetterRequest, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook)
+    TrainingStudent, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook)
 from toolkit.decorators import (
     admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, check_phone_number, block_student_update_profile, restrict_access_student_profile, val_id_num)
 
@@ -54,8 +54,8 @@ class FacultyCls:
         # grab department filter
         if request.method == 'POST':
             dept_raw = request.POST['filter_dept']
-            return redirect('department:department_students', dept_name=dept_raw)
-            # return redirect(reverse('department:department_students', kwargs={'dept_name': dept_raw}))
+            return redirect('administrator:department_students', dept_name=dept_raw)
+            # return redirect(reverse('administrator:department_students', kwargs={'dept_name': dept_raw}))
 
         context = {
             'faculty': faculty,
