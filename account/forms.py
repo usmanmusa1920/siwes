@@ -48,7 +48,9 @@ class DepartmentSignupForm(forms.ModelForm):
     """department signup form class"""
     class Meta:
         model = Department
-        fields = ['faculty', 'name', 'email', 'website', 'phone_number', 'description']
+        # note we didn`t include `faculty` in the field below
+        # because we want to assign it in the view
+        fields = ['name', 'email', 'website', 'phone_number', 'description']
 
 
 class DepartmentHODSignupForm(UserCreationForm):
@@ -71,11 +73,11 @@ class DepartmentCoordinatorSignupForm(UserCreationForm):
 
 class StudentSupervisorSignupForm(UserCreationForm):
     """student supervisor signup form class"""
-    location = forms.CharField(required=True)  # it is not part of User model fields
+    small_desc = forms.CharField(required=True)  # it is not part of User model fields
 
     class Meta:
         model = User
-        fields = ['first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'identification_num', 'email', 'phone_number', 'country', 'password1', 'password2', 'location']
+        fields = ['first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'identification_num', 'email', 'phone_number', 'country', 'password1', 'password2', 'small_desc']
 
 
 class StudentSignupForm(UserCreationForm):

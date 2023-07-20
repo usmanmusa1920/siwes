@@ -1,6 +1,7 @@
 from django.urls import path, include
 from .views import (
-    LoginCustom, LogoutCustom, changePassword, generalProfile, Register, UpdateProfile)
+    LoginCustom, LogoutCustom, changePassword, Register, UpdateProfile)
+from .profile import generalProfile
 
 
 app_name = 'auth'
@@ -12,6 +13,9 @@ urlpatterns = [
 
     # general profile
     path('general/profile/<int:id_no>', generalProfile, name='general_profile'),
+
+    # session
+    path('new/session', Register.session, name='new_session'),
 
     # register profile route
     path('register/administrator/', Register.administrator, name='register_administrator'),
