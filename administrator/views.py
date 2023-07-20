@@ -12,7 +12,7 @@ from faculty.models import (
 from department.models import (
     Department, DepartmentHOD, DepartmentTrainingCoordinator, StudentSupervisor, Letter)
 from student.models import (
-    TrainingStudent, StudentLetterRequest, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook)
+    TrainingStudent, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook)
 from toolkit.decorators import (
     admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, check_phone_number, block_student_update_profile, restrict_access_student_profile, val_id_num)
 

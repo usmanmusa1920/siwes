@@ -1,5 +1,6 @@
 from django.urls import path, include
 from .views import (Activate, Filter, Active)
+from .department import DepartmentCls
 
 
 app_name = 'administrator'
@@ -23,4 +24,8 @@ urlpatterns = [
     path('filter/department/training/coordinator', Filter.departmentTrainingCoordinator, name='filter_department_training_coordinator'),
     path('filter/student/supervisor', Filter.studentSupervisor, name='filter_student_supervisor'),
     path('filter/student', Filter.student, name='filter_student'),
+
+    # department
+    path('department/<str:dept_name>/students', DepartmentCls.students, name='department_students'),
+    path('department/<int:level>/students/level', DepartmentCls.studentsLevel, name='department_students_level'),
 ]
