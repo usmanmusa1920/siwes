@@ -277,7 +277,6 @@ class Register:
             form = DepartmentHODSignupForm(request.POST)
             if form.is_valid():
                 instance = form.save(commit=False)
-                instance.is_staff = True
                 instance.is_hod = True
                 instance.is_schoolstaff = True
                 instance.save()
@@ -465,7 +464,8 @@ class Register:
                 dept_hod = DepartmentHOD.objects.filter(department=dept, is_active=True).first()
 
                 # quering an active department training coordinator, using the `dept_hod` variable above. So that we can assign the new register student to the active training coordinator of his department
-                dept_training_coord_usr = DepartmentTrainingCoordinator.objects.filter(dept_hod=dept_hod, is_active=True).first()
+                dept_training_coord_usr = DepartmentTrainingCoordinator.objects.filter(
+                    dept_hod=dept_hod, is_active=True).first()
                 dept_training_coord = User.objects.filter(
                     identification_num=dept_training_coord_usr.id_no).first()
 

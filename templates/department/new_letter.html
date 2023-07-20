@@ -25,15 +25,11 @@
       <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="wrapp_form">
-          <p><b>Select student level:</b></p>
-          <span class="wrapp_radio">
-            <input type="radio" name="level" value="200" class="rad" required> 200 level
-          </span>
-          <span class="wrapp_radio">
-            <input type="radio" name="level" value="300" class="rad" required> 300 level
-          </span>
+          <p><b>About to release new letter for the below session:</b></p>
+          <input type="text" name="session" class="wrapp_input" placeholder="Session of {{school_session}}" value="{{school_session}}" required>
           <button type="submit">Release</button>
         </div>
+        &nbsp; <input type="checkbox" name="agree" required> Do you agree to release new letter of this session?
       </form>
       <div class="wrapp_form">
         <b>

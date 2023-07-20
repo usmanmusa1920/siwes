@@ -267,7 +267,7 @@ class Coordinator:
         if request.method == 'POST':
 
             # level
-            level = request.POST['level']
+            # level = request.POST['level']
 
             # letter
             placement_lett = Letter(
@@ -275,18 +275,18 @@ class Coordinator:
             acceptance_lett = Letter(
                 coordinator=usr, session=current_sch_sess.session, text='This is our students acceptance letter', letter='acceptance letter')
             
-            # assigning level
-            if level == '200':
-                placement_lett.is_200 = True
-                acceptance_lett.is_200 = True
-            elif level == '300':
-                placement_lett.is_300 = True
-                acceptance_lett.is_300 = True
+            # # assigning level
+            # if level == '200':
+            #     placement_lett.is_200 = True
+            #     acceptance_lett.is_200 = True
+            # elif level == '300':
+            #     placement_lett.is_300 = True
+            #     acceptance_lett.is_300 = True
 
             placement_lett.save()
             acceptance_lett.save()
             messages.success(
-                request, f'Your releaser new 200 level acceptance and placement letter of your student for {y_session()} session')
+                request, f'Your release new acceptance and placement letter of your student for {current_sch_sess.session} session')
             return redirect(reverse(
                 'department:training_coordinator_profile', kwargs={'id_no': usr.id_no}))
         context = {

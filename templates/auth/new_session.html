@@ -26,7 +26,7 @@
         {% csrf_token %}
         <div class="wrapp_form">
           <p><b>Enter new session:</b></p>
-          <input type="text" name="session" class="wrapp_input" placeholder="Enter session" value="{{date_sess}}" required>
+          <input type="text" name="session" class="wrapp_input" placeholder="Session of {{date_sess}}" value="{{date_sess}}" required>
           <button type="submit">Release</button>
         </div>
         &nbsp; <input type="checkbox" name="agree" required> Do you agree to release new school session?
