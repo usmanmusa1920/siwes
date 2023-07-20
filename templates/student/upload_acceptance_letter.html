@@ -9,36 +9,36 @@
 
 <!-- page title -->
 {% block title %}
-  <title>Uploaded student 300 acceptance letter page</title>
+  <title>Uploaded student {{level}} acceptance letter page</title>
 {% endblock title %}
 
 <!-- content of the page -->
 {% block main %}
   <div class="wrapper">
     <div class="wrapp_head">
-      <h1>Your uploaded 300 level acceptance letter</h1>
+      <h1>Your uploaded {{level}} level acceptance letter</h1>
     </div>
-
+    
     <div class="wrapp_main">
       <div class="wrapp_top_greynish">
-        <small>This is your 300 level acceptance letter you uploaded</small>
+        <small>This is your {{level}} level acceptance letter you uploaded</small>
       </div>
-      <form method="POST" action="{% url 'student:upload_acceptance_letter_300' %}" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'student:upload_acceptance_letter' level %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="wrapp_form">
-          {% if acceptance_300.image %}
-            <a href="{{acceptance_300.image.url}}" target="_blank" class="good_me">View full image</a>
+          {% if acceptance.image %}
+            <a href="{{acceptance.image.url}}" target="_blank" class="good_me">View full image</a>
             <div class="accept_let_img">
-              <img src="{{acceptance_300.image.url}}" alt="" srcset="">
+              <img src="{{acceptance.image.url}}" alt="" srcset="">
             </div>
             <br>
-            <a href="{% url 'student:update_acceptance_letter_300' %}" class="good_me">Change your 300 acceptance letter</a>
+            <a href="{% url 'student:update_acceptance_letter' level %}" class="good_me">Change your {{level}} acceptance letter</a>
           {% else %}
             <div class="wrapp_body">
               <div class="wrapp_null">
                 <div class="wrapp_in_null">
                   <div class="main_wrapp_null">
-                    <p>You have not upload your 300 level acceptance letter</p>
+                    <p>You have not upload your {{level}} level acceptance letter</p>
                   </div>
                 </div>
               </div>

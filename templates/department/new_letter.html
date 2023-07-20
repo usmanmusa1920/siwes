@@ -31,34 +31,6 @@
         </div>
         &nbsp; <input type="checkbox" name="agree" required> Do you agree to release new letter of this session?
       </form>
-      <div class="wrapp_form">
-        <b>
-          <h2>Letter of {{school_session}} session</h2>
-        </b>
-        <hr>
-        <br>
-
-        {% if comments %}
-          {% for comment in comments %}
-            <p><b>Supervisor</b>: {{comment.commentator.first_name}} {{comment.commentator.last_name}}</p>
-            <p><b>Grade</b>: {{comment.grade}}/100</p>
-            <p><b>Date</b>: {{comment.timestamp|date:'d F, Y'}}</p>
-            <p><b>Comment</b>: {{comment.comment}}</p>
-            <hr>
-            <br>
-          {% endfor %}
-        {% else %}
-          <div class="wrapp_body">
-            <div class="wrapp_null">
-              <div class="wrapp_in_null">
-                <div class="main_wrapp_null">
-                  <p>No comment for this logbook entry yet!</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        {% endif %}
-      </div>
     </div>
   </div>
 {% endblock main %}

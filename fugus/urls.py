@@ -21,6 +21,10 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.conf.urls.static import static
 from faculty.models import Faculty
+from toolkit import y_session
+from administrator.all_models import (
+    Faculty, FacultyDean, Department, DepartmentHOD, DepartmentTrainingCoordinator, TrainingStudent, StudentSupervisor, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult, Session
+    )
 
 """
     there are 4 already defined handler
@@ -40,6 +44,26 @@ def index(request):
         # redirecting student to finish his/her profile registeration
         messages.success(request, f'Complate your profile registeration')
         return redirect('auth:student_profile_update')
+    
+    # the below condition will notify if new session is needed
+    if request.user.is_admin:
+        current_sch_sess = Session.objects.filter(
+            is_current_session=True).last() # school session
+        fun_sess=y_session() # from `y_session` function
+
+        # spliting function session
+        fun_split=fun_sess.split('/')
+        fun_1=fun_split[0]
+        fun_2=fun_split[1]
+
+        # spliting current school session
+        curr_split=current_sch_sess.session.split('/')
+        curr_1=curr_split[0]
+        curr_2=curr_split[1]
+
+        # checking and comparing if both are equal to one
+        if int(fun_1) - int(curr_1) == 1 and int(fun_2) - int(curr_2) == 1:
+            messages.success(request, f'It seems new school session have to be created')
     context = {
         'faculties': faculties,
     }

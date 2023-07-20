@@ -9,20 +9,20 @@
 
 <!-- page title -->
 {% block title %}
-  <title>Update 200 acceptance letter page</title>
+  <title>Update {{level_s}} acceptance letter page</title>
 {% endblock title %}
 
 <!-- content of the page -->
 {% block main %}
   <div class="wrapper">
     <div class="wrapp_head">
-      <h1>Update 200 acceptance letter</h1>
+      <h1>Update {{level_s}} acceptance letter</h1>
     </div>
 
     <div class="wrapp_main">
       <!-- 200 level -->
       <div class="wrapp_top_greynish">
-        <small>This is your 200 level acceptance letter update page</small>
+        <small>This is your {{level_s}} level acceptance letter update page</small>
       </div>
       <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -32,7 +32,7 @@
             <div class="accept_let_img">
               <img src="{{form.instance.image.url}}" alt="" srcset="">
             </div>
-            {% if acceptance_200.is_reviewed == False and acceptance_200.can_change == False %}
+            {% if acceptance.is_reviewed == False and acceptance.can_change == False %}
               <div class="wrapp_info">
                 <p>You can change your uploaded acceptance letter before your training coordinator review it</p>
               </div>
@@ -44,11 +44,11 @@
               {% endif %}
               <br>
               <button type="submit">Submit</button>
-            {% elif acceptance_200.is_reviewed == True and acceptance_200.can_change == False %}
+            {% elif acceptance.is_reviewed == True and acceptance.can_change == False %}
               <div class="wrapp_info">
                 <p>Your acceptance letter has been viewd by your course coordinator, you can't change it now!</p>
               </div>
-            {% elif acceptance_200.is_reviewed == True and acceptance_200.can_change == False or acceptance_200.is_reviewed == True and acceptance_200.can_change == True %}
+            {% elif acceptance.is_reviewed == True and acceptance.can_change == False or acceptance.is_reviewed == True and acceptance.can_change == True %}
               <div class="wrapp_info">
                 <p>Your acceptance letter has been viewd by your course coordinator, but  you can still change it</p>
               </div>
@@ -66,7 +66,7 @@
               <div class="wrapp_null">
                 <div class="wrapp_in_null">
                   <div class="main_wrapp_null">
-                    <p>Update your 200 level acceptance letter</p>
+                    <p>Update your {{level_s}} level acceptance letter</p>
                   </div>
                 </div>
               </div>

@@ -137,6 +137,8 @@ class TrainingStudent(models.Model):
     session = models.CharField(max_length=255, blank=False, null=False, default=y_session())
     session_200 = models.CharField(max_length=255, blank=False, null=False, default=y_session())
     session_300 = models.CharField(max_length=255, blank=False, null=False, default=y_session())
+    is_apply_training_200 = models.BooleanField(default=False)
+    is_apply_training_300 = models.BooleanField(default=False)
     is_finish_200 = models.BooleanField(default=False)
     is_finish_300 = models.BooleanField(default=False)
     is_in_school = models.BooleanField(default=False)

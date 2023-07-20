@@ -77,13 +77,13 @@
         {% csrf_token %}
         <div class="wrapp_form">
           <h1>Student training result</h1>
-          {% if request.user.identification_num == std.matrix_no %}
+          {% if request.user.identification_num == student.matrix_no %}
             {% if  WR.week_no == 12 %}
               <div class="wrapp_info">
                 <p>Check your result if it is out</p>
               </div>
               <br>
-              <a href="{% url 'department:student_result_page' std.matrix_no std.level %}" class="good_me">Result</a>
+              <a href="{% url 'department:student_result_page' student.matrix_no student.level %}" class="good_me">Result</a>
             {% else %}
               <div class="wrapp_info">
                 <p>Be patient, Once you finish, your result will be out</p>
@@ -98,7 +98,7 @@
                 <p>You can release your student result, now!</p>
               </div>
               <br>
-              <a href="{% url 'department:release_result' std.matrix_no %}" class="good_me">Release</a>
+              <a href="{% url 'department:release_result' student.matrix_no %}" class="good_me">Release</a>
             {% else %}
               <div class="wrapp_info">
                 <p>Student have to finish his programme before you can release his/her result</p>

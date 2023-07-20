@@ -396,12 +396,6 @@ class Register:
                 # quering department, using the `all_department` variable above
                 coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_id).first()
 
-                # quering department HOD, using the `dept` variable above
-                # dept_hod = DepartmentHOD.objects.filter(department=dept, is_active=True).first()
-
-                # quering department training coordinator, using the `dept_hod` variable above
-                # dept_training_coordinator = DepartmentTrainingCoordinator.objects.filter(dept_hod=dept_hod, is_active=True).first()
-
                 # registering user to department training coordinator table
                 new_student_supervisor = StudentSupervisor(
                     supervisor=instance, first_name=instance.first_name, last_name=instance.last_name, email=instance.email, phone_number=instance.phone_number, id_no=instance.identification_num, small_desc=raw_small_desc, is_active=True
@@ -474,9 +468,9 @@ class Register:
                     student=instance, faculty=faculty, department=dept, student_training_coordinator=dept_training_coord, matrix_no=raw_identification_num)
                 new_student.save()
 
-                # # creating student weekly reader (for logbook entry for 200 level)
-                # WR = WeekReader(student=new_student)
-                # WR.save()
+                # adding new student into the cordinator `training_students` list
+                dept_training_coord_usr.training_students.add(new_student)
+                
                 messages.success(request, f'Student with admission number of {raw_identification_num} has been registered for training programme!')
                 return redirect('auth:general_profile', id_no=raw_identification_num)
         else:
@@ -527,11 +521,7 @@ class UpdateProfile:
                 std.phone_number = form.phone_number
                 std.is_in_school = True
                 std.save()
-
-                # querying student week reader for updating his level. May be he is not in 200 level which is the default one
-                # WR = WeekReader.objects.filter(student=std).first()
-                # WR.level = level
-                # WR.save()
+                
                 messages.success(request, f'Your profile has been updated!')
                 return redirect(reverse('student:profile', kwargs={'matrix_id': form.identification_num}))
         else:

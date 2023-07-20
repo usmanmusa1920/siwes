@@ -237,19 +237,19 @@ class Coordinator:
     # @coordinator_required
     @staticmethod
     def student_result(request, matrix_no, level):
-        student_user = TrainingStudent.objects.filter(matrix_no=matrix_no).first()
-        result = StudentResult.objects.filter(student=student_user, level=level).first()
+        student = TrainingStudent.objects.filter(matrix_no=matrix_no).first()
+        result = StudentResult.objects.filter(student=student, level=level).first()
 
         # checking result
         if not result:
             messages.success(
-                request, f'The result is not out for ({student_user}) of {student_user.level})')
+                request, f'The result is not out for ({student}) of {student.level})')
             return redirect(
-                'student:logbook_entry', matrix_no=matrix_no, student_level=student_user.level)
+                'student:logbook_entry', matrix_no=matrix_no, student_level=student.level)
         
         context = {
             'result': result,
-            'student_user': student_user,
+            'student': student,
         }
         return render(request, 'student/student_result.html', context=context)
     

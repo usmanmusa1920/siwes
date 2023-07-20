@@ -40,55 +40,47 @@ class Student:
     @staticmethod
     def profile(request, matrix_id):
         """student profile"""
-        std = TrainingStudent.objects.filter(matrix_no=matrix_id).first()
+
+        # student
+        student = TrainingStudent.objects.filter(matrix_no=matrix_id).first()
 
         # restricting any student from getting access to other students` profile
-        block_other_stu = restrict_access_student_profile(request, std.matrix_no)
+        block_other_stu = restrict_access_student_profile(request, student.matrix_no)
         if block_other_stu:
             return block_other_stu
-
-        # dean = FacultyDean.objects.filter(faculty=std.faculty).last()
-        # hod = DepartmentHOD.objects.filter(department=std.department).last()
-
-        coord_id = std.student_training_coordinator.identification_num
+        
+        # student coordinator
+        coord_id = student.student_training_coordinator.identification_num
         coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_id).first()
 
-        acceptance_200 = AcceptanceLetter.objects.filter(sender_acept=std, level='200').last()
-        acceptance_300 = AcceptanceLetter.objects.filter(sender_acept=std, level='300').last()
+        # filtering student uploaded acceptance letter
+        acceptance_200 = AcceptanceLetter.objects.filter(
+            sender_acept=student, level='200').last()
+        acceptance_300 = AcceptanceLetter.objects.filter(
+            sender_acept=student, level='300').last()
 
-        # letter 200 level
+        # acceptance and placement letter for 200 level of which
+        # student `session_200` match with the letter session
         letter_a_200 = Letter.objects.filter(
-            letter='acceptance letter', coordinator=coord, session=std.session_200).first()
+            letter='acceptance letter', coordinator=coord, session=student.session_200).first()
         letter_p_200 = Letter.objects.filter(
-            letter='placement letter', coordinator=coord, session=std.session_200).first()
+            letter='placement letter', coordinator=coord, session=student.session_200).first()
 
-        # # letter 300 level
+        # acceptance and placement letter for 300 level of which
+        # student `session_300` match with the letter session
         letter_a_300 = Letter.objects.filter(
-            letter='acceptance letter', coordinator=coord, session=std.session_300).first()
+            letter='acceptance letter', coordinator=coord, session=student.session_300).first()
         letter_p_300 = Letter.objects.filter(
-            letter='placement letter', coordinator=coord, session=std.session_300).first()
+            letter='placement letter', coordinator=coord, session=student.session_300).first()
         
-        # logbook
-        logbook_200 = WeekScannedLogbook.objects.filter(
-            student_lg=std, level='200').first()
-        logbook_300 = WeekScannedLogbook.objects.filter(
-            student_lg=std, level='300').first()
-        # week reader
-        wr_200 = WeekReader.objects.filter(
-            student=std, is_200=True).first()
-        wr_300 = WeekReader.objects.filter(
-            student=std, is_300=True).first()
-
         context = {
-            'std': std,
+            'student': student,
             'letter_a_200': letter_a_200,
             'letter_p_200': letter_p_200,
             'letter_a_300': letter_a_300,
             'letter_p_300': letter_p_300,
             'acceptance_200': acceptance_200,
             'acceptance_300': acceptance_300,
-            'wr_200': wr_200,
-            'wr_300': wr_300,
         }
         return render(request, 'student/profile.html', context=context)
     
@@ -100,6 +92,19 @@ class Student:
         # current login student
         student = TrainingStudent.objects.filter(
             matrix_no=request.user.identification_num).first()
+        
+        # the following, check if the student already
+        # done his training for 200 and 300 level
+        if level == 200 or level == '200':
+            if student.is_apply_training_200 == True:
+                messages.success(
+                    request, f'Your already apply for {level} level training')
+                return redirect(reverse('student:profile', kwargs={'matrix_id': student.matrix_no}))
+        else:
+            if student.is_apply_training_300 == True:
+                messages.success(
+                    request, f'Your already apply for {level} level training')
+                return redirect(reverse('student:profile', kwargs={'matrix_id': student.matrix_no}))
         
         # coordinator from base `User`
         coord_user = User.objects.filter(
@@ -116,243 +121,117 @@ class Student:
         current_dept_letter = Letter.objects.filter(
             session=current_sch_sess.session, coordinator=coord, letter='placement letter'
         ).last()
+
+        # if the above filter of `current_dept_letter` found, add
+        # the student in the viewers of that letter
         if current_dept_letter:
             current_dept_letter.viewers.add(student)
         else:
             messages.success(
                 request, f'Your department have not release student training letter for this session')
             return redirect(reverse('student:profile', kwargs={'matrix_id': student.matrix_no}))
-
-        # creating student weekly reader (for logbook entry for 200 level)
-        if level == '200' or level == 200:
-            WR_prev = WeekReader.objects.filter(
-                student=student, session=current_sch_sess.session, is_200=True).last()
-            if not WR_prev:
-                WR = WeekReader(student=student, session=current_sch_sess.session, is_200=True)
-                WR.save()
-            student.session_200 = current_sch_sess.session
+        
+        # he it will check a student boolean field for his specific level that he is (200 or 300)
+        if level == 200 or level == '200':
+            student.is_apply_training_200=True
             student.save()
         else:
-            WR_prev = WeekReader.objects.filter(
-                student=student, session=current_sch_sess.session, is_300=True).last()
-            if not WR_prev:
-                WR = WeekReader(student=student, session=current_sch_sess.session, is_300=True)
-                WR.save()
-            student.session_300 = current_sch_sess.session
+            student.is_apply_training_300=True
             student.save()
-
         messages.success(
             request, f'You apply for your {level} level {student.faculty.training} training')
         return redirect(reverse('student:profile', kwargs={'matrix_id': student.matrix_no}))
 
     @student_required
     @staticmethod
-    def placementLetter200(request):
-        """student placement letter 200 level"""
+    def placementLetter(request, level):
+        """student placement letter for 200 and 300 level"""
+
+        # student
         the_student_request_user = request.user
-        std = TrainingStudent.objects.filter(student=the_student_request_user).first()
+        student = TrainingStudent.objects.filter(student=the_student_request_user).first()
 
-        coord_id = std.student_training_coordinator.identification_num
+        # coordinator of student
+        coord_id = student.student_training_coordinator.identification_num
         coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_id).first()
-
-        # letter
-        letter = Letter.objects.filter(letter='placement letter', coordinator=coord, is_200=True).first()
-
-        # dean
-        dean = FacultyDean.objects.filter(faculty=std.faculty).last()
-
-        # hod
-        hod = DepartmentHOD.objects.filter(department=std.department).last()
-
-        context = {
-            'std': std,
-            'letter': letter,
-            'dean': dean,
-            'hod': hod,
-        }
-        return render(request, 'student/placement_letter.html', context=context)
-
-    @student_required
-    @staticmethod
-    def acceptanceLetter200(request):
-        """student placement letter 200 level"""
-        the_student_request_user = request.user
-        std = TrainingStudent.objects.filter(student=the_student_request_user).first()
-
-        coord_id = std.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_id).first()
-
-        # letter
-        letter = Letter.objects.filter(letter='acceptance letter', coordinator=coord, is_200=True).first()
-
-        # dean
-        dean = FacultyDean.objects.filter(faculty=std.faculty).last()
-
-        # hod
-        hod = DepartmentHOD.objects.filter(department=std.department).last()
-
-        context = {
-            'std': std,
-            'letter': letter,
-            'dean': dean,
-            'hod': hod,
-        }
-        return render(request, 'student/acceptance_letter.html', context=context)
-
-    @student_required
-    @staticmethod
-    def placementLetter300(request):
-        """student placement letter 300 level"""
-        the_student_request_user = request.user
-        std = TrainingStudent.objects.filter(student=the_student_request_user).first()
-
-        coord_id = std.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_id).first()
-
-        # letter
-        letter = Letter.objects.filter(letter='placement letter', coordinator=coord, is_300=True).first()
-
-        # dean
-        dean = FacultyDean.objects.filter(faculty=std.faculty).last()
-
-        # hod
-        hod = DepartmentHOD.objects.filter(department=std.department).last()
-
-        context = {
-            'std': std,
-            'letter': letter,
-            'dean': dean,
-            'hod': hod,
-        }
-        return render(request, 'student/placement_letter.html', context=context)
-
-    @student_required
-    @staticmethod
-    def acceptanceLetter300(request):
-        """student placement letter 300 level"""
-        the_student_request_user = request.user
-        std = TrainingStudent.objects.filter(student=the_student_request_user).first()
-
-        coord_id = std.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_id).first()
-
-        # letter
-        letter = Letter.objects.filter(letter='acceptance letter', coordinator=coord, is_300=True).first()
-
-        # dean
-        dean = FacultyDean.objects.filter(faculty=std.faculty).last()
-
-        # hod
-        hod = DepartmentHOD.objects.filter(department=std.department).last()
-
-        context = {
-            'std': std,
-            'letter': letter,
-            'dean': dean,
-            'hod': hod,
-        }
-        return render(request, 'student/acceptance_letter.html', context=context)
-
-    @student_required
-    @staticmethod
-    def uploadedAcceptanceLetter200(request):
-        """This view show 200 level student acceptance letter"""
-        stu_usr = User.objects.get(id=request.user.id)  # student user
-        std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()  # training student
-        # coord = std.student_training_coordinator
-        coord_tab = std.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
-
-        # acceptance letter for the student
-        acceptance_200 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level='200').last()
-        context = {
-            'acceptance_200': acceptance_200,
-        }
-        return render(request, 'student/upload_acceptance_letter_200.html', context=context)
-
-    @student_required
-    @staticmethod
-    def uploadedAcceptanceLetter300(request):
-        """This view show 300 level student acceptance letter"""
-        stu_usr = User.objects.get(id=request.user.id)  # student user
-        std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()  # training student
-        coord_tab = std.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
-
-        # acceptance letter for the student
-        acceptance_300 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level='300').last()
-        context = {
-            'acceptance_300': acceptance_300,
-        }
-        return render(request, 'student/upload_acceptance_letter_300.html', context=context)
-
-    @student_required
-    @staticmethod
-    def uploadAcceptanceLetter200(request):
-        """upload (the view that will upload) acceptance letter for 200 level student"""
-        stu_usr = User.objects.get(id=request.user.id)  # student user
-        std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
-        # coord = std.student_training_coordinator
-        coord_tab = std.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
-
-        train = std.faculty.training
-        faculty = std.faculty.name
-        department = std.department.name
-        level = std.level
-        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
-
-        form = UploadAcceptanceLetter(request.POST, request.FILES)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            pic_name = picture_name(instance.image.name)
-            instance.image.name = route + pic_name
-            instance.sender_acept = std
-            instance.receiver_acept = coord
-            instance.level = '200'
-            instance.save()
-            messages.success(request, f'Your 200 level acceptance letter image has been uploaded!')
-            return redirect(reverse('student:uploaded_acceptance_letter_200'))
-
-    @student_required
-    @staticmethod
-    def uploadAcceptanceLetter300(request):
-        """upload (the view that will upload) acceptance letter for 300 level student"""
-        stu_usr = User.objects.get(id=request.user.id)  # student user
-        std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
-        # coord = std.student_training_coordinator
-        coord_tab = std.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
-
-        train = std.faculty.training
-        faculty = std.faculty.name
-        department = std.department.name
-        level = std.level
-        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
-
-        form = UploadAcceptanceLetter(request.POST, request.FILES)
-        if form.is_valid():
-            instance = form.save(commit=False)
-            pic_name = picture_name(instance.image.name)
-            instance.image.name = route + pic_name
-            instance.sender_acept = std
-            instance.receiver_acept = coord
-            instance.level = '300'
-            instance.save()
-            messages.success(request, f'Your 300 level acceptance letter image has been uploaded!')
-            return redirect(reverse('student:uploaded_acceptance_letter_300'))
-
-    @student_required
-    @staticmethod
-    def updateAcceptanceLetter200(request):
-        """update acceptance letter for 200 level student"""
         
+        # letter
+        if level == 200 or level == '200':
+            letter = Letter.objects.filter(
+                letter='placement letter', coordinator=coord, session=student.session_200).first()
+        else:
+            letter = Letter.objects.filter(
+                letter='placement letter', coordinator=coord, session=student.session_300).first()
+        # hod
+        hod = DepartmentHOD.objects.filter(
+            department=student.department, is_active=True).last()
+        context = {
+            'student': student,
+            'letter': letter,
+            'hod': hod,
+        }
+        return render(request, 'student/placement_letter.html', context=context)
+
+    @student_required
+    @staticmethod
+    def acceptanceLetter(request, level):
+        """student placement letter for 200 and 300 level"""
+
+        # student
+        the_student_request_user = request.user
+        student = TrainingStudent.objects.filter(student=the_student_request_user).first()
+
+        # coordinator of student
+        coord_id = student.student_training_coordinator.identification_num
+        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_id).first()
+
+        # letter
+        if level == 200 or level == '200':
+            letter = Letter.objects.filter(letter='acceptance letter', coordinator=coord, session=student.session_200).first()
+        else:
+            letter = Letter.objects.filter(letter='acceptance letter', coordinator=coord, session=student.session_300).first()
+        context = {
+            'student': student,
+            'letter': letter,
+        }
+        return render(request, 'student/acceptance_letter.html', context=context)
+
+    @student_required
+    @staticmethod
+    def uploadedAcceptanceLetter(request, level):
+        """This view show 200 level student acceptance letter"""
+
+        # student user
+        stu_usr = User.objects.get(id=request.user.id)
+        student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
+
+        # coordinator
+        coord_tab = student.student_training_coordinator.identification_num
+        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
+
+        # acceptance letter for the student
+        if level == 200 or level == '200':
+            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level=str(level)).last()
+        else:
+            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level=str(level)).last()
+        context = {
+            'acceptance': acceptance,
+            'level': level,
+        }
+        return render(request, 'student/upload_acceptance_letter.html', context=context)
+
+    @student_required
+    @staticmethod
+    def uploadAcceptanceLetter(request, level_s):
+        """upload (the view that will upload) acceptance letter for 200 and 300 level student"""
+
+        # student
         stu_usr = User.objects.get(id=request.user.id)  # student user
         std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
-        # coord = std.student_training_coordinator
+
+        # coordinator
         coord_tab = std.student_training_coordinator.identification_num
         coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
-        acceptance_200 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level='200').first()
 
         train = std.faculty.training
         faculty = std.faculty.name
@@ -360,102 +239,118 @@ class Student:
         level = std.level
         route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
 
-        if not acceptance_200:
+        form = UploadAcceptanceLetter(request.POST, request.FILES)
+        if form.is_valid():
+            instance = form.save(commit=False)
+            pic_name = picture_name(instance.image.name)
+            instance.image.name = route + pic_name
+            instance.sender_acept = std
+            instance.receiver_acept = coord
+            if level_s == '200' or level_s == 200:
+                instance.level = '200'
+            else:
+                instance.level = '300'
+            instance.save()
+
+            # current school session
+            current_sch_sess = Session.objects.filter(is_current_session=True).last()
+
+            # creating student weekly reader (for logbook entry for 200 level)
+            if level == '200' or level == 200:
+                WR_prev = WeekReader.objects.filter(
+                    student=std, session=current_sch_sess.session, is_200=True).last()
+                if not WR_prev:
+                    WR = WeekReader(student=std, session=current_sch_sess.session, is_200=True)
+                    WR.save()
+                std.session_200 = current_sch_sess.session
+                std.save()
+            else:
+                WR_prev = WeekReader.objects.filter(
+                    student=std, session=current_sch_sess.session, is_300=True).last()
+                if not WR_prev:
+                    WR = WeekReader(student=std, session=current_sch_sess.session, is_300=True)
+                    WR.save()
+                std.session_300 = current_sch_sess.session
+                std.save()
+            messages.success(request, f'Your {level_s} level acceptance letter image has been uploaded!')
+            return redirect(reverse('student:uploaded_acceptance_letter', kwargs={'level': level_s}))
+        
+    @student_required
+    @staticmethod
+    def updateAcceptanceLetter(request, level_s):
+        """update acceptance letter for 200 and 300 level student"""
+        
+        # student user
+        stu_usr = User.objects.get(id=request.user.id)
+        student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
+
+        # coordinator
+        coord_tab = student.student_training_coordinator.identification_num
+        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
+
+        if level_s == '200' or level_s == 200:
+            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='200').first()
+        else:
+            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='300').first()
+
+        train = student.faculty.training
+        faculty = student.faculty.name
+        department = student.department.name
+        level = student.level
+        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
+
+        if not acceptance:
             return False
 
         if request.method == 'POST':
-            form = UploadAcceptanceLetter(request.POST, request.FILES, instance=acceptance_200)
+            form = UploadAcceptanceLetter(request.POST, request.FILES, instance=acceptance)
             if form.is_valid():
                 # the remove of previous acceptance is not workin, later will be arrange
-                if os.path.exists(acceptance_200.image.path):
-                    os.remove(acceptance_200.image.path)
+                if os.path.exists(acceptance.image.path):
+                    os.remove(acceptance.image.path)
                 instance = form.save(commit=False)
                 pic_name = picture_name(instance.image.name)
                 instance.image.name = route + pic_name
                 instance.save()
 
-                stu_letter = AcceptanceLetter.objects.filter(sender_acept=std, level='200').first()
+                if level_s == '200' or level_s == 200:
+                    stu_letter = AcceptanceLetter.objects.filter(sender_acept=student, level='200').first()
+                else:
+                    stu_letter = AcceptanceLetter.objects.filter(sender_acept=student, level='300').first()
                 if stu_letter:
                     stu_letter.is_reviewed = False
                     stu_letter.can_change = False
                     stu_letter.save()
                 messages.success(request, f'Your 200 level acceptance letter image has been updated!')
-                return redirect(reverse('student:update_acceptance_letter_200'))
+                return redirect(reverse('student:update_acceptance_letter', kwargs={'level_s': level_s}))
         else:
-            form = UploadAcceptanceLetter(instance=acceptance_200)
+            form = UploadAcceptanceLetter(instance=acceptance)
         context = {
             'form': form,
-            'std': std,
-            'acceptance_200': acceptance_200,
+            'level_s': level_s,
+            'acceptance': acceptance,
         }
-        return render(request, 'student/update_acceptance_letter_200.html', context)
-
-    @student_required
-    @staticmethod
-    def updateAcceptanceLetter300(request):
-        """update acceptance letter for 300 level student"""
-
-        stu_usr = User.objects.get(id=request.user.id)  # student user
-        std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
-        # coord = std.student_training_coordinator
-        coord_tab = std.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
-        acceptance_300 = AcceptanceLetter.objects.filter(sender_acept=std, receiver_acept=coord, level='300').first()
-
-        train = std.faculty.training
-        faculty = std.faculty.name
-        department = std.department.name
-        level = std.level
-        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
-
-        if not acceptance_300:
-            return False
-
-        if request.method == 'POST':
-            form = UploadAcceptanceLetter(
-                request.POST, request.FILES, instance=acceptance_300)
-            if form.is_valid():
-                # the remove of previous acceptance is not workin, later will be arrange
-                if os.path.exists(acceptance_300.image.path):
-                    os.remove(acceptance_300.image.path)
-                instance = form.save(commit=False)
-                pic_name = picture_name(instance.image.name)
-                instance.image.name = route + pic_name
-                instance.save()
-
-                stu_letter = AcceptanceLetter.objects.filter(sender_acept=std, level='300').first()
-                if stu_letter:
-                    stu_letter.is_reviewed = False
-                    stu_letter.can_change = False
-                    stu_letter.save()
-                messages.success(request, f'Your 300 level acceptance letter image has been updated!')
-                return redirect(reverse('student:update_acceptance_letter_300'))
-        else:
-            form = UploadAcceptanceLetter(instance=acceptance_300)
-        context = {
-            'form': form,
-            'std': std,
-            'acceptance_300': acceptance_300,
-        }
-        return render(request, 'student/update_acceptance_letter_300.html', context)
-
+        return render(request, 'student/update_acceptance_letter.html', context)
+    
     @coordinator_or_supervisor_or_student_required
     @staticmethod
     def logbookEntry(request, matrix_no, student_level):
         """
         This method handle the tricks of student logbook entry per week (upload i.e scanned logbook in hardcopy), which can be view by them and their supervisor.
         """
-        stu_usr = User.objects.filter(identification_num=matrix_no).first() # student user
-        std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
 
-        train = std.faculty.training
-        faculty = std.faculty.name
-        department = std.department.name
-        level = std.level
+        # student
+        stu_usr = User.objects.filter(identification_num=matrix_no).first() # student user
+        student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
+
+        train = student.faculty.training
+        faculty = student.faculty.name
+        department = student.department.name
+        level = student.level
         route = Student.student_acceptance_route('do_nothing', train, faculty, department, level, logbook=True)
 
         # filtering student week reader
-        WR = WeekReader.objects.filter(student=std).last()
+        WR = WeekReader.objects.filter(student=student).last()
 
         # increment week by one, but it doesn't save it into the database,
         # just to make it the start of our range below (w)
@@ -475,7 +370,7 @@ class Student:
 
         # student logbook entry instance
         logbook_entries = WeekScannedLogbook.objects.filter(
-            student_lg=std, week=WR, level=student_level).all()
+            student_lg=student, week=WR, level=student_level).all()
 
         if request.method == 'POST':
             form = UploadLogbookEntry(request.POST, request.FILES)
@@ -483,7 +378,7 @@ class Student:
                 instance = form.save(commit=False)
                 pic_name = picture_name(instance.image.name)
                 instance.image.name = route + pic_name
-                instance.student_lg = std
+                instance.student_lg = student
                 instance.week = WR
 
                 # incrementing the week number of (within logbook field)
@@ -495,12 +390,12 @@ class Student:
                 WR.save()
                 messages.success(request, f'You just upload your logbook entry for {WR.week_no} week!')
                 return redirect(
-                    reverse('student:logbook_entry', kwargs={'matrix_no': std.matrix_no, 'student_level': student_level}))
+                    reverse('student:logbook_entry', kwargs={'matrix_no': student.matrix_no, 'student_level': student_level}))
         else:
             form = UploadLogbookEntry()
         context = {
             'form': form,
-            'std': std,
+            'student': student,
             'WR': WR,
             'weeks': weeks,
             'week_no': week_no,
@@ -530,7 +425,7 @@ class Student:
         else:
             form = LogbookEntryComment()
         context = {
-            'form': form,
+            # 'form': form,
             'comments': comments,
             'logbook': logbook,
         }

@@ -27,14 +27,14 @@ curr_sess.save()
 
 
 ### _______________________
-### ADMINISTRATOR (6 admin)
+### ADMINISTRATOR (2 admin)
 admin_user_1 = User.objects.create_superuser(
     first_name='Olagoke', last_name='Abdul', identification_num='19992000', email='olagokeabdul@yahoo.com', phone_number='+2348144807200', date_of_birth=dob, is_superuser=True, is_staff=True, is_admin=True, is_schoolstaff=True, password='19991125u')
 admin_user_2 = User.objects.create_superuser(
     first_name='Ahmad', middle_name='Aliyu', last_name='Aminu', identification_num='20151889', email='ahmadaliyu@yahoo.com', phone_number='+2348144807201', date_of_birth=dob, is_superuser=True, is_staff=True, is_admin=True, is_schoolstaff=True) # user_password_not_set
 
 admin_user_1.save()
-# admin_user_2.save()
+admin_user_2.save()
 
 #<!-- administrator models -->
 admin_1 = Administrator(
@@ -43,7 +43,7 @@ admin_2 = Administrator(
     director=admin_user_2, first_name=admin_user_2.first_name, last_name=admin_user_2.last_name, email=admin_user_2.email, phone_number=admin_user_2.phone_number, id_no=admin_user_2.identification_num, is_active=True)
 
 admin_1.save()
-# admin_2.save()
+admin_2.save()
 
 
 ### _____________________
@@ -146,7 +146,7 @@ dean_4.save()
 ### _______________________
 ### DEPARTMENT HOD (32 hod)
 hod_user_1 = User.objects.create_user(
-    first_name='Lawal', last_name='Saad', identification_num='20191999', email='lawalsaad@yahoo.com', phone_number='+2349036632603', is_hod=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
+    first_name='Lawal', last_name='Saad', identification_num='20191999', email='lawalsaad@yahoo.com', phone_number='+2349036632603 +2348097750488', is_hod=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
 hod_user_2 = User.objects.create_user(
     first_name='Ahmad', last_name='Jabaka', identification_num='20191920', email='ahmadjabaka@yahoo.com', phone_number='+2349036632604', is_hod=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
 hod_user_3 = User.objects.create_user(
