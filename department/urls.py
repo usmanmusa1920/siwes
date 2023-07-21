@@ -22,7 +22,7 @@ urlpatterns = [
         'coordinator/acknowledge/student/<int:student_id>', Coordinator.acknowledgeStudent, name='coordinator_acknowledge_student'),
     # assign supervisor
     path(
-        'assign/supervisor/<int:id_no>', Coordinator.assign_supervisor, name='assign_supervisor'),
+        'assign/supervisor/<int:id_no>/<int:level>', Coordinator.assign_supervisor, name='assign_supervisor'),
     # release student result
     path(
         'release/student/result/<int:matrix_no>', Coordinator.release_student_result, name='release_result'),

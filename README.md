@@ -1,8 +1,6 @@
 # fugus
 
-The `automate_users_data.sh` script, it ease writing code in python interpreter for testing some users instanciation.
-
-The `faculty_and_dept.json` file, contains faculties and departments name and some info of them, for testing also.
+The `automate_users_data.sh` script, it ease writing code in python interpreter for registering some users, faculties and departments by the use of `faculty_and_dept.json` file, that contains faculties and departments name and some info of them, for registering them.
 
 ```
 Datetime format:
@@ -19,10 +17,12 @@ Datetime format:
 
 ```
     If any issue when using the default user model or even custom user model
-    (from django.contrib.auth.models import User) or
     (
-    from django.contrib.auth import get_user_model
-    User = get_user_model()
+        from django.contrib.auth.models import User
+    ) or
+    (
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
     )
     use the below tricks (export DJANGO_SETTINGS_MODULE=fugus.settings)
 
@@ -55,19 +55,19 @@ First school `session` must be registered for every year, so that to know in his
 
 `Administrator` is the one who is incharge and control of anything within the site, also have grant access to the admin page of the site.
 
-`Faculty` info coming soon!
+`Faculty` indicate which faculty a `department`, `student`, and others `(department HOD, faculty dean, department training coordinator)` user category belongs to with the exception of `administrator` and `supervisor`. These last two (`administrator` and `supervisor`) have no any relation to faculty.
 
-`Department` info coming soon!
+`Department` indicate which department a `student`, and others `(department HOD, faculty dean, department training coordinator)` user category belongs to with the exception of `administrator` and `supervisor`. These last two (`administrator` and `supervisor`) have no any relation to department.
 
-`Faculty dean` info coming soon!
+`Faculty dean` this register a user as a dean of a faculty, it have to be registered first before any department HOD, also he/she will be the active dean ones he is created by administrator.
 
-`Department HOD` info coming soon!
+`Department HOD` this register a user as a HOD of a department, it have to be registered first before any department training coordinator, also he/she will be the active HOD ones he is created by administrator.
 
-`Department training coordinator` info coming soon!
+`Department training coordinator` this register a user as a training coordinator of a department, it have to be registered first before any student (student of that department) or supervisor that want to supervise student of that department, also he/she will be the active training coordinator ones he is created by administrator. Training coordinator is incharge of assigning a set of students to a supervisor, also he is the one will release student training result.
 
-`Student training supervisor` info coming soon!
+`Student training supervisor` is the one who is incharge of supervising student, he can comment on student logbook for each week and also grade him/her.
 
-`Student` info coming soon!
+`Student` the student of the school like me! whether 200 or 300 level student only.
 
 Landing page
 

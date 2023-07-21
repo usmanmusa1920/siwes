@@ -14,18 +14,18 @@
 
 <!-- page title -->
 {% block title %}
-  <title>Assign students supervisor for 200 page</title>
+  <title>Assign students supervisor for {{level}} page</title>
 {% endblock title %}
 
 <!-- content of the page -->
 {% block main %}
   <div class="wrapper">
     <div class="wrapp_head">
-      <h1>Assign students supervisor for 200 page</h1>
+      <h1>Assign students supervisor for {{level}} page</h1>
     </div>
     <div class="wrapp_main">
       <div class="wrapp_top_greynish">
-        <small>Assign students supervisor for 200</small>
+        <small>Assign students supervisor for {{level}}</small>
       </div>
 
       <form method="post">
@@ -39,8 +39,21 @@
               </i>
             </small>
             <select name="raw_students" class="wrapp_select_multiple" multiple required>
+              <!-- this do a loop on the departmental coordinator, and check if a student is assign a supervisor for 200 or 300 level, if it is true it will not show him/her, but else it will show his/her name in other to be assign to a supervisor -->
               {% for student in training_tutor.training_students.all %}
-                <option value="{{student.matrix_no}}">{{student.first_name}} {{student.last_name}} ({{student.matrix_no}}) {{student.department}}</option>
+                {% if level == 200 or level == '200' %}
+                  {% if student.is_assign_supervisor_200 %}
+                    <!-- pass -->
+                  {% else %}
+                    <option value="{{student.matrix_no}}">{{student.first_name}} {{student.last_name}} ({{student.matrix_no}}) {{student.department}}</option>
+                  {% endif %}
+                {% elif level == 300 or level == '300' %}
+                  {% if student.is_assign_supervisor_300 %}
+                    <!-- pass -->
+                  {% else %}
+                    <option value="{{student.matrix_no}}">{{student.first_name}} {{student.last_name}} ({{student.matrix_no}}) {{student.department}}</option>
+                  {% endif %}
+                {% endif %}
               {% endfor %}
             </select>
           </div>
@@ -49,8 +62,8 @@
         <!-- suprvisor -->
         {% if training_tutor.training_supervisors.all.count > 0 %}
           <div class="wrapp_form">
-
             <p><b>Select supervisor for the selected students above:</b></p>
+            <!-- this do a loop on a supervisor field that have manay-to-manay relation to that department coordinator, and also loop on each supervisor list of student that he/she is assigned to supervise, then check if whether that student is assign a supervisor for 200 or 300 level, if is assigned base on the level he/she is assigned, it will display his/her name -->
             {% for supp in training_tutor.training_supervisors.all %}
               <span class="wrapp_radio">
                 <input type="radio" name="raw_supervisors" value="{{supp.id_no}}" onclick="get_supervisor(this)" required> {{supp.first_name}} {{supp.last_name}} ({{supp.id_no}})
@@ -63,11 +76,16 @@
                 </li>
                 {% for student in supp.training_students.all %}
                   <!-- only show student that are from thesame department with the coordinator -->
-                  {% if student.department == training_tutor.department %}
-                    {% if student.is_assign_supervisor_200 %}
-                      <small>&nbsp; &nbsp; <b>{{student.first_name}} {{student.last_name}}</b> ({{student}}) {{student.department}}</small>
-                    {% else %}
-                      <!-- pass -->
+                  {% if student.department.name == training_tutor.department.name %}
+                    {% if level == 200 or level == '200' %}
+                      {% if student.is_assign_supervisor_200 %}
+                        <small>&nbsp; &nbsp; <b>{{student.first_name}} {{student.last_name}}</b> ({{student}}) {{student.department}}</small>
+                      {% endif %}
+                    {% elif level == 300 or level == '300' %}
+                      {% if student.is_assign_supervisor_300 %}
+                        <small>&nbsp; &nbsp; <b>{{student.first_name}} {{student.last_name}}</b> ({{student}}) {{student.department}}</small>
+                      </small>
+                      {% endif %}
                     {% endif %}
                   {% endif %}
                 {% endfor %}

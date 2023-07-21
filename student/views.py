@@ -5,15 +5,15 @@ from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from .models import (TrainingStudent, AcceptanceLetter, WeekReader,
-    WeekScannedLogbook, CommentOnLogbook)
 from .forms import (UploadAcceptanceLetter, UploadLogbookEntry, LogbookEntryComment)
-from toolkit import picture_name
-from faculty.models import FacultyDean
-from department.models import DepartmentHOD, DepartmentTrainingCoordinator, Letter
+from toolkit import (picture_name, y_session)
 from toolkit.decorators import (
-    admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, check_phone_number, block_student_update_profile, restrict_access_student_profile, supervisor_or_student_required, coordinator_or_supervisor_or_student_required, val_id_num)
-from administrator.all_models import Session
+    block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
+)
+from administrator.models import Administrator
+from administrator.all_models import(
+    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+)
 
 
 User = get_user_model()
@@ -75,6 +75,7 @@ class Student:
         
         context = {
             'student': student,
+            'coord': coord,
             'letter_a_200': letter_a_200,
             'letter_p_200': letter_p_200,
             'letter_a_300': letter_a_300,

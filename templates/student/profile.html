@@ -47,6 +47,22 @@
           <b>Level:</b> {{student.level}}
         </p>
         <p>
+          <b>Supervisor:</b>
+          {% for supervisor in coord.training_supervisors.all %}
+            {% if student in supervisor.training_students.all %}
+              {% if student.level == 300 or student.level == '300' %}
+                {% if student.is_assign_supervisor_300 %}
+                  <i><b>{{supervisor}}</b></i> is your 300L supervisor
+                {% endif %}
+              {% else %}
+                {% if student.is_assign_supervisor_200 %}
+                  <i><b>{{supervisor}}</b></i> is your 200L supervisor
+                {% endif %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </p>
+        <p>
           {% if student.faculty.name == "Science" %}
             <b>Department:</b> B.Sc {{student.department.name}}
           {% elif student.faculty.name == "Education" %}

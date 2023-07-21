@@ -8,19 +8,16 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import get_user_model
 from .forms import (
-    PasswordChangeForm, AdministratorSignupForm, FacultySignupForm, FacultyDeanSignupForm, DepartmentSignupForm, DepartmentHODSignupForm, DepartmentCoordinatorSignupForm, StudentSupervisorSignupForm, StudentSignupForm, UpdateStudentProfile)
-from administrator.models import (
-    Administrator)
-from administrator.all_models import Session
-from faculty.models import (
-    Faculty, FacultyDean)
-from department.models import (
-    Department, DepartmentHOD, DepartmentTrainingCoordinator, StudentSupervisor, Letter)
-from student.models import (
-    TrainingStudent, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook)
+    PasswordChangeForm, AdministratorSignupForm, FacultySignupForm, FacultyDeanSignupForm, DepartmentSignupForm, DepartmentHODSignupForm, DepartmentCoordinatorSignupForm, StudentSupervisorSignupForm, StudentSignupForm, UpdateStudentProfile
+)
+from toolkit import (picture_name, y_session)
 from toolkit.decorators import (
-    admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, check_phone_number, block_student_update_profile, restrict_access_student_profile, val_id_num)
-from toolkit import y_session
+    block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
+)
+from administrator.models import Administrator
+from administrator.all_models import(
+    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+)
 
 
 User = get_user_model()
@@ -84,7 +81,7 @@ class Register:
     @admin_required
     @staticmethod
     def session(request):
-        """sess_field"""
+        """register new session"""
 
         last_prev_sess = Session.objects.filter(is_current_session=True).last()
         if last_prev_sess:
@@ -98,8 +95,6 @@ class Register:
         else:
             date_sess = y_session()
         if request.method == 'POST':
-            sess_field = request.POST['session']
-
             # deactivating any `is_current_session` which is True to False
             prev_sess = Session.objects.filter(is_current_session=True)
             for sess in prev_sess:
@@ -107,7 +102,7 @@ class Register:
                 sess.save()
 
             # if we find the query `last_prev_sess`, we will use it for the following tricks
-            # else if we don`t find the query we, will create new one
+            # else if we don`t find the query we, will create new one using `y_session` function
             if last_prev_sess:
                 new_sess = Session(session=date_sess, is_current_session=True)
             else:
@@ -115,7 +110,7 @@ class Register:
             new_sess.save()
 
             messages.success(
-                request, f'New session ({sess_field}) for the school training programm created')
+                request, f'New session ({date_sess}) for the school training programm created')
             return redirect('landing')
         context = {
             'date_sess': date_sess,
@@ -180,6 +175,37 @@ class Register:
         }
         return render(request, 'auth/register.html', context)
 
+    @check_phone_number(redirect_where='auth:register_department')
+    @admin_required
+    @staticmethod
+    def department(request):
+        """register department"""
+
+        faculties = Faculty.objects.all()
+        if request.method == 'POST':
+            form = DepartmentSignupForm(request.POST)
+            if form.is_valid():
+                instance = form.save(commit=False)
+
+                # grabbing user raw datas (from html form)
+                raw_name = form.cleaned_data['name']
+                raw_faculty = request.POST['raw_faculty']
+
+                db_faculty = Faculty.objects.filter(name=raw_faculty).first()
+                instance.faculty = db_faculty
+                instance.save()
+
+                messages.success(request, f'New department with name of {raw_name} has been registered!')
+                return redirect('auth:register_department')
+        else:
+            form = DepartmentSignupForm()
+        context = {
+            'form': form,
+            'faculties': faculties,
+            'who_to_reg': 'department',
+        }
+        return render(request, 'auth/register.html', context)
+
     @check_phone_number(redirect_where='auth:register_faculty_dean')
     @admin_required
     @staticmethod
@@ -229,37 +255,6 @@ class Register:
             'form': form,
             'departments': departments,
             'who_to_reg': 'faculty dean',
-        }
-        return render(request, 'auth/register.html', context)
-
-    @check_phone_number(redirect_where='auth:register_department')
-    @admin_required
-    @staticmethod
-    def department(request):
-        """register department"""
-
-        faculties = Faculty.objects.all()
-        if request.method == 'POST':
-            form = DepartmentSignupForm(request.POST)
-            if form.is_valid():
-                instance = form.save(commit=False)
-
-                # grabbing user raw datas (from html form)
-                raw_name = form.cleaned_data['name']
-                raw_faculty = request.POST['raw_faculty']
-
-                db_faculty = Faculty.objects.filter(name=raw_faculty).first()
-                instance.faculty = db_faculty
-                instance.save()
-
-                messages.success(request, f'New department with name of {raw_name} has been registered!')
-                return redirect('auth:register_department')
-        else:
-            form = DepartmentSignupForm()
-        context = {
-            'form': form,
-            'faculties': faculties,
-            'who_to_reg': 'department',
         }
         return render(request, 'auth/register.html', context)
 
@@ -394,7 +389,7 @@ class Register:
                 raw_small_desc = form.cleaned_data['small_desc']
 
                 # quering department, using the `all_department` variable above
-                coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_id).first()
+                coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_id, is_active=True).first()
 
                 # registering user to department training coordinator table
                 new_student_supervisor = StudentSupervisor(

@@ -3,18 +3,14 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from .models import (
-    Department, DepartmentHOD, DepartmentTrainingCoordinator, StudentSupervisor, Letter)
-from administrator.models import (
-    Administrator)
-from faculty.models import (
-    Faculty, FacultyDean)
-from student.models import (
-    TrainingStudent, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult)
+from toolkit import (picture_name, y_session)
 from toolkit.decorators import (
-    admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, check_phone_number, block_student_update_profile, restrict_access_student_profile, val_id_num)
-from toolkit import y_session
-from administrator.all_models import Session
+    block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
+)
+from administrator.models import Administrator
+from administrator.all_models import(
+    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+)
 
 
 User = get_user_model()
@@ -27,6 +23,7 @@ class Coordinator:
     @staticmethod
     def profile(request, id_no):
         """coordinator profile"""
+        
         training_tutor = User.objects.filter(identification_num=id_no).first()
         training_tutor_tab = DepartmentTrainingCoordinator.objects.filter(
             id_no=training_tutor.identification_num).first()
@@ -57,7 +54,7 @@ class Coordinator:
             'student_of_300': student_of_300,
             'student_session': student_session,
         }
-        return render(request, 'department/training_coordinator_profile.html', context=context)
+        return render(request, 'department/coordinator_profile.html', context=context)
 
     @coordinator_required
     @staticmethod
@@ -142,8 +139,8 @@ class Coordinator:
     
     @coordinator_required
     @staticmethod
-    def assign_supervisor(request, id_no):
-        """for 200 level"""
+    def assign_supervisor(request, id_no, level):
+        """for 200 and 300 level"""
 
         # departmental training coordinator instance
         training_tutor = DepartmentTrainingCoordinator.objects.filter(id_no=id_no).first()
@@ -163,13 +160,17 @@ class Coordinator:
             # looping over the req_student data in other to add them to a supervisor
             for student in req_student:
                 student_user = TrainingStudent.objects.filter(matrix_no=student).first()
-                student_user.is_assign_supervisor_200
+                if level == 200 or level == '200':
+                    student_user.is_assign_supervisor_200 = True
+                else:
+                    student_user.is_assign_supervisor_300 = True
                 student_user.save()
                 supervisor.training_students.add(student_user)
             messages.success(
                 request, f'You just assign ({req_student}) to a supervisor `{supervisor.first_name} {supervisor.last_name}` ({supervisor.id_no})')
-            return redirect('department:assign_supervisor', id_no=id_no)
+            return redirect('department:assign_supervisor', id_no=id_no, level=level)
         context = {
+            'level': level,
             'training_tutor': training_tutor,
         }
         return render(request, 'department/assign_supervisor.html', context=context)

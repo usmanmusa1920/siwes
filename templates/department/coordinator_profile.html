@@ -23,7 +23,8 @@
       <a href="{% url 'department:training_coordinator_profile' training_tutor.id_no %}" class="sec_current">Your profile</a>
       <a href="{% url 'department:training_coordinator_session_student' %}" class="sec_link">{{training_tutor.faculty.training|upper}} student</a>
       <a href="{% url 'department:training_coordinator_student_acceptance_letter' %}" class="sec_link">student acceptance letter</a>
-      <a href="{% url 'department:assign_supervisor' training_tutor.id_no %}" class="sec_link">Assign supervisor</a>
+      <a href="{% url 'department:assign_supervisor' training_tutor.id_no 200 %}" class="sec_link">Assign supervisor 200</a>
+      <a href="{% url 'department:assign_supervisor' training_tutor.id_no 300 %}" class="sec_link">Assign supervisor 300</a>
     </div>
 
     <!-- departmental training supervisors -->
@@ -164,9 +165,9 @@
       </div>
 
       <div class="wrapp_info_right">
-        <a href="#">Edit profile</a>
+        <a href="#" class="good_me">Edit profile</a>
         <br>
-        <a href="#">Request for IT letter</a>
+        <a href="#" class="me_good">Request for IT letter</a>
       </div>
     </div>
 
