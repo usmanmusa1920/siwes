@@ -5,14 +5,14 @@ from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from .forms import (UploadAcceptanceLetter, UploadLogbookEntry, LogbookEntryComment)
+from .forms import (UploadAcceptanceLetter, UploadLogbookEntry, UploadLogbookImage, LogbookEntryComment)
 from toolkit import (picture_name, y_session)
 from toolkit.decorators import (
     block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
 )
 from administrator.models import Administrator
 from administrator.all_models import(
-    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, WeekScannedImage, CommentOnLogbook, StudentResult
 )
 
 
@@ -127,6 +127,13 @@ class Student:
         # the student in the viewers of that letter
         if current_dept_letter:
             current_dept_letter.viewers.add(student)
+
+            # checking to save a session that student apply training base on his level
+            if level == 200 or level == '200':
+                student.session_200 = current_sch_sess.session
+            else:
+                student.session_300 = current_sch_sess.session
+            student.save()
         else:
             messages.success(
                 request, f'Your department have not release student training letter for this session')
@@ -240,21 +247,22 @@ class Student:
         level = std.level
         route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
 
+        # current school session
+        current_sch_sess = Session.objects.filter(is_current_session=True).last()
+
         form = UploadAcceptanceLetter(request.POST, request.FILES)
         if form.is_valid():
             instance = form.save(commit=False)
             pic_name = picture_name(instance.image.name)
             instance.image.name = route + pic_name
             instance.sender_acept = std
+            instance.session = current_sch_sess.session
             instance.receiver_acept = coord
             if level_s == '200' or level_s == 200:
                 instance.level = '200'
             else:
                 instance.level = '300'
             instance.save()
-
-            # current school session
-            current_sch_sess = Session.objects.filter(is_current_session=True).last()
 
             # creating student weekly reader (for logbook entry for 200 level)
             if level == '200' or level == 200:
@@ -300,6 +308,9 @@ class Student:
         level = student.level
         route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
 
+        # current school session
+        current_sch_sess = Session.objects.filter(is_current_session=True).last()
+
         if not acceptance:
             return False
 
@@ -311,6 +322,7 @@ class Student:
                     os.remove(acceptance.image.path)
                 instance = form.save(commit=False)
                 pic_name = picture_name(instance.image.name)
+                instance.session = current_sch_sess.session
                 instance.image.name = route + pic_name
                 instance.save()
 
@@ -372,19 +384,27 @@ class Student:
         # student logbook entry instance
         logbook_entries = WeekScannedLogbook.objects.filter(
             student_lg=student, week=WR, level=student_level).all()
+        log_images = WeekScannedImage.objects.filter(student=student).all()
 
         if request.method == 'POST':
-            form = UploadLogbookEntry(request.POST, request.FILES)
-            if form.is_valid():
+            form = UploadLogbookEntry(request.POST)
+            pic_form = UploadLogbookImage(request.POST, request.FILES)
+            if form.is_valid() and pic_form.is_valid():
                 instance = form.save(commit=False)
-                pic_name = picture_name(instance.image.name)
-                instance.image.name = route + pic_name
+                pic_instance = pic_form.save(commit=False)
+                # pic_name = picture_name(instance.image.name)
+                pic_name = picture_name(pic_instance.image.name)
+                # instance.image.name = route + pic_name
+                pic_instance.logbook = instance
+                pic_instance.student = student
+                pic_instance.image.name = route + pic_name
                 instance.student_lg = student
                 instance.week = WR
 
                 # incrementing the week number of (within logbook field)
                 instance.week_no = WR.week_no + 1
                 instance.save()
+                pic_instance.save()
 
                 # increment student week reader by one
                 WR.week_no += 1
@@ -394,15 +414,48 @@ class Student:
                     reverse('student:logbook_entry', kwargs={'matrix_no': student.matrix_no, 'student_level': student_level}))
         else:
             form = UploadLogbookEntry()
+            pic_form = UploadLogbookImage()
         context = {
             'form': form,
+            'pic_form': pic_form,
             'student': student,
             'WR': WR,
             'weeks': weeks,
             'week_no': week_no,
             'logbook_entries': logbook_entries,
+            'log_images': log_images,
         }
         return render(request, 'student/logbook_entry.html', context)
+    
+    @staticmethod
+    def additionalWeekImage(request, logbook_id):
+        # student
+        stu_usr = request.user # student user
+        student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
+
+        train = student.faculty.training
+        faculty = student.faculty.name
+        department = student.department.name
+        level = student.level
+        route = Student.student_acceptance_route(
+            'do_nothing', train, faculty, department, level, logbook=True)
+        log_parent = WeekScannedLogbook.objects.get(id=logbook_id)
+        if request.method == 'POST':
+            form = UploadLogbookImage(request.POST, request.FILES)
+            if form.is_valid():
+                instance = form.save(commit=False)
+                pic_name = picture_name(instance.image.name)
+                instance.logbook = log_parent
+                instance.student = student
+                instance.image.name = route + pic_name
+                instance.save()
+                messages.success(request, f'You just upload your additional logbook entry image')
+                return redirect(
+                    reverse('student:logbook_comment', kwargs={'logbook_id': logbook_id}))
+            else:
+                messages.success(request, f'Something went wrong when uploading your additional logbook entry image')
+                return redirect(
+                    reverse('student:logbook_comment', kwargs={'logbook_id': logbook_id}))
 
     @supervisor_or_student_required
     @staticmethod
@@ -410,24 +463,36 @@ class Student:
         """supervisor comment on student logbook"""
         
         logbook = WeekScannedLogbook.objects.get(id=logbook_id)
-        stu_usr = User.objects.get(id=request.user.id)  # student user
-        std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
-        comments = CommentOnLogbook.objects.filter(logbook=logbook).all()
+        log_images = WeekScannedImage.objects.filter(logbook=logbook).all()
+        commentator = StudentSupervisor.objects.filter(supervisor=request.user).first()
 
         if request.method == 'POST':
             form = LogbookEntryComment(request.POST)
             if form.is_valid():
+                g_list = [1,2,3,4,5] # grade list
+                grade = form.cleaned_data.get('grade')
+                print(grade, type(grade))
+                if grade not in g_list:
+                    messages.warning(request, f'Invalid grade ({grade}), you can only grade student with {g_list} grades')
+                    return redirect(reverse('student:logbook_comment', kwargs={'logbook_id': logbook_id}))
                 instance = form.save(commit=False)
-                instance.commentator = request.user
+                instance.commentator = commentator
                 instance.logbook = logbook
                 instance.save()
-                messages.success(request, f'You just comment on logbook entry for {logbook.week_no} week of {std.matrix_no}')
+                messages.success(request, f'You just comment on logbook entry for {logbook.week_no} week of {logbook.student_lg.matrix_no}')
                 return redirect(reverse('student:logbook_comment', kwargs={'logbook_id': logbook_id}))
         else:
             form = LogbookEntryComment()
         context = {
             # 'form': form,
-            'comments': comments,
+            'log_images': log_images,
             'logbook': logbook,
         }
         return render(request, 'student/logbook_comment.html', context)
+    
+    @staticmethod
+    def message(request):
+        context = {
+            'None': None,
+        }
+        return render(request, 'student/message.html', context)

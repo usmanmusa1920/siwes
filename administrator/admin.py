@@ -5,10 +5,12 @@ from toolkit.decorators import (
 )
 from .models import Administrator
 from .all_models import(
-    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+    Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, WeekScannedImage, CommentOnLogbook, StudentResult
 )
 
 
 admin.site.register(Administrator)
+admin.site.register(SchoolVC)
 admin.site.register(StudentResult)
 admin.site.register(Session)
+admin.site.register(WeekScannedImage)

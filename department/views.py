@@ -9,7 +9,7 @@ from toolkit.decorators import (
 )
 from administrator.models import Administrator
 from administrator.all_models import(
-    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+    Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
 )
 
 
@@ -162,8 +162,10 @@ class Coordinator:
                 student_user = TrainingStudent.objects.filter(matrix_no=student).first()
                 if level == 200 or level == '200':
                     student_user.is_assign_supervisor_200 = True
+                    student_user.supervisor_id_200 = req_supervisor
                 else:
                     student_user.is_assign_supervisor_300 = True
+                    student_user.supervisor_id_300 = req_supervisor
                 student_user.save()
                 supervisor.training_students.add(student_user)
             messages.success(
@@ -192,9 +194,74 @@ class Coordinator:
                 request, f'You already released out this student ({student_user.first_name}) result of {student_user.level} level')
             return redirect(
                 'department:student_result_page', matrix_no=matrix_no, level=student_user.level)
+        def train_calc():
+            if student_user.level == 200:
+                WKSL = WeekScannedLogbook.objects.filter(
+                    student_lg=student_user, session=student_user.session_200)
+            else:
+                WKSL = WeekScannedLogbook.objects.filter(
+                    student_lg=student_user, session=student_user.session_300)
+            total_comment_score = 0
+            for scanned in WKSL:
+                comment_grade = CommentOnLogbook.objects.filter(logbook=scanned).first()
+                total_comment_score += int(comment_grade.grade)
+            
+            # total score for student in a training
+            student_total_mark = total_comment_score
+
+            # here we assume each day mark is 1 mark, so in a week student may get 5 mark for 1 week, if we times 5 day with 12 weeks number (5 * 12), we will get 60, which is overall score expected that a student will have (100%)
+            total_expected = 60
+
+            calc_1 = student_total_mark * 100
+            calc_2 = calc_1 / total_expected
+            def grade_func(t_grade, score):
+                match t_grade:
+                    case 'Excellent':
+                        return f'Status: {t_grade}, Score: {score}'
+                    case 'Very good':
+                        return f'Status: {t_grade}, Score: {score}'
+                    case 'Good':
+                        return f'Status: {t_grade}, Score: {score}'
+                    case 'Pass':
+                        return f'Status: {t_grade}, Score: {score}'
+                    case 'Poor':
+                        return f'Status: {t_grade}, Score: {score}'
+                    case 'Fail':
+                        return f'Status: {t_grade}, Score: {score}'
+                    case _:
+                        return f'Status: Absent, Score: {score}'
+            status = {
+                'A': 'Excellent',
+                'B': 'Very good',
+                'C': 'Good',
+                'D': 'Pass',
+                'E': 'Poor',
+                'F': 'Fail',
+            }
+            if calc_2 >= 70 and calc_2 <= 100:
+                grade = "A"
+                g_status = grade_func(status[grade], calc_2)
+            elif calc_2 >= 60 and calc_2 <= 69:
+                grade = "B"
+                g_status = grade_func(status[grade], calc_2)
+            elif calc_2 >= 50 and calc_2 <= 59:
+                grade = "C"
+                g_status = grade_func(status[grade], calc_2)
+            elif calc_2 >= 45 and calc_2 <= 49:
+                grade = "D"
+                g_status = grade_func(status[grade], calc_2)
+            elif calc_2 >= 35 and calc_2 <= 44:
+                grade = "E"
+                g_status = grade_func(status[grade], calc_2)
+            else:
+                grade = "F"
+                g_status = grade_func(status[grade], calc_2)
+            return {'Grade': grade, 'Status': g_status}
+        
         # student training result
+        grade_and_status = train_calc()
         new_result = StudentResult(
-            student=student_user, c_first_name=student_coord.first_name, c_middle_name=student_coord.middle_name, c_last_name=student_coord.last_name, c_id_no=student_coord.identification_num, c_email=student_coord.email, c_phone_number=student_coord.phone_number, s_first_name=student_supervisor.first_name, s_middle_name=student_supervisor.middle_name, s_last_name=student_supervisor.last_name, s_id_no=student_supervisor.identification_num, s_email=student_supervisor.email, s_phone_number=student_supervisor.phone_number, level=student_user.level, session=student_user.session
+            student=student_user, c_first_name=student_coord.first_name, c_middle_name=student_coord.middle_name, c_last_name=student_coord.last_name, c_id_no=student_coord.identification_num, c_email=student_coord.email, c_phone_number=student_coord.phone_number, s_first_name=student_supervisor.first_name, s_middle_name=student_supervisor.middle_name, s_last_name=student_supervisor.last_name, s_id_no=student_supervisor.identification_num, s_email=student_supervisor.email, s_phone_number=student_supervisor.phone_number, level=student_user.level, session=student_user.session, status=grade_and_status['Status'], grade=grade_and_status['Grade']
             )
         new_result.save()
 
@@ -264,25 +331,18 @@ class Coordinator:
             
         # current school session
         current_sch_sess = Session.objects.filter(is_current_session=True).last()
+        # current faculty dean
+        dept_hod = DepartmentHOD.objects.filter(
+            department=usr.department, is_active=True).last()
+        # active school vc
+        active_vc = SchoolVC.objects.filter(is_active=True).last()
         
         if request.method == 'POST':
-
-            # level
-            # level = request.POST['level']
-
             # letter
             placement_lett = Letter(
-                coordinator=usr, session=current_sch_sess.session, text='This is our students placement letter')
+                coordinator=usr, session=current_sch_sess.session, text='This is our students placement letter', dept_hod=dept_hod, vc=active_vc)
             acceptance_lett = Letter(
-                coordinator=usr, session=current_sch_sess.session, text='This is our students acceptance letter', letter='acceptance letter')
-            
-            # # assigning level
-            # if level == '200':
-            #     placement_lett.is_200 = True
-            #     acceptance_lett.is_200 = True
-            # elif level == '300':
-            #     placement_lett.is_300 = True
-            #     acceptance_lett.is_300 = True
+                coordinator=usr, session=current_sch_sess.session, text='This is our students acceptance letter', letter='acceptance letter', dept_hod=dept_hod, vc=active_vc)
 
             placement_lett.save()
             acceptance_lett.save()

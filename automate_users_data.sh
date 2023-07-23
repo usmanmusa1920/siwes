@@ -15,7 +15,7 @@ from toolkit.decorators import (
 )
 from administrator.models import Administrator
 from administrator.all_models import(
-    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+    Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult, Message
 )
 from django.contrib.auth import get_user_model
 
@@ -117,6 +117,20 @@ dept_32 = Department.objects.filter(name='Sociology').first()
 
 ### _____________________
 ### FACULTY DEAN (4 dean)
+sch_vc_user = User.objects.create_user(
+    first_name='Mu`azu', middle_name='Abubakar', last_name='Gusau', identification_num='20161777', email='amagusau@udusok.edu.ng', phone_number='+2348035052912', is_vc=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
+
+sch_vc_user.save()
+
+#<!-- faculty dean -->
+sch_vc = SchoolVC(
+    vc=sch_vc_user, faculty=faculty_1, department=dept_1 , first_name=sch_vc_user.first_name, last_name=sch_vc_user.last_name, email=sch_vc_user.email, email_other='magusau@hotmail.com', phone_number=sch_vc_user.phone_number, phone_number_other='+2348181959199', id_no=sch_vc_user.identification_num, ranks='B.Sc (UDUS) M.Sc (Surrey UK), Ph.D (Surrey UK)', level_rank_title_1='Prof', level_rank_title_2='Ph.D', professorship='Professor of Toxicology', is_active=True)
+
+sch_vc.save()
+
+
+### _____________________
+### FACULTY DEAN (4 dean)
 dean_user_1 = User.objects.create_user(
     first_name='Ahmad', last_name='Galadima', identification_num='20161666', email='ahmadgaladima@yahoo.com', phone_number='+2348144807203', is_dean=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
 dean_user_2 = User.objects.create_user(
@@ -149,7 +163,7 @@ dean_4.save()
 ### _______________________
 ### DEPARTMENT HOD (32 hod)
 hod_user_1 = User.objects.create_user(
-    first_name='Lawal', last_name='Saad', identification_num='20191999', email='lawalsaad@yahoo.com', phone_number='+2349036632603 +2348097750488', is_hod=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
+    first_name='Lawal', last_name='Saad', identification_num='20191999', email='lawalsaad@yahoo.com', phone_number='+2349036632603', is_hod=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
 hod_user_2 = User.objects.create_user(
     first_name='Ahmad', last_name='Jabaka', identification_num='20191920', email='ahmadjabaka@yahoo.com', phone_number='+2349036632604', is_hod=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
 hod_user_3 = User.objects.create_user(
@@ -247,7 +261,7 @@ hod_user_32.save()
 
 #<!-- department hod -->
 hod_1 = DepartmentHOD(
-    hod=hod_user_1, faculty=faculty_1, department=dept_1, first_name=hod_user_1.first_name, last_name=hod_user_1.last_name, email=hod_user_1.email, phone_number=hod_user_1.phone_number, id_no=hod_user_1.identification_num, ranks='B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO', level_rank_title_1='Dr', level_rank_title_2='Ph.D', is_active=True)
+    hod=hod_user_1, faculty=faculty_1, department=dept_1, first_name=hod_user_1.first_name, last_name=hod_user_1.last_name, email=hod_user_1.email, email_other='lawalsaad@fugusau.edu.ng', phone_number=hod_user_1.phone_number, phone_number_other='+2348097750488', id_no=hod_user_1.identification_num, ranks='B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO', level_rank_title_1='Dr', level_rank_title_2='Ph.D', is_active=True)
 hod_2 = DepartmentHOD(
     hod=hod_user_2, faculty=faculty_1, department=dept_2, first_name=hod_user_2.first_name, last_name=hod_user_2.last_name, email=hod_user_2.email, phone_number=hod_user_2.phone_number, id_no=hod_user_2.identification_num, is_active=True)
 hod_3 = DepartmentHOD(

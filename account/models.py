@@ -1,9 +1,9 @@
-from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django_countries.fields import CountryField
 from django.conf import settings
+from toolkit import y_session
 
 
 User = settings.AUTH_USER_MODEL
@@ -94,6 +94,7 @@ class UserAccount(AbstractBaseUser):
 
     # Our custom permissions (ranks)
     is_admin = models.BooleanField(default=False)  # administrator
+    is_vc = models.BooleanField(default=False)  # vice cancellor
     is_dean = models.BooleanField(default=False)  # faculty dean
     is_hod = models.BooleanField(default=False)  # department HOD
     is_coordinator = models.BooleanField(default=False)  # department training coordinator
@@ -123,7 +124,7 @@ class UserAccount(AbstractBaseUser):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    session = models.CharField(max_length=255, default=datetime.today().year)
+    session = models.CharField(max_length=255, default=y_session())
     image = models.ImageField(
         default='default_pic.png', upload_to=f'users_profile_pics')
 

@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import get_user_model
 from .forms import (
-    PasswordChangeForm, AdministratorSignupForm, FacultySignupForm, FacultyDeanSignupForm, DepartmentSignupForm, DepartmentHODSignupForm, DepartmentCoordinatorSignupForm, StudentSupervisorSignupForm, StudentSignupForm, UpdateStudentProfile
+    PasswordChangeForm, AdministratorSignupForm, FacultySignupForm, FacultyDeanSignupForm, DepartmentSignupForm, SchoolVCSignupForm, DepartmentHODSignupForm, DepartmentCoordinatorSignupForm, StudentSupervisorSignupForm, StudentSignupForm, UpdateStudentProfile
 )
 from toolkit import (picture_name, y_session)
 from toolkit.decorators import (
@@ -16,7 +16,7 @@ from toolkit.decorators import (
 )
 from administrator.models import Administrator
 from administrator.all_models import(
-    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+    Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult, Message
 )
 
 
@@ -121,7 +121,11 @@ class Register:
     @admin_required
     @staticmethod
     def administrator(request):
-        """register administrator"""
+        """
+        register administrator
+        
+        when creating new administrator a signal will fire, which will automatically create administrator also in the seperate table of administrator. But in this view it only query the administrator in other to assign his/her description
+        """
 
         if request.method == 'POST':
             form = AdministratorSignupForm(request.POST)
@@ -137,10 +141,11 @@ class Register:
                 raw_identification_num = form.cleaned_data['identification_num']
                 raw_description = form.cleaned_data['description']
 
-                # creating user (in the administrator table)
-                new_administrator = Administrator(
-                    director=instance, first_name=instance.first_name, middle_name=instance.middle_name, last_name=instance.last_name, gender=instance.gender, date_of_birth=instance.date_of_birth, id_no=instance.identification_num, email=instance.email, phone_number=instance.phone_number, description=raw_description, is_active=True
-                )
+                # filtering created admin in other to assign his/her description
+                new_administrator = Administrator.objects.filter(
+                    id_no=instance.identification_num
+                ).first()
+                new_administrator.description = raw_description
                 new_administrator.save()
                 messages.success(request, f'Administrator with ID number of {raw_identification_num} has been registered as an administrator!')
                 return redirect('auth:general_profile', id_no=raw_identification_num)
@@ -206,6 +211,64 @@ class Register:
         }
         return render(request, 'auth/register.html', context)
 
+    @check_phone_number(redirect_where='auth:register_department_hod')
+    @admin_required
+    @staticmethod
+    def schoolVC(request):
+        """register schoolVC"""
+
+        # quering faculties and departments names, which we will be rendering in templates
+        faculties = Faculty.objects.all()
+        departments = Department.objects.all()
+        print(request.method)
+
+        if request.method == 'POST':
+            form = SchoolVCSignupForm(request.POST)
+            print(form.errors)
+            if form.is_valid():
+                instance = form.save(commit=False)
+                instance.is_vc = True
+                instance.is_schoolstaff = True
+                instance.save()
+
+                # grabbing user raw datas (from html form)
+                raw_identification_num = form.cleaned_data['identification_num']
+                raw_ranks = form.cleaned_data['ranks']
+                raw_level_rank_title_1 = form.cleaned_data['level_rank_title_1']
+                raw_level_rank_title_2 = form.cleaned_data['level_rank_title_2']
+                raw_dept = request.POST['raw_dept']
+                raw_other_email = request.POST['other_email']
+                raw_other_phone = request.POST['other_phone']
+                raw_professorship = request.POST['professorship']
+                
+                db_dept = Department.objects.filter(name=raw_dept).first()
+                faculty_name = db_dept.faculty.name
+                db_faculty = Faculty.objects.filter(name=faculty_name).first()
+
+                # deactivating old vc
+                old_active_vc = SchoolVC.objects.filter(is_active=True)
+                if old_active_vc:
+                    for old in old_active_vc:
+                        old.is_active = False
+                        old.save()
+
+                # creating user (in the school vc table)
+                new_dept_hod = SchoolVC(
+                    vc=instance, faculty=db_faculty, department=db_dept, ranks=raw_ranks, first_name=instance.first_name, middle_name=instance.middle_name, last_name=instance.last_name, gender=instance.gender, date_of_birth=instance.date_of_birth, id_no=instance.identification_num, email=instance.email, phone_number=instance.phone_number, level_rank_title_1=raw_level_rank_title_1, level_rank_title_2=raw_level_rank_title_2, email_other=raw_other_email, phone_number_other=raw_other_phone, professorship=raw_professorship, is_active=True
+                )
+                new_dept_hod.save()
+                messages.success(request, f'Staff with ID number of {raw_identification_num} has been registered as new VC of the school!')
+                return redirect('auth:general_profile', id_no=raw_identification_num)
+        else:
+            form = SchoolVCSignupForm()
+        context = {
+            'form': form,
+            'faculties': faculties,
+            'departments': departments,
+            'who_to_reg': 'school vc',
+        }
+        return render(request, 'auth/register.html', context)
+    
     @check_phone_number(redirect_where='auth:register_faculty_dean')
     @admin_required
     @staticmethod
@@ -282,6 +345,8 @@ class Register:
                 raw_level_rank_title_1 = form.cleaned_data['level_rank_title_1']
                 raw_level_rank_title_2 = form.cleaned_data['level_rank_title_2']
                 raw_dept = request.POST['raw_dept']
+                raw_other_email = request.POST['other_email']
+                raw_other_phone = request.POST['other_phone']
                 
                 db_dept = Department.objects.filter(name=raw_dept).first()
                 faculty_name = db_dept.faculty.name
@@ -296,7 +361,7 @@ class Register:
 
                 # creating user (in the department hod table)
                 new_dept_hod = DepartmentHOD(
-                    hod=instance, faculty=db_faculty, department=db_dept, ranks=raw_ranks, first_name=instance.first_name, middle_name=instance.middle_name, last_name=instance.last_name, gender=instance.gender, date_of_birth=instance.date_of_birth, id_no=instance.identification_num, email=instance.email, phone_number=instance.phone_number, level_rank_title_1=raw_level_rank_title_1, level_rank_title_2=raw_level_rank_title_2, is_active=True
+                    hod=instance, faculty=db_faculty, department=db_dept, ranks=raw_ranks, first_name=instance.first_name, middle_name=instance.middle_name, last_name=instance.last_name, gender=instance.gender, date_of_birth=instance.date_of_birth, id_no=instance.identification_num, email=instance.email, phone_number=instance.phone_number, level_rank_title_1=raw_level_rank_title_1, level_rank_title_2=raw_level_rank_title_2, email_other=raw_other_email, phone_number_other=raw_other_phone, is_active=True
                 )
                 new_dept_hod.save()
                 messages.success(request, f'Staff with ID number of {raw_identification_num} has been registered as new department of {raw_dept} dean!')

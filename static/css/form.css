@@ -255,3 +255,179 @@
   margin: 5px;
   width: fit-content;
 }
+
+.message_div{
+  width: 100%;
+  background: whitesmoke;
+  padding: 5px;
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+}
+
+.message_inner{
+  width: 70%;
+  border: solid lightgrey 1px;
+  padding: 5px;
+  margin: 5px;
+}
+
+@media only screen and (max-width: 700px){
+  .message_div{
+    width: 100%;
+    padding: 1PX;
+    margin: 0;
+  }
+  
+  .message_inner{
+    width: 100%;
+    padding: 1PX;
+    margin: 0;
+  }
+}
+
+@media only screen and (max-width: 1050px){
+  .message_div{
+    width: 100%;
+    padding: 1PX;
+    margin: 0;
+  }
+  
+  .message_inner{
+    width: 100%;
+    padding: 1PX;
+    margin: 0;
+  }
+}
+
+.msg_sender{
+  float: right;
+  background: rgb(79, 79, 102);
+  width: fit-content;
+  min-width: 51%;
+  max-width: 51%;
+  padding: 3px;
+  border-radius: 5px;
+  margin: 3px 0 3px 0;
+  float: left;
+}
+
+.msg_receiver{
+  background: darkgrey;
+  width: fit-content;
+  min-width: 51%;
+  max-width: 51%;
+  padding: 3px;
+  border-radius: 5px;
+  margin: 3px 0 3px 0;
+  float: right;
+}
+
+@media only screen and (max-width: 700px){
+  .msg_sender{
+    float: right;
+    min-width: 80%;
+    max-width: 80%;
+    padding: 1px;
+    float: left;
+  }
+  
+  .msg_receiver{
+    min-width: 80%;
+    max-width: 80%;
+    padding: 1px;
+    float: right;
+  }
+}
+
+@media only screen and (max-width: 1050px){
+  .msg_sender{
+    float: right;
+    min-width: 80%;
+    max-width: 80%;
+    padding: 1px;
+    float: left;
+  }
+  
+  .msg_receiver{
+    min-width: 80%;
+    max-width: 80%;
+    padding: 1px;
+    float: right;
+  }
+}
+
+.msg_sender p, .msg_receiver p{
+  background: white;
+  margin: 3px;
+  padding: 3px;
+}
+
+.msg_sender small, .msg_receiver small{
+  background: wheat;
+  margin: 3px;
+  padding: 3px;
+}
+
+.msg_sender small img, .msg_receiver small img{
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+}
+
+.msg_0{
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+}
+
+.img_div{
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.img_div img{
+  width: 30%;
+  height: auto;
+}
+
+.wrapp_pages{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wrapp_pages_column{
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.surf{
+  background: rgb(79, 79, 102);
+  color: white;
+  border-radius: 10px;
+  text-align: center;
+  padding: 5px 10px;
+}
+
+.page_link{
+  margin: 5px;
+  color: rgb(79, 79, 102);
+  text-decoration: none;
+}
+
+.page_link:hover{
+  text-decoration: underline;
+}
+
+.current{
+  background: rgb(79, 79, 102);
+  color: white;
+  border-radius: 10px;
+  text-align: center;
+  padding: 5px 10px;
+}

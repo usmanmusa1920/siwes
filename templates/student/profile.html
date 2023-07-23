@@ -46,6 +46,16 @@
         <p>
           <b>Level:</b> {{student.level}}
         </p>
+        {% if student.supervisor_id_200 %}
+          <p>
+            <b>Supervisor 200L: {{student.supervisor_id_200}}</b>
+          </p>
+        {% endif %}
+        {% if student.supervisor_id_300 %}
+          <p>
+            <b>Supervisor 300L: {{student.supervisor_id_300}}</b>
+          </p>
+        {% endif %}
         <p>
           <b>Supervisor:</b>
           {% for supervisor in coord.training_supervisors.all %}
@@ -79,6 +89,10 @@
         {% if student.matrix_no == request.user.identification_num %}
           <a class="delete_me">Report problem</a>
         {% endif %}
+        <br>
+        <a href="{% url 'student:send_message' %}#send_form" class="me_good">Message coordinator</a>
+        <br>
+        <a href="{% url 'student:send_message' %}#send_form" class="me_good">Message supervisor</a>
         <br>
         <a href="#" class="me_good">View result</a>
       </div>

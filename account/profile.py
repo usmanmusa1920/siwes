@@ -15,7 +15,7 @@ from toolkit.decorators import (
 )
 from administrator.models import Administrator
 from administrator.all_models import(
-    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+    Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
 )
 
 
@@ -31,6 +31,8 @@ def generalProfile(request, id_no):
     
     if user.is_admin:
         uuu = Administrator.objects.filter(id_no=id_no).first()
+    if user.is_vc:
+        uuu = SchoolVC.objects.filter(id_no=id_no).first()
     if user.is_dean:
         uuu = FacultyDean.objects.filter(id_no=id_no).first()
     if user.is_hod:

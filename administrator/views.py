@@ -76,14 +76,13 @@ class Activate:
         if new_active_dean.is_active:
             messages.success(request, f'This ({new_active_dean.id_no}) is already the dean of faculty of {new_active_dean.faculty.name}')
             return redirect('auth:general_profile', id_no=staff_user_id)
+        # deactivating previous deans
+        for dean in FacultyDean.objects.filter(is_active=True, faculty=new_active_dean.faculty):
+            dean.is_active = False
+            dean.save()
+        # activating new dean
         new_active_dean.is_active = True
         new_active_dean.save()
-        for dean in FacultyDean.objects.filter(is_active=True, faculty=new_active_dean.faculty):
-            if dean == new_active_dean:
-                pass
-            else:
-                dean.is_active = False
-                dean.save()
         messages.success(
             request, f'You just activate {new_active_dean.id_no} as faculty of {new_active_dean.faculty.name} new dean')
         return redirect('administrator:filter_faculty_dean')
@@ -97,14 +96,13 @@ class Activate:
         if new_active_hod.is_active == True:
             messages.success(request, f'This ({new_active_hod.id_no}) is already the {new_active_hod.department.name} department H.O.D')
             return redirect('auth:general_profile', id_no=staff_user_id)
+        # deactivating previous hods
+        for hod in DepartmentHOD.objects.filter(is_active=True, department=new_active_hod.department):
+            hod.is_active = False
+            hod.save()
+        # activating new hod
         new_active_hod.is_active = True
         new_active_hod.save()
-        for hod in DepartmentHOD.objects.filter(is_active=True, department=new_active_hod.department):
-            if hod == new_active_hod:
-                pass
-            else:
-                hod.is_active = False
-                hod.save()
         messages.success(
             request, f'You just activate {new_active_hod.id_no} as {new_active_hod.department.name} department new H.O.D')
         return redirect('administrator:filter_department_hod')
@@ -114,20 +112,22 @@ class Activate:
     def departmentTrainingCoordinator(request, staff_user_id):
         """activate (and also deactivate previous) new department training coordinator"""
         
-        new_active_coord = DepartmentTrainingCoordinator.objects.filter(id_no=staff_user_id).first()
+        new_active_coord = DepartmentTrainingCoordinator.objects.filter(
+            id_no=staff_user_id).first()
+        coord_dept = new_active_coord.department
+        
+        # deactivating previous coordinator
         if new_active_coord.is_active == True:
             messages.success(request, f'This ({new_active_coord.id_no}) is already the {new_active_coord.dept_hod.department.name} department training coordinator!')
             return redirect('auth:general_profile', id_no=staff_user_id)
+        for coord in DepartmentTrainingCoordinator.objects.filter(is_active=True, dept_hod=new_active_coord.dept_hod):
+            coord.is_active = False
+            coord.save()
+        # activating new coordinator
         new_active_coord.is_active = True
         new_active_coord.save()
-        for coord in DepartmentTrainingCoordinator.objects.filter(is_active=True, dept_hod=new_active_coord.dept_hod):
-            if coord == new_active_coord:
-                pass
-            else:
-                coord.is_active = False
-                coord.save()
         messages.success(
-            request, f'You just activate {new_active_coord.id_no} as {new_active_coord.dept_hod.department.name} department training coordinator!')
+            request, f'You just activate {new_active_coord.id_no} as new {coord_dept.name} department training coordinator!')
         return redirect('administrator:filter_department_training_coordinator')
 
 

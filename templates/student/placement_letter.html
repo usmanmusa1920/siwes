@@ -25,26 +25,50 @@
           <div class="wrapp_in_column">
             <div class="wrapp_div">
               <h4>
-                PROF. MU'AZU ABUBAKAR GUSAU
+                {% if letter.vc.level_rank_title_1 != None %}
+                  {{letter.vc.level_rank_title_1|upper}}.
+                {% endif %}
+
+                {{letter.vc.first_name|upper}}
+                {% if letter.vc.middle_name %}
+                  {{letter.vc.middle_name|upper}}
+                {% endif %}
+                {{letter.vc.last_name|upper}}
+
+                {% if letter.vc.level_rank_title_2 != None %}
+                  , <i>{{letter.vc.level_rank_title_2|upper}}</i>
+                {% endif %}
               </h4>
-              <span>
-                <small class="danger">B.Sc (UDUS) M.Sc (Surrey UK),</small>
-                <small class="danger">Ph.D (Surrey UK)</small>
-              </span>
+              {% if letter.vc.ranks %}
+                <span>
+                  <small class="danger">{{letter.vc.ranks}}</small>
+                </span>
+              {% endif %}
             </div>
-            <p>
-              <strong>Professor of Toxicology</strong>
-            </p>
+            {% if letter.vc.professorship != None %}
+              <p>
+                <strong>{{letter.vc.professorship}}</strong>
+              </p>
+            {% endif %}
             <h4 class="danger">VICE CHANCElLOR</h4>
-            <p>
-              <span class="danger">Email:</span>
-              magusau@udusok.edu.ng,
-              <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; magusau@hotmail.com
-            </p>
-            <p>
-              <span class="danger">Tel: </span>
-              +234 803 505 2912, +234 818 195 9199
-            </p>
+            {% if letter.vc.email %}
+              <p>
+                <span class="danger">Email:</span>
+                {{letter.vc.email}},
+                {% if letter.vc.email_other %}
+                  <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{letter.vc.email_other}}
+                {% endif %}
+              </p>
+            {% endif %}
+            {% if letter.vc.phone_number %}
+              <p>
+                <span class="danger">Tel: </span>
+                {{letter.vc.phone_number}}
+                {% if letter.vc.phone_number_other %}
+                  {{letter.vc.phone_number_other}}
+                {% endif %}
+              </p>
+            {% endif %}
           </div>
         </div>
         
@@ -52,39 +76,44 @@
           <div class="wrapp_in_column">
             <div class="wrapp_div">
               <h4>
-                {% if hod.level_rank_title_1 != None %}
-                  <i>{{hod.level_rank_title_1}}. </i>
+                {% if letter.dept_hod.level_rank_title_1 != None %}
+                  {{letter.dept_hod.level_rank_title_1|upper}}.
                 {% endif %}
 
-                {{hod.first_name|upper}}
-                {% if hod.middle_name %}
-                  {{hod.middle_name|upper}}
+                {{letter.dept_hod.first_name|upper}}
+                {% if letter.dept_hod.middle_name %}
+                  {{letter.dept_hod.middle_name|upper}}
                 {% endif %}
-                {{hod.last_name|upper}}
+                {{letter.dept_hod.last_name|upper}}
 
-                {% if hod.level_rank_title_2 != None %}
-                  , <i>{{hod.level_rank_title_2}}</i>
+                {% if letter.dept_hod.level_rank_title_2 != None %}
+                  , <i>{{letter.dept_hod.level_rank_title_2|upper}}</i>
                 {% endif %}
               </h4>
 
-              {% if hod.ranks %}
+              {% if letter.dept_hod.ranks %}
                 <span>
-                  <small class="danger">{{hod.ranks}}</small>
+                  <small class="danger">{{letter.dept_hod.ranks}}</small>
                 </span>
               {% endif %}
             </div>
             <h4 class="danger">HEAD OF DEPARTMENT</h4>
-            {% if hod.email %}
+            {% if letter.dept_hod.email %}
               <p>
                 <span class="danger">Email:</span>
-                {{hod.email}}
+                {{letter.dept_hod.email}},
+                {% if letter.dept_hod.email_other %}
+                  <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{letter.dept_hod.email_other}}
+                {% endif %}
               </p>
             {% endif %}
-            
-            {% if hod.phone_number %}
+            {% if letter.dept_hod.phone_number %}
               <p>
                 <span class="danger">Tel: </span>
-                {{hod.phone_number}}
+                {{letter.dept_hod.phone_number}}
+                {% if letter.dept_hod.phone_number_other %}
+                  {{letter.dept_hod.phone_number_other}}
+                {% endif %}
               </p>
             {% endif %}
           </div>

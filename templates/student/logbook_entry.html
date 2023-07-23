@@ -29,10 +29,23 @@
           {% csrf_token %}
           <div class="wrapp_form">
             <h1>Week {{entry.week_no}}</h1>
-            <div class="accept_let_img">
-              <img src="{{entry.image.url}}" alt="" srcset="">
-            </div>
-            <br>
+            {% for img in log_images %}
+              {% if img.logbook == entry  %}
+                <div class="accept_let_img">
+                  <img src="{{img.image.url}}" alt="" srcset="">
+                </div>
+                <br>
+              {% endif  %}
+            {% endfor %}
+            {% if entry.commentonlogbook %}
+              <i>
+                <a>Supervisor commented</a>
+              </i>
+            {% else %}
+              <i>
+                <a>No comment</a>
+              </i>
+            {% endif %}
             <a href="{% url 'student:logbook_comment' entry.id %}" class="good_me">View week remark</a>
           </div>
         </form>
@@ -53,6 +66,11 @@
               {% if form.errors %}
                 <div class="wrapp_warn">
                   {{form.errors}}
+                </div>
+              {% endif %}
+              {% if pic_form.errors %}
+                <div class="wrapp_warn">
+                  {{pic_form.errors}}
                 </div>
               {% endif %}
               <br>

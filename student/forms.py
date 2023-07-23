@@ -6,7 +6,7 @@ from toolkit.decorators import (
 )
 from administrator.models import Administrator
 from administrator.all_models import(
-    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, WeekScannedImage, CommentOnLogbook, StudentResult
 )
 
 
@@ -22,7 +22,13 @@ class UploadAcceptanceLetter(forms.ModelForm):
 class UploadLogbookEntry(forms.ModelForm):
     class Meta:
         model = WeekScannedLogbook
-        fields = ['image', 'title', 'text']
+        fields = ['title', 'text']
+
+
+class UploadLogbookImage(forms.ModelForm):
+    class Meta:
+        model = WeekScannedImage
+        fields = ['image']
 
 
 class LogbookEntryComment(forms.ModelForm):

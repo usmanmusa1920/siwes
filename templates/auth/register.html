@@ -32,7 +32,7 @@
         
         <!-- only administrator, faculty dean, department hod, 
           training coordinator, and student supervisor will fall into this (below) condition -->
-        {% if who_to_reg == 'administrator' or who_to_reg == 'faculty dean' or who_to_reg == 'department hod' or who_to_reg == 'training coordinator' or who_to_reg == 'student supervisor' %}
+        {% if who_to_reg == 'administrator' or who_to_reg == 'school vc' or who_to_reg == 'faculty dean' or who_to_reg == 'department hod' or who_to_reg == 'training coordinator' or who_to_reg == 'student supervisor' %}
           <title>New administrator page</title>
           <div class="wrapp_form">
             <h2>Fill in user information</h2>
@@ -74,6 +74,15 @@
             <input type="text" name="email" class="wrapp_input" placeholder="Email addres" required>
             {% if form.email.errors %}
               <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
+            {% endif %}
+
+            {% if who_to_reg == 'school vc' or who_to_reg == 'department hod' %}
+              <div class="wrapp_info">
+                <p><i><strong><small>Other email and phone number if any (optional):</small></strong></i></p>
+              </div>
+              <!-- <p><i><strong><small>Other email and phone number if any (optional):</small></strong></i></p> -->
+              <input type="text" name="other_email" class="wrapp_input" placeholder="Other email address (optional)">
+              <input type="tel" name="other_phone" placeholder="Other phone number (e.g +2348012345678)  (optional)" class="wrapp_input" minlength="14">
             {% endif %}
 
             <p><b>Select country:</b></p>
@@ -118,7 +127,7 @@
               <small>`level_rank_title_2` is the title that is prefix after the name of a staff like `Ph.D.` e.g  Lawal Saad Ph.D</small>
               <textarea name="level_rank_title_2" class="wrapp_text" placeholder="Level rank title 1 e.g Ph.D (optional)"></textarea>
             </div>
-          {% elif who_to_reg == 'department hod' %}
+          {% elif who_to_reg == 'department hod' or who_to_reg == 'school vc' %}
             <div class="wrapp_form">
               <p><b>Select department:</b></p>
               <select name="raw_dept" class="wrapp_select" required>
@@ -127,11 +136,25 @@
                   <option value="{{dept.name}}">{{dept.name}}</option>
                 {% endfor %}
               </select>
+
+              {% if who_to_reg == 'school vc' %}
+                <p><b>Professorship:</b></p>
+                <small>`Professorship` is the staff feld of professorship like `Professor of Toxicology`</small>
+                <textarea name="professorship" class="wrapp_text" placeholder="Professorship like `Professor of Toxicology` (optional)"></textarea>
+              {% endif %}
     
               <p><b>Ranks:</b></p>
               <small>This is staff ranks or universities he/she attended them e.g
                 # B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO</small>
               <textarea name="ranks" class="wrapp_text" placeholder="Ranks e.g B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO (optional)"></textarea>
+
+              <p><b>Level rank title 1:</b></p>
+              <small>`level_rank_title_1` is the title that is prefix before the first name of a staff like `PROF` or `Dr` e.g  PROF. MU'AZU ABUBAKAR GUSAU  or  Dr Lawal Saad.</small>
+              <textarea name="level_rank_title_1" class="wrapp_text" placeholder="Level rank title 1 e.g PROF or Dr (optional)"></textarea>
+
+              <p><b>Level rank title 2:</b></p>
+              <small>`level_rank_title_2` is the title that is prefix after the name of a staff like `Ph.D.` e.g  Lawal Saad Ph.D</small>
+              <textarea name="level_rank_title_2" class="wrapp_text" placeholder="Level rank title 1 e.g Ph.D (optional)"></textarea>
             </div>
           {% elif who_to_reg == 'training coordinator' or who_to_reg == 'student supervisor' %}
             <div class="wrapp_form">
@@ -222,7 +245,7 @@
           </div>
         {% endif %}
 
-        {% if who_to_reg == 'administrator' or who_to_reg == 'faculty dean' or who_to_reg == 'department hod' or who_to_reg == 'training coordinator' or who_to_reg == 'student supervisor' %}
+        {% if who_to_reg == 'administrator' or who_to_reg == 'school vc' or who_to_reg == 'faculty dean' or who_to_reg == 'department hod' or who_to_reg == 'training coordinator' or who_to_reg == 'student supervisor' %}
           <div class="wrapp_form">
             <p><b>Security:</b></p>
             <small>Default password for new {{who_to_reg}} is his/her (first name, first letter + ID number + last name, first letter), he/she can change it later</small>

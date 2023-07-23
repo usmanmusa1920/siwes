@@ -23,7 +23,7 @@
       <div class="wrapp_top_greynish">
         <small>This is your 300 level acceptance letter you uploaded</small>
       </div>
-      <form method="POST" action="{% url 'student:upload_acceptance_letter_300' %}" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'student:upload_acceptance_letter' 300 %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="wrapp_form">
           {% if letter.image %}

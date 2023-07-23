@@ -57,6 +57,45 @@ class Department(models.Model):
     
 
 
+class SchoolVC(models.Model):
+    """This is school VC table of database"""
+    
+    vc = models.ForeignKey(User, on_delete=models.CASCADE)
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+
+    # this is staff ranks or universities he/she attended them e.g
+    # B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO
+    ranks = models.CharField(max_length=100, unique=False, blank=True, null=True)
+
+    # `level_rank_title_1` is the title that is prefix before the first name of a staff like `PROF` or `Dr` e.g  PROF. MU'AZU ABUBAKAR GUSAU  or  Dr Lawal Saad.
+    level_rank_title_1 = models.CharField(max_length=100, unique=False, blank=True, null=True)
+
+    # `level_rank_title_2` is the title that is prefix after the name of a staff like `Ph.D.` e.g  Lawal Saad Ph.D.
+    level_rank_title_2 = models.CharField(max_length=100, unique=False, blank=True, null=True)
+
+    professorship = models.CharField(max_length=100, unique=False, blank=True, null=True)
+
+    first_name = models.CharField(max_length=100, unique=False)
+    middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
+    last_name = models.CharField(max_length=100, unique=False)
+    gender_choices = [('female', 'Female'), ('male', 'Male'),]
+    gender = models.CharField(max_length=100, default='male', choices=gender_choices)
+    date_of_birth = models.DateField(max_length=100, blank=True, null=True)
+    id_no = models.CharField(max_length=255, unique=True)
+    email = models.EmailField(max_length=255, unique=False)
+    email_other = models.EmailField(max_length=255, unique=False, blank=True, null=True)
+    phone_number = models.CharField(max_length=100, unique=False)
+    phone_number_other = models.CharField(max_length=100, unique=False, blank=True, null=True)
+    date_joined = models.DateTimeField(default=timezone.now)
+    date_leave = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'VC of the school, is active: {self.is_active}'
+    
+
+
 class FacultyDean(models.Model):
     """This is dean faculty table of database"""
     
@@ -117,7 +156,9 @@ class DepartmentHOD(models.Model):
     date_of_birth = models.DateField(max_length=100, blank=True, null=True)
     id_no = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, unique=False)
+    email_other = models.EmailField(max_length=255, unique=False, blank=True, null=True)
     phone_number = models.CharField(max_length=100, unique=False)
+    phone_number_other = models.CharField(max_length=100, unique=False, blank=True, null=True)
     date_joined = models.DateTimeField(default=timezone.now)
     date_leave = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=False)
@@ -152,6 +193,10 @@ class TrainingStudent(models.Model):
     session = models.CharField(max_length=255, blank=False, null=False, default=y_session())
     session_200 = models.CharField(max_length=255, blank=False, null=False, default=y_session())
     session_300 = models.CharField(max_length=255, blank=False, null=False, default=y_session())
+
+    supervisor_id_200 = models.CharField(max_length=255, blank=False, null=False)
+    supervisor_id_300 = models.CharField(max_length=255, blank=False, null=False)
+
     is_apply_training_200 = models.BooleanField(default=False)
     is_apply_training_300 = models.BooleanField(default=False)
     is_finish_200 = models.BooleanField(default=False)
@@ -228,6 +273,9 @@ class Letter(models.Model):
     """This is letter (acceptance/placement) table of database"""
     
     coordinator = models.ForeignKey(DepartmentTrainingCoordinator, on_delete=models.CASCADE)
+    dept_hod = models.ForeignKey(DepartmentHOD, on_delete=models.CASCADE)
+    vc = models.ForeignKey(SchoolVC, on_delete=models.CASCADE)
+
     release_date = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     letter_type = [('placement letter', 'Placement letter'), ('acceptance letter', 'Acceptance letter'),]
@@ -239,11 +287,11 @@ class Letter(models.Model):
     viewers = models.ManyToManyField(TrainingStudent, blank=True, related_name='viewers')
 
     session = models.CharField(max_length=255, blank=False, null=False, default=y_session())
-    is_200 = models.BooleanField(default=False)
-    is_300 = models.BooleanField(default=False)
+    # is_200 = models.BooleanField(default=False)
+    # is_300 = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'Letter of ({self.letter})'
+        return f'Letter of ({self.letter}) in {self.session} session'
     
 
 
@@ -299,7 +347,6 @@ class WeekScannedLogbook(models.Model):
     # avoid updating student scanned logbook on admin page (because of the image file route won`t save correctly`)
 
     session = models.CharField(max_length=255, blank=False, null=False, default=y_session())
-    image = models.ImageField(blank=True, null=True, upload_to=f'weekly-scanned-logbook')
     text = models.TextField(blank=True, null=True,)  # references
     level_choices = [('200', '200 level'), ('300', '300 level'),]
     level = models.CharField(max_length=100, default='200', choices=level_choices)
@@ -309,20 +356,32 @@ class WeekScannedLogbook(models.Model):
         return f'{self.student_lg.first_name}\'s logbook of the {self.week} week out of 12 weeks'
     
 
+class WeekScannedImage(models.Model):
+    """This is student weekly logbook (image) entry table of database"""
     
+    student = models.ForeignKey(TrainingStudent, on_delete=models.CASCADE)
+    logbook = models.ForeignKey(WeekScannedLogbook, related_name='week_reader', on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(default=timezone.now)
+    image = models.ImageField(blank=True, null=True, upload_to=f'weekly-scanned-logbook')
+
+    def __str__(self):
+        return f'{self.logbook} (image)'
+    
+
 class CommentOnLogbook(models.Model):
     """This is student weekly logbook comment table of database"""
     
     commentator = models.ForeignKey(StudentSupervisor, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(default=timezone.now)
-    logbook = models.ForeignKey(WeekScannedLogbook, on_delete=models.CASCADE)  # Week scanned logbook
+    # Week scanned logbook
+    logbook = models.OneToOneField(WeekScannedLogbook, on_delete=models.CASCADE)
     # grade of that week logbook
     grade = models.IntegerField(blank=True, null=True)
     comment = models.TextField(blank=False, null=False)
     session = models.CharField(max_length=255, blank=False, null=False, default=y_session())
 
     def __str__(self):
-        return f'Comment of {self.commentator.identification_num} on {self.logbook.student_lg.matrix_no} logbook'
+        return f'Comment of {self.commentator.id_no} on {self.logbook.student_lg.matrix_no} logbook'
     
 
 
@@ -348,6 +407,11 @@ class StudentResult(models.Model):
     s_id_no = models.CharField(max_length=255, unique=True, blank=False, null=False)
     s_email = models.EmailField(max_length=255, unique=False, blank=False, null=False)
     s_phone_number = models.CharField(max_length=100, unique=False, blank=False, null=False)
+
+    # result status
+    status = models.CharField(max_length=100, unique=False, blank=False, null=False)
+    # result grade
+    grade = models.CharField(max_length=100, unique=False, blank=False, null=False)
     
     session = models.CharField(
         max_length=255, blank=False, null=False, default=y_session())
@@ -358,24 +422,29 @@ class StudentResult(models.Model):
         return f'{self.student} training result for {self.level}'
     
     
-# class Message(models.Model):
-#     from_sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='from_sender')
-#     to_receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='to_receiver')
-#     message = models.TextField(blank=True, null=True)
-#     image = models.ImageField(blank=True, null=True, upload_to='chat_chat_pic')
-#     timestamp = models.DateTimeField(default=timezone.now)
+class Message(models.Model):
+    from_sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='from_sender')
+    to_receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='to_receiver')
+    message = models.TextField(blank=True, null=True)
+    image = models.ImageField(blank=True, null=True, upload_to='message_img')
+    timestamp = models.DateTimeField(default=timezone.now)
     
-#     # This  is_msg_added, we use it to mate our filter well organize, it didn't do anything else apart from that
-#     is_msg_added = models.BooleanField(default=False)
+    # This  `is_msg_added`, we use it to make our filter well organize, it didn't do anything else apart from that
+    is_msg_added = models.BooleanField(default=False)
     
-#     # This is_new_message, we use it to see if the sender of a message, send another additional message, before he/she get reply from who he/she sent a message to
-#     is_new_message = models.BooleanField(default=False)
+    # This `is_new_message`, we use it to see if the sender of a message, send another additional message, before he/she get reply from who he/she sent a message to
+    is_new_message = models.BooleanField(default=False)
     
-#     # At this we filter to see if a user reply a message, before the user that sent him/her a message send another one again
-#     is_msg_replied = models.BooleanField(default=False)
+    # At this we filter to see if a user reply a message, before the user that sent him/her a message send another one again
+    is_msg_replied = models.BooleanField(default=False)
     
-#     # This one it let us know if a message is seen
-#     is_view = models.BooleanField(default=False)
+    # This one it let us know if a message is seen or not
+    is_view = models.BooleanField(default=False)
+
+    # is_request_to_change_img = models.BooleanField(default=False)
+    # is_approved_request = models.BooleanField(default=False)
+    # req_level_choices = [('200', '200 level'), ('300', '300 level'),]
+    # req_level = models.CharField(max_length=100, default='200', choices=req_level_choices)
     
-#     def __str__(self):
-#         return f'Message send from {self.from_sender} to {self.to_receiver} on {self.timestamp} ({self.message})'
+    def __str__(self):
+        return f'Message send from {self.from_sender} to {self.to_receiver} on {self.timestamp} ({self.message})'

@@ -1,0 +1,148 @@
+<!-- extending from base.html file -->
+{% extends 'base.html' %}
+{% load static %}
+
+<!-- css file link -->
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/form.css' %}">
+{% endblock css %}
+
+<!-- page title -->
+{% block title %}
+  <title>Message</title>
+{% endblock title %}
+
+<!-- content of the page -->
+{% block main %}
+  <div class="wrapper">
+    <div class="wrapp_head">
+      <h1>Message</h1>
+    </div>
+    <div class="wrapp_main">
+      <div class="wrapp_top_greynish">
+        <small>This is your message</small>
+      </div>
+
+      <div class="wrapp_form">
+        <b>
+          <h2>Messages</h2>
+        </b>
+        <hr>
+        <div class="wrapp_body">
+          <div class="wrapp_null">
+            <div class="wrapp_in_null">
+              <div class="main_wrapp_null">
+                <p>No conversation yet!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="wrapp_form">
+        <div class="wrapp_pages">
+          <div class="wrapp_pages_column">
+            <a href="#" class="surf">previous</a>
+            <a>...</a>
+            <a href="?page={{num}}" class="page_link">3</a>
+            <a href="?page={{num}}" class="page_link">4</a>
+            <a href="?page={{num}}" class="current">5</a>
+            <a href="?page={{num}}" class="page_link">6</a>
+            <a href="?page={{num}}" class="page_link">7</a>
+            <a>...</a>
+            <a href="#" class="surf">Next</a>
+          </div>
+        </div>
+
+        <div class="message_div">
+          <div class="message_inner">
+            <div class="msg_sender">
+              <div class="msg_2">
+                <div class="msg_1">
+                  <div class="msg_0">
+                    <div class="img_div">
+                      <img src="{{request.user.profile.image.url}}" alt="" srcset="">
+                    </div>
+                    <p>No comment for this logbook entry yet! No comment for this logbook entry yet! No comment for this logbook entry yet!</p>
+                    <small>
+                      <img src="{{request.user.profile.image.url}}" alt="" srcset="">
+                      Mon, 25 july, 2023
+                      <b>Seen</b>
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="msg_receiver">
+              <div class="msg_2">
+                <div class="msg_1">
+                  <div class="msg_0">
+                    <div class="img_div">
+                      <img src="{{request.user.profile.image.url}}" alt="" srcset="">
+                    </div>
+                    <p>No comment for this logbook entry yet! No comment for this logbook entry yet! No comment for this logbook entry yet!</p>
+                    <small>
+                      <img src="{{request.user.profile.image.url}}" alt="" srcset="">
+                      Mon, 25 july, 2023
+                      <b>Not seen</b>
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="msg_receiver">
+              <div class="msg_2">
+                <div class="msg_1">
+                  <div class="msg_0">
+                    <div class="img_div">
+                      <img src="{{request.user.profile.image.url}}" alt="" srcset="">
+                    </div>
+                    <p>No comment for this logbook entry yet! No comment for this logbook entry yet! No comment for this logbook entry yet!</p>
+                    <small>
+                      <img src="{{request.user.profile.image.url}}" alt="" srcset="">
+                      Mon, 25 july, 2023
+                      <b>Seen</b>
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="msg_sender">
+              <div class="msg_2">
+                <div class="msg_1">
+                  <div class="msg_0">
+                    <div class="img_div">
+                      <img src="{{request.user.profile.image.url}}" alt="" srcset="">
+                    </div>
+                    <p>No comment </p>
+                    <small>
+                      <img src="{{request.user.profile.image.url}}" alt="" srcset="">
+                      Mon, 25 july, 2023
+                      <b>Seen</b>
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form method="POST" id="send_form" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="wrapp_form">
+          <textarea name="message" class="wrapp_text" placeholder="Send message . . ."></textarea>
+          <input type="file" name="image" accept="image/*">
+          <div class="wrapp_info">
+            <p>When uploading image make sure it has an extension of PGN, JPG, or JPEG</p>
+          </div>
+          <button type="submit">Send</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock main %}

@@ -9,22 +9,14 @@
   -->
   <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
   <link rel="stylesheet" href="{% static 'css/placement_letter.css' %}">
-  <title>Placement letter</title>
+  <title>Student result ({{result.level}})</title>
 </head>
 <body>
   <div class="wrapp_letter">
     <div class="wrapp_head">
-      {% if request.user.is_coordinator %}
-        {% if messages %}
-          {% for flash_msg in messages %}
-            <div class="alert_{{flash_msg.tags}}">{{flash_msg}}</div>
-            <br>
-          {% endfor %}
-        {% endif %}
-      {% endif %}
       <img src="{% static 'media/logo.png' %}" alt="">
       <h1>{{student.department|upper}}</h1>
-      <h4>{{std.faculty|upper}}</h4>
+      <h4>{{student.faculty|upper}}</h4>
       <h4 class="uni">FEDERAL UNIVERSITY GUSAU</h4>
       <p>Along Zaria - Sokoto Road, P.M.B 1001, Gusau, Zamfara State, Nigeria</p>
 
@@ -33,27 +25,50 @@
           <div class="wrapp_in_column">
             <div class="wrapp_div">
               <h4>
-                PROF. MU'AZU ABUBAKAR GUSAU <i>Ph.D.</i>
+                {% if result.vc.level_rank_title_1 != None %}
+                  {{result.vc.level_rank_title_1|upper}}.
+                {% endif %}
+
+                {{result.vc.first_name|upper}}
+                {% if result.vc.middle_name %}
+                  {{result.vc.middle_name|upper}}
+                {% endif %}
+                {{result.vc.last_name|upper}}
+
+                {% if result.vc.level_rank_title_2 != None %}
+                  , <i>{{result.vc.level_rank_title_2|upper}}</i>
+                {% endif %}
               </h4>
-              <span>
-                <small class="danger">B.Sc (UDUS) M.Sc (Surrey UK),</small>
-                <small class="danger">Ph.D (Surrey UK)</small>
-            </span>
-              </span>
+              {% if result.vc.ranks %}
+                <span>
+                  <small class="danger">{{result.vc.ranks}}</small>
+                </span>
+              {% endif %}
             </div>
-            <p>
-              <strong>Professor of Toxicology</strong>
-            </p>
+            {% if result.vc.professorship != None %}
+              <p>
+                <strong>{{result.vc.professorship}}</strong>
+              </p>
+            {% endif %}
             <h4 class="danger">VICE CHANCElLOR</h4>
-            <p>
-              <span class="danger">Email:</span>
-              magusau@udusok.edu.ng,
-              <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; magusau@hotmail.com
-            </p>
-            <p>
-              <span class="danger">Tel: </span>
-              +234 803 505 2912, +234 818 195 9199
-            </p>
+            {% if result.vc.email %}
+              <p>
+                <span class="danger">Email:</span>
+                {{result.vc.email}},
+                {% if result.vc.email_other %}
+                  <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{result.vc.email_other}}
+                {% endif %}
+              </p>
+            {% endif %}
+            {% if result.vc.phone_number %}
+              <p>
+                <span class="danger">Tel: </span>
+                {{result.vc.phone_number}}
+                {% if result.vc.phone_number_other %}
+                  {{result.vc.phone_number_other}}
+                {% endif %}
+              </p>
+            {% endif %}
           </div>
         </div>
         
@@ -61,44 +76,44 @@
           <div class="wrapp_in_column">
             <div class="wrapp_div">
               <h4>
-                {% if hod.level_rank_title_1 != None %}
-                  <i>{{hod.level_rank_title_1}}. </i>
+                {% if result.dept_hod.level_rank_title_1 != None %}
+                  {{result.dept_hod.level_rank_title_1|upper}}.
                 {% endif %}
 
-                {{hod.first_name|upper}}
-                {% if hod.middle_name %}
-                  {{hod.middle_name|upper}}
+                {{result.dept_hod.first_name|upper}}
+                {% if result.dept_hod.middle_name %}
+                  {{result.dept_hod.middle_name|upper}}
                 {% endif %}
-                {{hod.last_name|upper}}
+                {{result.dept_hod.last_name|upper}}
 
-                {% if hod.level_rank_title_2 != None %}
-                  , <i>{{hod.level_rank_title_2}}</i>
+                {% if result.dept_hod.level_rank_title_2 != None %}
+                  , <i>{{result.dept_hod.level_rank_title_2|upper}}</i>
                 {% endif %}
               </h4>
 
-              {% if hod.ranks %}
+              {% if result.dept_hod.ranks %}
                 <span>
-                  <small class="danger">{{hod.ranks}}</small>
-                  <!-- <small class="danger">B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.);</small>
-                  <small class="danger">Msc, PhD (USIM Malaysia); CFTO</small> -->
+                  <small class="danger">{{result.dept_hod.ranks}}</small>
                 </span>
               {% endif %}
             </div>
             <h4 class="danger">HEAD OF DEPARTMENT</h4>
-            {% if hod.email %}
+            {% if result.dept_hod.email %}
               <p>
                 <span class="danger">Email:</span>
-                {{hod.email}}
-                <!-- lawalsaad@yahoo.com, lawalsaad@fugusau.edu.ng -->
-                <!-- <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; magusau@hotmail.com -->
+                {{result.dept_hod.email}},
+                {% if result.dept_hod.email_other %}
+                  <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{result.dept_hod.email_other}}
+                {% endif %}
               </p>
             {% endif %}
-            
-            {% if hod.phone_number %}
+            {% if result.dept_hod.phone_number %}
               <p>
                 <span class="danger">Tel: </span>
-                {{hod.phone_number}}
-                <!-- +2349036632603, +2348097750488 -->
+                {{result.dept_hod.phone_number}}
+                {% if result.dept_hod.phone_number_other %}
+                  {{result.dept_hod.phone_number_other}}
+                {% endif %}
               </p>
             {% endif %}
           </div>
@@ -109,15 +124,15 @@
     <div class="letter_body">
       <p class="letter_date">
         {% if letter %}
-          {{letter.release_date|date:'d F, Y'}}
+          {{result.timestamp|date:'d F, Y'}}
         {% endif %}
       </p>
 
-      <h3 class="letter_to_sir">Your {{student.faculty.training}} result of {{result.level}} level</h3>
+      <h3 class="letter_to_sir">The Personal Manger/Managing Director/Director</h3>
 
       <p>Dear Sir</p>
 
-      <h1 class="letter_title">{{student.faculty.training|upper}} RSULT</h1>
+      <h1 class="letter_title">{{student.faculty.training|upper}} STUDENT RESULT</h1>
 
       <p class="letter_p">SIWES is a mandatory training prescribed by the Nigerian Universities Commision (NUC) and duly recognised by the ITF for all university student undergoing science and related course. In view of its importance, and in accordance with the demands of the programme, it will be greatly appreciated if you would provide a place for our student(s) to gain experience.</p>
 
@@ -149,11 +164,40 @@
               {{student.department.name}}
             {% endif %}
           </span>
-          <span>{{letter.duration}} months</span>
+          <span>{{result.duration}} months</span>
+        </div>
+        <br>
+
+        <div class="keys">
+          <span>Status:</span>
+        </div>
+        <div class="values">
+          <span> &nbsp; &nbsp; {{result.status|upper}}</span>
+        </div>
+        <br>
+        <div class="keys">
+          <span>Grade:</span>
+        </div>
+        <div class="values">
+          <span> &nbsp; &nbsp; {{result.grade}}</span>
+        </div>
+        <br>
+        <div class="keys">
+          <span>Session:</span>
+        </div>
+        <div class="values">
+          <span> &nbsp; &nbsp; {{result.session}}</span>
+        </div>
+        <br>
+        <div class="keys">
+          <span>Level:</span>
+        </div>
+        <div class="values">
+          <span> &nbsp; &nbsp; {{result.level}}</span>
         </div>
         <br>
         <p class="letter_p">
-          <i><b>Note: </b>Student is expected to start the training on <strong>{{letter.start_of_training|date:'d F, Y'}}</strong> and finish on <strong>{{letter.end_of_training|date:'d F, Y'}}</strong>, if no any public event across the range.</i>
+          <i><b>Note: </b>Student is expected to start the training on <strong>{{result.start_of_training|date:'d F, Y'}}</strong> and finish on <strong>{{result.end_of_training|date:'d F, Y'}}</strong>, if no any public event across the range.</i>
         </p>
       </div>
 
@@ -161,18 +205,18 @@
 
       <p class="letter_p">However, if you are satisfied with the student(s) involvement in the training, any assistance rendered will be highly appreciated.</p>
 
-      <p class="letter_p">Please indicate your acceptance of the student by filling the attached form and mail it to the Departmental {{std.department.faculty.training|upper}} Coordinator.</p>
+      <p class="letter_p">Please indicate your acceptance of the student by filling the attached form and mail it to the Departmental {{student.department.faculty.training|upper}} Coordinator.</p>
 
       <p class="letter_p">Thank you.</p>
 
       <h3 class="sign_1">
-        {{std.student_training_coordinator.first_name|upper}}
-        {% if std.student_training_coordinator.middle_name %}
-          {{std.student_training_coordinator.middle_name|upper}}
+        {{student.student_training_coordinator.first_name|upper}}
+        {% if student.student_training_coordinator.middle_name %}
+          {{student.student_training_coordinator.middle_name|upper}}
         {% endif %}
-        {{std.student_training_coordinator.last_name|upper}}
+        {{student.student_training_coordinator.last_name|upper}}
       </h3>
-      <p class="sign_2">Departmental {{std.department.faculty.training|upper}} Coordinator</p>
+      <p class="sign_2">Departmental {{student.faculty.training|upper}} Coordinator</p>
     </div>
 
     <div class="letter_footer">

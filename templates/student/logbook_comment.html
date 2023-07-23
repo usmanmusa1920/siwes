@@ -22,46 +22,41 @@
       <div class="wrapp_top_greynish">
         <small>This is your {{logbook.week_no}} week logbook entry</small>
       </div>
-      <form method="POST" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'student:additional_log_image' logbook.id  %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="wrapp_form">
-          <div class="accept_let_img">
-            <img src="{{logbook.image.url}}" alt="" srcset="">
-          </div>
-          <br>
-          <a href="{{logbook.image.url}}" target="_blank" class="good_me">View full image</a>
-          <br>
-          {% if comments %}
-            <!-- blank -->
-          {% else %}
-            {% if request.user.identification_num == logbook.student_lg.matrix_no %}
-              <!-- pass if the current login user is the student that own this logbook entry -->
-            {% else %}
-              <p>Grade:</p>
-              <input type="number" name="grade" class="wrapp_input" placeholder="Grade logbook entry" required>
-              <p>Comment:</p>
-              <textarea name="comment" class="wrapp_text" placeholder="Comment on logbook entry" required></textarea>
-              <button type="submit">Comment</button>
-            {% endif %}
+          {% for img in log_images %}
+            <div class="accept_let_img">
+              <img src="{{img.image.url}}" alt="" srcset="">
+            </div>
+            <a href="{{img.image.url}}" target="_blank" class="good_me">View full image</a>
+            <hr>
+            <br>
+          {% endfor %}
+          {% if log_images.all.count == 1 or log_images.all.count == '1' %}
+            <div class="wrapp_info">
+              <p>You can upload another (one more) scanned page of this week logbook (optional), when uploading make sure it has an extension of PGN, JPG, or JPEG</p>
+            </div>
+            <input type="file" name="image" accept="image/*" required>
+            <br>
+            <button type="submit">Upload</button>
           {% endif %}
         </div>
       </form>
+      
       <div class="wrapp_form">
         <b>
           <h2>Logbook comments</h2>
         </b>
         <hr>
         <br>
-
-        {% if comments %}
-          {% for comment in comments %}
-            <p><b>Supervisor</b>: {{comment.commentator.first_name}} {{comment.commentator.last_name}}</p>
-            <p><b>Grade</b>: {{comment.grade}}/100</p>
-            <p><b>Date</b>: {{comment.timestamp|date:'d F, Y'}}</p>
-            <p><b>Comment</b>: {{comment.comment}}</p>
-            <hr>
-            <br>
-          {% endfor %}
+        {% if logbook.commentonlogbook %}
+          <p><b>Supervisor</b>: {{logbook.commentonlogbook.commentator.first_name}} {{logbook.commentonlogbook.commentator.last_name}}</p>
+          <p><b>Grade</b>: {{logbook.commentonlogbook.grade}}/100</p>
+          <p><b>Date</b>: {{logbook.commentonlogbook.timestamp|date:'d F, Y'}}</p>
+          <p><b>Comment</b>: {{logbook.commentonlogbook.comment}}</p>
+          <hr>
+          <br>
         {% else %}
           <div class="wrapp_body">
             <div class="wrapp_null">
@@ -74,6 +69,22 @@
           </div>
         {% endif %}
       </div>
+
+      {% if not logbook.commentonlogbook %}
+        {% if request.user.identification_num != logbook.student_lg.matrix_no %}
+          <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="wrapp_form">
+              <p>Grade:</p>
+              <small>You can grade student with: 1, 2, 3, 4, or 5 score</small>
+              <input type="text" name="grade" class="wrapp_input" placeholder="Grade (1, 2, 3, 4, or 5) score " required>
+              <p>Comment:</p>
+              <textarea name="comment" class="wrapp_text" placeholder="Comment on logbook entry" required></textarea>
+              <button type="submit">Comment</button>
+            </div>
+          </form>
+        {% endif %}
+      {% endif %}
     </div>
   </div>
 {% endblock main %}

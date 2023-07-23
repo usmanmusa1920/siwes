@@ -56,6 +56,17 @@ class DepartmentSignupForm(forms.ModelForm):
         fields = ['name', 'email', 'website', 'phone_number', 'description']
 
 
+class SchoolVCSignupForm(UserCreationForm):
+    """school VC signup form class"""
+    ranks = forms.CharField(required=False)  # it is not part of User model fields
+    level_rank_title_1 = forms.CharField(required=False)  # it is not part of User model fields
+    level_rank_title_2 = forms.CharField(required=False)  # it is not part of User model fields
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'identification_num', 'email', 'phone_number', 'country', 'password1', 'password2', 'ranks', 'level_rank_title_1', 'level_rank_title_2']
+
+
 class DepartmentHODSignupForm(UserCreationForm):
     """department H O D signup form class"""
     ranks = forms.CharField(required=False)  # it is not part of User model fields

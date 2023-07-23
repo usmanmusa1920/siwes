@@ -25,9 +25,15 @@ urlpatterns = [
     path(
         'logbook-entry/<int:matrix_no>/<int:student_level>', Student.logbookEntry, name='logbook_entry'),
     path(
+        'additional/log/image/<int:logbook_id>', Student.additionalWeekImage, name='additional_log_image'),
+    path(
         'logbook/comment/<int:logbook_id>', Student.logbookComment, name='logbook_comment'),
 
     # apply training for a specific level
     path(
         'apply/training/<int:level>', Student.applyTraining, name='apply_training'),
+
+    # message
+    path(
+        'send/message', Student.message, name='send_message'),
 ]
