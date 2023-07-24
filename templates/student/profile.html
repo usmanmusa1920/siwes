@@ -50,11 +50,13 @@
           <p>
             <b>Supervisor 200L: {{student.supervisor_id_200}}</b>
           </p>
+          <a href="{% url 'chat:send_message' student.supervisor_id_200 %}" class="me_good">Message 300L supervisor</a>
         {% endif %}
         {% if student.supervisor_id_300 %}
           <p>
             <b>Supervisor 300L: {{student.supervisor_id_300}}</b>
           </p>
+          <a href="{% url 'chat:send_message' student.supervisor_id_300 %}" class="me_good">Message 300L supervisor</a>
         {% endif %}
         <p>
           <b>Supervisor:</b>
@@ -87,12 +89,10 @@
         <br>
         <br>
         {% if student.matrix_no == request.user.identification_num %}
-          <a class="delete_me">Report problem</a>
+          <a href="{% url 'chat:req_change_acceptance_letter' %}" class="delete_me">Request change acceptance letter</a>
         {% endif %}
         <br>
-        <a href="{% url 'student:send_message' %}#send_form" class="me_good">Message coordinator</a>
-        <br>
-        <a href="{% url 'student:send_message' %}#send_form" class="me_good">Message supervisor</a>
+        <a href="{% url 'chat:send_message' coord.id_no %}" class="me_good">Message coordinator</a>
         <br>
         <a href="#" class="me_good">View result</a>
       </div>

@@ -14,6 +14,7 @@ from administrator.models import Administrator
 from administrator.all_models import(
     Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, WeekScannedImage, CommentOnLogbook, StudentResult
 )
+from chat.models import Message
 
 
 User = get_user_model()
@@ -284,6 +285,75 @@ class Student:
             messages.success(request, f'Your {level_s} level acceptance letter image has been uploaded!')
             return redirect(reverse('student:uploaded_acceptance_letter', kwargs={'level': level_s}))
         
+    # @student_required
+    @staticmethod
+    def updateAcceptanceLetterReq(request, level_s, msg_id=False):
+        """update acceptance letter for 200 and 300 level student"""
+        
+        # student user
+        stu_usr = User.objects.get(id=request.user.id)
+        student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
+
+        # coordinator
+        coord_tab = student.student_training_coordinator.identification_num
+        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
+
+        if level_s == '200' or level_s == 200:
+            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='200').first()
+        else:
+            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='300').first()
+
+        train = student.faculty.training
+        faculty = student.faculty.name
+        department = student.department.name
+        level = student.level
+        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
+
+        # current school session
+        current_sch_sess = Session.objects.filter(is_current_session=True).last()
+
+        if not acceptance:
+            return False
+
+        if request.method == 'POST':
+            form = UploadAcceptanceLetter(request.POST, request.FILES, instance=acceptance)
+            if form.is_valid():
+                # the remove of previous acceptance is not workin, later will be arrange
+                if os.path.exists(acceptance.image.path):
+                    os.remove(acceptance.image.path)
+                instance = form.save(commit=False)
+                pic_name = picture_name(instance.image.name)
+                instance.session = current_sch_sess.session
+                instance.image.name = route + pic_name
+                instance.save()
+
+                if level_s == '200' or level_s == 200:
+                    stu_letter = AcceptanceLetter.objects.filter(sender_acept=student, level='200').first()
+                else:
+                    stu_letter = AcceptanceLetter.objects.filter(sender_acept=student, level='300').first()
+                if stu_letter:
+                    stu_letter.is_reviewed = False
+                    stu_letter.can_change = False
+                    stu_letter.save()
+                if msg_id:
+                    # messg = Message.objects.get(id=msg_id)
+                    # messg.is_expired = True
+                    # messg.save()
+                    for ms in Message.objects.filter(from_sender=request.user):
+                        ms.is_expired = True
+                        ms.save()
+                messages.success(request, f'Your 200 level acceptance letter image has been updated!')
+                return redirect(reverse('student:update_acceptance_letter', kwargs={'level_s': level_s}))
+        # else:
+        #     form = UploadAcceptanceLetter(instance=acceptance)
+        # context = {
+        #     'form': form,
+        #     'level_s': level_s,
+        #     'acceptance': acceptance,
+        # }
+        # return render(request, 'student/update_acceptance_letter.html', context)
+    
+        
     @student_required
     @staticmethod
     def updateAcceptanceLetter(request, level_s):
@@ -489,10 +559,3 @@ class Student:
             'logbook': logbook,
         }
         return render(request, 'student/logbook_comment.html', context)
-    
-    @staticmethod
-    def message(request):
-        context = {
-            'None': None,
-        }
-        return render(request, 'student/message.html', context)

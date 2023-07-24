@@ -270,6 +270,8 @@
   border: solid lightgrey 1px;
   padding: 5px;
   margin: 5px;
+  display: flex;
+  flex-direction: column-reverse;
 }
 
 @media only screen and (max-width: 700px){
@@ -301,26 +303,25 @@
 }
 
 .msg_sender{
-  float: right;
   background: rgb(79, 79, 102);
   width: fit-content;
-  min-width: 51%;
-  max-width: 51%;
+  min-width: 45%;
+  max-width: 45%;
   padding: 3px;
   border-radius: 5px;
   margin: 3px 0 3px 0;
-  float: left;
+  /* float: left; */
 }
 
 .msg_receiver{
   background: darkgrey;
   width: fit-content;
-  min-width: 51%;
-  max-width: 51%;
+  min-width: 45%;
+  max-width: 45%;
   padding: 3px;
   border-radius: 5px;
-  margin: 3px 0 3px 0;
-  float: right;
+  margin: 3px 0 3px 50%;
+  /* float: right; */
 }
 
 @media only screen and (max-width: 700px){
@@ -336,24 +337,24 @@
     min-width: 80%;
     max-width: 80%;
     padding: 1px;
-    float: right;
+    /* float: right; */
   }
 }
 
 @media only screen and (max-width: 1050px){
   .msg_sender{
-    float: right;
     min-width: 80%;
     max-width: 80%;
     padding: 1px;
-    float: left;
+    /* float: left; */
   }
   
   .msg_receiver{
     min-width: 80%;
     max-width: 80%;
     padding: 1px;
-    float: right;
+    /* float: right; */
+    margin: 3px 0 3px 50%;
   }
 }
 
@@ -385,11 +386,22 @@
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .img_div img{
-  width: 30%;
+  width: 100%;
   height: auto;
+}
+
+.msg_0 a{
+  color: black;
+  background: white;
+}
+
+.req_letter{
+  background: red;
+  color:white;
 }
 
 .wrapp_pages{

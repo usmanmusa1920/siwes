@@ -31,6 +31,11 @@
   border-bottom: dotted grey 1px;
 }
 
+.wrapp_img img{
+  width: 30%;
+  height: auto;
+}
+
 .section{
   border:  solid lightgray 1px;
   width: 100%;

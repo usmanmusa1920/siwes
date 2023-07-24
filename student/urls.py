@@ -13,6 +13,8 @@ urlpatterns = [
         'student/acceptance/letter/<int:level>', Student.acceptanceLetter, name='acceptance_letter'),
     path(
         'student/uploaded/acceptance/letter/<int:level>', Student.uploadedAcceptanceLetter, name='uploaded_acceptance_letter'),
+    path(
+        'student/uploaded/acceptance/letter/<int:level_s>/request/message/<int:msg_id>', Student.updateAcceptanceLetterReq, name='uploaded_acceptance_letter_req'),
 
     # upload acceptance letter
     path(
@@ -32,8 +34,4 @@ urlpatterns = [
     # apply training for a specific level
     path(
         'apply/training/<int:level>', Student.applyTraining, name='apply_training'),
-
-    # message
-    path(
-        'send/message', Student.message, name='send_message'),
 ]

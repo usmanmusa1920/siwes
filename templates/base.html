@@ -163,6 +163,7 @@
           </div>
 
           <div class="header_right">
+            <a href="{% url 'chat:notification' %}"><h4>Notification</h4></a> &nbsp;
             {% if request.user.is_staff %}
               <a href="{% url 'auth:general_profile' request.user.identification_num %}">Profile</a>
             {% elif request.user.is_coordinator %}

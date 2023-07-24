@@ -1,6 +1,8 @@
 #!/bin/bash
 sv
+rm account/migrations/*_initial.py
 rm administrator/migrations/*_initial.py
+rm chat/migrations/*_initial.py
 rm db.sqlite3 && pmake && pmigrate
 
 python manage.py shell
@@ -13,9 +15,10 @@ from toolkit import (picture_name, y_session)
 from toolkit.decorators import (
     block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
 )
+from chat.models import Message
 from administrator.models import Administrator
 from administrator.all_models import(
-    Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult, Message
+    Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
 )
 from django.contrib.auth import get_user_model
 
@@ -38,15 +41,6 @@ admin_user_2 = User.objects.create_superuser(
 
 admin_user_1.save()
 admin_user_2.save()
-
-#<!-- administrator models -->
-admin_1 = Administrator(
-    director=admin_user_1, first_name=admin_user_1.first_name, last_name=admin_user_1.last_name, email=admin_user_1.email, phone_number=admin_user_1.phone_number, id_no=admin_user_1.identification_num, is_active=True)
-admin_2 = Administrator(
-    director=admin_user_2, first_name=admin_user_2.first_name, last_name=admin_user_2.last_name, email=admin_user_2.email, phone_number=admin_user_2.phone_number, id_no=admin_user_2.identification_num, is_active=True)
-
-admin_1.save()
-admin_2.save()
 
 
 ### _____________________

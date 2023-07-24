@@ -81,6 +81,7 @@ urlpatterns = [
     path('', include('faculty.urls')),
     path('', include('department.urls')),
     path('', include('student.urls')),
+    path('', include('chat.urls')),
 ]
 
 if settings.DEBUG:
