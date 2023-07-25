@@ -51,7 +51,7 @@ def notification(request):
   msgs_filter = Message.objects.filter(
       to_receiver=request.user.id, is_msg_added=False, is_new_message=False).order_by('-timestamp') | Message.objects.filter(to_receiver=request.user.id, is_msg_added=True, is_msg_replied=False).order_by('-timestamp') | Message.objects.filter(from_sender=request.user.id, is_msg_added=False, is_new_message=False).order_by('-timestamp') | Message.objects.filter(from_sender=request.user.id, is_msg_added=True, is_msg_replied=False).order_by('-timestamp')
   
-  paginator = Paginator(msgs_filter, 6)
+  paginator = Paginator(msgs_filter, 10)
   page = request.GET.get('page')
   msgs = paginator.get_page(page)
   
@@ -63,7 +63,6 @@ def notification(request):
     # 'friend_req': friend_req,
     'unread_msg': unread_msg,
     'msgs': msgs,
-    'paginator_count': paginator
   }
   return render(request, 'chat/notification.html', context)
 

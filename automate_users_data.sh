@@ -1,10 +1,13 @@
 #!/bin/bash
 sv
+
 rm account/migrations/*_initial.py
 rm administrator/migrations/*_initial.py
 rm chat/migrations/*_initial.py
-rm db.sqlite3 && pmake && pmigrate
+rm db.sqlite3
+rm dump.json
 
+pmake && pmigrate
 python manage.py shell
 
 import os
@@ -25,7 +28,6 @@ from django.contrib.auth import get_user_model
 
 dob = datetime.utcnow()
 User = get_user_model()
-
 
 # Session
 curr_sess = Session(is_current_session=True)
@@ -3723,4 +3725,5 @@ coord_32.training_students.add(student_319)
 coord_32.training_students.add(student_320)
 
 exit()
+python manage.py dumpdata --format json --indent 4 > dump.json
 pm

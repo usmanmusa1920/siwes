@@ -43,12 +43,15 @@
             <a href="{% url 'administrator:active_department_training_coord' %}">Active Training coordinators</a>
           {% elif request.user.is_coordinator %}
             <a href="{% url 'department:new_letter' %}">New letter</a>
-            <a href="{% url 'department:new_letter' %}">New letter</a>
-            <a href="{% url 'department:new_letter' %}">New letter</a>
+            <a href="{% url 'chat:notification' %}">Notification</a>
+            <a href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Profile</a>
           {% elif request.user.is_student %}
             <a href="{% url 'student:profile' request.user.identification_num %}">Student profile</a>
             <a href="{% url 'student:placement_letter' 200 %}">Placement letter 200</a>
             <a href="{% url 'student:acceptance_letter' 200 %}">Acceptance letter 200</a>
+          {% else %}
+            <a href="{% url 'chat:notification' %}">Notification</a>
+            <a href="{% url 'auth:general_profile' request.user.identification_num %}">Profile</a>
           {% endif %}
         </div>
       </div>
@@ -72,14 +75,22 @@
         {% endfor %}
       {% elif request.user.is_coordinator %}
         <a href="{% url 'department:new_letter' %}">New letter</a>
-        <a href="{% url 'department:new_letter' %}">New letter</a>
-        <a href="{% url 'department:new_letter' %}">New letter</a>
+        <a href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Your profile</a>
+        <a href="{% url 'department:training_coordinator_session_student' %}">{{training_tutor.faculty.training|upper}} student</a>
+        <a href="{% url 'department:training_coordinator_student_acceptance_letter' %}">student acceptance letter</a>
+        <a href="{% url 'department:assign_supervisor' request.user.identification_num 200 %}">Assign supervisor 200</a>
+        <a href="{% url 'department:assign_supervisor' request.user.identification_num 300 %}">Assign supervisor 300</a>
       {% elif request.user.is_student %}
         <a><h4>{{request.user}}</h4></a>
         <a href="{% url 'student:profile' request.user.identification_num %}">View your profile</a>
         <a href="{% url 'student:acceptance_letter' 200 %}">View your acceptance letter 200</a>
         <a href="{% url 'student:placement_letter' 300 %}">View your placement letter 300</a>
         <a href="{% url 'student:acceptance_letter' 300 %}">View your acceptance letter 300</a>
+        <a href="{% url 'auth:logout' %}">Logout</a>
+      {% else %}
+        <a href="{% url 'chat:notification' %}">Notification</a>
+        <a href="{% url 'auth:general_profile' request.user.identification_num %}">Profile</a>
+        <a href="{% url 'auth:change_password' %}">Change password</a>
         <a href="{% url 'auth:logout' %}">Logout</a>
       {% endif %}
     </div>

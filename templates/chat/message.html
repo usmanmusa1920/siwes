@@ -106,7 +106,7 @@
                               {% if msg.is_approved_request %}
                                 {% if msg.is_expired == False %}
                                   <b class="req_letter">Your request approved</b>
-                                  <form method="POST" action="{% url 'student:uploaded_acceptance_letter_req' student.level msg.id %}" enctype="multipart/form-data">
+                                  <form method="POST" action="{% url 'student:update_acceptance_letter' student.level msg.id %}" enctype="multipart/form-data">
                                     {% csrf_token %}
                                     <div class="wrapp_form">
                                       <input type="file" name="image" accept="image/*">
@@ -140,7 +140,6 @@
                                 {% if not msg.is_approved_request %}
                                   <b class="req_letter">Request to change acceptance letter</b>
                                   <a href="{% url 'chat:approve_request' msg.id %}">Accept</a>
-                                  <a href="#">Decline</a>
                                 {% endif %}
                               {% endif %}
                               <small>

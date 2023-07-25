@@ -58,7 +58,7 @@
           </p>
           <a href="{% url 'chat:send_message' student.supervisor_id_300 %}" class="me_good">Message 300L supervisor</a>
         {% endif %}
-        <p>
+        <!-- <p>
           <b>Supervisor:</b>
           {% for supervisor in coord.training_supervisors.all %}
             {% if student in supervisor.training_students.all %}
@@ -73,7 +73,7 @@
               {% endif %}
             {% endif %}
           {% endfor %}
-        </p>
+        </p> -->
         <p>
           {% if student.faculty.name == "Science" %}
             <b>Department:</b> B.Sc {{student.department.name}}
@@ -88,13 +88,7 @@
         <a href="{% url 'auth:student_profile_update' %}" class="good_me">Edit profile</a>
         <br>
         <br>
-        {% if student.matrix_no == request.user.identification_num %}
-          <a href="{% url 'chat:req_change_acceptance_letter' %}" class="delete_me">Request change acceptance letter</a>
-        {% endif %}
-        <br>
         <a href="{% url 'chat:send_message' coord.id_no %}" class="me_good">Message coordinator</a>
-        <br>
-        <a href="#" class="me_good">View result</a>
       </div>
 
       {% if student.matrix_no == request.user.identification_num %}
@@ -102,14 +96,14 @@
           <!-- 200 level -->
           {% if student.is_apply_training_200 %}
             {% if acceptance_200 %}
-              <a href="{% url 'student:uploaded_acceptance_letter' 200 %}" class="good_me">View acceptance letter for 200</a>
+              <a href="{% url 'student:upload_acceptance_letter_page' 200 %}" class="good_me">View acceptance letter for 200</a>
               <br>
               <br>
               <a href="{% url 'student:logbook_entry' request.user.identification_num 200 %}" class="good_me">Logbook entry 200</a>
               <br>
               <br>
             {% else %}
-              <a href="{% url 'student:uploaded_acceptance_letter' 200 %}" class="good_me">Upload acceptance letter for 200</a>
+              <a href="{% url 'student:upload_acceptance_letter_page' 200 %}" class="good_me">Upload acceptance letter for 200</a>
               <br>
               <br>
             {% endif %}
@@ -133,14 +127,14 @@
             <br>
             {% if student.is_apply_training_300 %}
               {% if acceptance_300 %}
-                <a href="{% url 'student:uploaded_acceptance_letter' 300 %}" class="me_good">View acceptance letter for 300</a>
+                <a href="{% url 'student:upload_acceptance_letter_page' 300 %}" class="me_good">View acceptance letter for 300</a>
                 <br>
                 <br>
                 <a href="{% url 'student:logbook_entry' request.user.identification_num 300 %}" class="me_good">Logbook entry 300</a>
                 <br>
                 <br>
               {% else %}
-                <a href="{% url 'student:uploaded_acceptance_letter' 300 %}" class="me_good">Upload acceptance letter for 300</a>
+                <a href="{% url 'student:upload_acceptance_letter_page' 300 %}" class="me_good">Upload acceptance letter for 300</a>
               {% endif %}
               {% if letter_a_300 or letter_p_300 %}
                 <a href="{% url 'student:placement_letter' 300 %}" class="me_good">Placement letter for 300</a>

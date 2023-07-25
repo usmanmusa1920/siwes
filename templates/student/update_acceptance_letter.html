@@ -24,7 +24,7 @@
       <div class="wrapp_top_greynish">
         <small>This is your {{level_s}} level acceptance letter update page</small>
       </div>
-      <form method="POST" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'student:update_acceptance_letter' level_s %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="wrapp_form">
           {% if form.instance.image %}
@@ -46,8 +46,11 @@
               <button type="submit">Submit</button>
             {% elif acceptance.is_reviewed == True and acceptance.can_change == False %}
               <div class="wrapp_info">
-                <p>Your acceptance letter has been viewd by your course coordinator, you can't change it now!</p>
+                <p>Your acceptance letter has been viewed by your course coordinator, you can't change it now!</p>
               </div>
+              {% if student.matrix_no == request.user.identification_num %}
+                <a href="{% url 'chat:req_change_acceptance_letter' %}" class="good_me">Request change acceptance letter</a>
+              {% endif %}
             {% elif acceptance.is_reviewed == True and acceptance.can_change == False or acceptance.is_reviewed == True and acceptance.can_change == True %}
               <div class="wrapp_info">
                 <p>Your acceptance letter has been viewd by your course coordinator, but  you can still change it</p>

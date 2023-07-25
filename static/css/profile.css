@@ -214,6 +214,17 @@
   background: whitesmoke;
 }
 
+.wrapp_white{
+  border:  solid lightgray 1px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 10px;
+  margin: 5px 0;
+  background: wheat;
+}
+
 .wrapp_list a{
   color: darkgreen;
 }
@@ -400,4 +411,10 @@
   background: wheat;
   padding: 10px;
   margin: 7px 0;
+}
+
+.is_view_img{
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
 }

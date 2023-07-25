@@ -207,8 +207,8 @@ class Student:
 
     @student_required
     @staticmethod
-    def uploadedAcceptanceLetter(request, level):
-        """This view show 200 level student acceptance letter"""
+    def uploadAcceptanceLetterPage(request, level):
+        """This view show 200 and 300 level student page, that they will upload their acceptance letter for the first time (not update page) acceptance letter"""
 
         # student user
         stu_usr = User.objects.get(id=request.user.id)
@@ -232,7 +232,7 @@ class Student:
     @student_required
     @staticmethod
     def uploadAcceptanceLetter(request, level_s):
-        """upload (the view that will upload) acceptance letter for 200 and 300 level student"""
+        """this view will be call when a student upload his/her first acceptance letter (200 and 300) level student"""
 
         # student
         stu_usr = User.objects.get(id=request.user.id)  # student user
@@ -283,12 +283,41 @@ class Student:
                 std.session_300 = current_sch_sess.session
                 std.save()
             messages.success(request, f'Your {level_s} level acceptance letter image has been uploaded!')
-            return redirect(reverse('student:uploaded_acceptance_letter', kwargs={'level': level_s}))
+            return redirect(reverse('student:upload_acceptance_letter_page', kwargs={'level': level_s}))
+    
+        
+    @student_required
+    @staticmethod
+    def updateAcceptanceLetterPage(request, level_s):
+        """this is a view that will show student update acceptance letter page for 200 and 300 level student"""
+        
+        # student user
+        stu_usr = User.objects.get(id=request.user.id)
+        student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
+
+        # coordinator
+        coord_tab = student.student_training_coordinator.identification_num
+        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
+
+        if level_s == '200' or level_s == 200:
+            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='200').first()
+        else:
+            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='300').first()
+        context = {
+            'form': UploadAcceptanceLetter(instance=acceptance),
+            'level_s': level_s,
+            'student': student,
+            'acceptance': acceptance,
+        }
+        return render(request, 'student/update_acceptance_letter.html', context)
         
     # @student_required
     @staticmethod
-    def updateAcceptanceLetterReq(request, level_s, msg_id=False):
-        """update acceptance letter for 200 and 300 level student"""
+    def updateAcceptanceLetter(request, level_s, msg_id=False):
+        """
+        update acceptance letter for 200 and 300 level student
+        this is a view that update student acceptance letter, after he/she make a request to his/her coordinator, also it is a view that update student acceptance letter, before student coordinator view his acceptance letter for the first time.
+        """
         
         # student user
         stu_usr = User.objects.get(id=request.user.id)
@@ -343,77 +372,7 @@ class Student:
                         ms.is_expired = True
                         ms.save()
                 messages.success(request, f'Your 200 level acceptance letter image has been updated!')
-                return redirect(reverse('student:update_acceptance_letter', kwargs={'level_s': level_s}))
-        # else:
-        #     form = UploadAcceptanceLetter(instance=acceptance)
-        # context = {
-        #     'form': form,
-        #     'level_s': level_s,
-        #     'acceptance': acceptance,
-        # }
-        # return render(request, 'student/update_acceptance_letter.html', context)
-    
-        
-    @student_required
-    @staticmethod
-    def updateAcceptanceLetter(request, level_s):
-        """update acceptance letter for 200 and 300 level student"""
-        
-        # student user
-        stu_usr = User.objects.get(id=request.user.id)
-        student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
-
-        # coordinator
-        coord_tab = student.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
-
-        if level_s == '200' or level_s == 200:
-            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='200').first()
-        else:
-            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='300').first()
-
-        train = student.faculty.training
-        faculty = student.faculty.name
-        department = student.department.name
-        level = student.level
-        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
-
-        # current school session
-        current_sch_sess = Session.objects.filter(is_current_session=True).last()
-
-        if not acceptance:
-            return False
-
-        if request.method == 'POST':
-            form = UploadAcceptanceLetter(request.POST, request.FILES, instance=acceptance)
-            if form.is_valid():
-                # the remove of previous acceptance is not workin, later will be arrange
-                if os.path.exists(acceptance.image.path):
-                    os.remove(acceptance.image.path)
-                instance = form.save(commit=False)
-                pic_name = picture_name(instance.image.name)
-                instance.session = current_sch_sess.session
-                instance.image.name = route + pic_name
-                instance.save()
-
-                if level_s == '200' or level_s == 200:
-                    stu_letter = AcceptanceLetter.objects.filter(sender_acept=student, level='200').first()
-                else:
-                    stu_letter = AcceptanceLetter.objects.filter(sender_acept=student, level='300').first()
-                if stu_letter:
-                    stu_letter.is_reviewed = False
-                    stu_letter.can_change = False
-                    stu_letter.save()
-                messages.success(request, f'Your 200 level acceptance letter image has been updated!')
-                return redirect(reverse('student:update_acceptance_letter', kwargs={'level_s': level_s}))
-        else:
-            form = UploadAcceptanceLetter(instance=acceptance)
-        context = {
-            'form': form,
-            'level_s': level_s,
-            'acceptance': acceptance,
-        }
-        return render(request, 'student/update_acceptance_letter.html', context)
+                return redirect(reverse('student:update_acceptance_letter_page', kwargs={'level_s': level_s}))
     
     @coordinator_or_supervisor_or_student_required
     @staticmethod

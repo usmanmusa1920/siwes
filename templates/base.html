@@ -79,6 +79,9 @@
           <a class="dash_link">Student SIWES</a>
         {% endif %}
 
+        <span class="link_ref">Notification</span>
+        <a href="{% url 'chat:notification' %}" class="dash_link">Notification</a>
+
         {% if request.user.is_student %}
           <span class="link_ref">Fees</span>
           <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Pay Fees</a>
@@ -102,7 +105,17 @@
           <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">View Result</a>
           <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Senate Approved Result</a>
         {% elif request.user.is_coordinator %}
-          <!-- pass -->
+          <span class="link_ref">Links</span>
+          <a href="{% url 'department:new_letter' %}"class="dash_link">New letter</a>
+          <a href="{% url 'department:training_coordinator_profile' request.user.identification_num %}" class="dash_link">Your profile</a>
+
+          <span class="link_ref">Student</span>
+          <a href="{% url 'department:training_coordinator_session_student' %}" class="dash_link">{{training_tutor.faculty.training|upper}} student</a>
+          <a href="{% url 'department:training_coordinator_student_acceptance_letter' %}" class="dash_link">student acceptance letter</a>
+
+          <span class="link_ref">Assignsupervisor</span>
+          <a href="{% url 'department:assign_supervisor' request.user.identification_num 200 %}" class="dash_link">Assign supervisor 200</a>
+          <a href="{% url 'department:assign_supervisor' request.user.identification_num 300 %}" class="dash_link">Assign supervisor 300</a>
         {% elif request.user.is_admin %}
           <span class="link_ref">Profile:</span>
           <a class="dash_link" href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Training Coordinator</a>
@@ -163,7 +176,6 @@
           </div>
 
           <div class="header_right">
-            <a href="{% url 'chat:notification' %}"><h4>Notification</h4></a> &nbsp;
             {% if request.user.is_staff %}
               <a href="{% url 'auth:general_profile' request.user.identification_num %}">Profile</a>
             {% elif request.user.is_coordinator %}
