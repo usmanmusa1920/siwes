@@ -39,7 +39,7 @@ class DepartmentCls:
 
     @admin_required
     @staticmethod
-    def studentsLevel(request, level):
+    def students_level(request, level):
         """department list of students base on level"""
         depart_coord = DepartmentTrainingCoordinator.objects.filter(coordinator=request.user).first()
         all_students = TrainingStudent.objects.filter(student_training_coordinator=depart_coord, level=level).order_by('-date_joined')

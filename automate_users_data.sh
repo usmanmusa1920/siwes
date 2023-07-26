@@ -1,11 +1,20 @@
 #!/bin/bash
+x
 sv
 
-rm account/migrations/*_initial.py
-rm administrator/migrations/*_initial.py
-rm chat/migrations/*_initial.py
+rm -rf account/__pycache__
+rm -rf account/migrations/*
+touch account/migrations/__init__.py
+
+rm -rf administrator/__pycache__
+rm -rf administrator/migrations/*
+touch administrator/migrations/__init__.py
+
+rm -rf chat/__pycache__
+rm -rf chat/migrations/*
+touch chat/migrations/__init__.py
+
 rm db.sqlite3
-rm dump.json
 
 pmake && pmigrate
 python manage.py shell
@@ -3725,5 +3734,6 @@ coord_32.training_students.add(student_319)
 coord_32.training_students.add(student_320)
 
 exit()
+rm dump.json
 python manage.py dumpdata --format json --indent 4 > dump.json
 pm

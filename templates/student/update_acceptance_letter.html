@@ -49,7 +49,7 @@
                 <p>Your acceptance letter has been viewed by your course coordinator, you can't change it now!</p>
               </div>
               {% if student.matrix_no == request.user.identification_num %}
-                <a href="{% url 'chat:req_change_acceptance_letter' %}" class="good_me">Request change acceptance letter</a>
+                <a href="{% url 'chat:request_to_change_acceptance_letter' %}" class="good_me">Request change acceptance letter</a>
               {% endif %}
             {% elif acceptance.is_reviewed == True and acceptance.can_change == False or acceptance.is_reviewed == True and acceptance.can_change == True %}
               <div class="wrapp_info">

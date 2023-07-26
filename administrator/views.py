@@ -23,7 +23,7 @@ class Active:
 
     @admin_required
     @staticmethod
-    def facultyDean(request):
+    def faculty_dean(request):
         """active faculty deans"""
         
         active_department_hod = FacultyDean.objects.filter(is_active=True).all()
@@ -37,7 +37,7 @@ class Active:
     
     @admin_required
     @staticmethod
-    def departmentHod(request):
+    def department_hod(request):
         """active department HOD"""
         
         active_department_hod = DepartmentHOD.objects.filter(is_active=True).all()
@@ -51,7 +51,7 @@ class Active:
     
     @admin_required
     @staticmethod
-    def departmentTrainingCoordinator(request):
+    def department_training_coordinator(request):
         """active departmenttraining coordinator"""
         
         active_department_coord = DepartmentTrainingCoordinator.objects.filter(is_active=True).all()
@@ -69,7 +69,7 @@ class Activate:
 
     @admin_required
     @staticmethod
-    def facultyDean(request, staff_user_id):
+    def faculty_dean(request, staff_user_id):
         """activate (and also deactivate previous) new faculty dean"""
         
         new_active_dean = FacultyDean.objects.filter(id_no=staff_user_id).first()
@@ -89,7 +89,7 @@ class Activate:
 
     @admin_required
     @staticmethod
-    def departmentHOD(request, staff_user_id):
+    def department_hod(request, staff_user_id):
         """activate (and also deactivate previous) new department HOD"""
         
         new_active_hod = DepartmentHOD.objects.filter(id_no=staff_user_id).first()
@@ -109,7 +109,7 @@ class Activate:
 
     @admin_required
     @staticmethod
-    def departmentTrainingCoordinator(request, staff_user_id):
+    def department_training_coordinator(request, staff_user_id):
         """activate (and also deactivate previous) new department training coordinator"""
         
         new_active_coord = DepartmentTrainingCoordinator.objects.filter(
@@ -176,7 +176,7 @@ class Filter:
 
     @admin_required
     @staticmethod
-    def facultyDean(request):
+    def faculty_dean(request):
         """filter faculty dean by ID number"""
         
         search_panel = request.GET.get('search_q')
@@ -196,7 +196,7 @@ class Filter:
     
     @admin_required
     @staticmethod
-    def departmentHod(request):
+    def department_hod(request):
         """filter department HOD by ID number"""
         
         search_panel = request.GET.get('search_q')
@@ -216,7 +216,7 @@ class Filter:
     
     @admin_required
     @staticmethod
-    def departmentTrainingCoordinator(request):
+    def department_training_coordinator(request):
         """filter department training coordinator by ID number"""
         
         search_panel = request.GET.get('search_q')
@@ -236,7 +236,7 @@ class Filter:
     
     @admin_required
     @staticmethod
-    def studentSupervisor(request):
+    def student_supervisor(request):
         """filter student supervisor by ID number"""
         
         search_panel = request.GET.get('search_q')

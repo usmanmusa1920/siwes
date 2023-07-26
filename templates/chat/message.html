@@ -23,11 +23,13 @@
         <small>This is your message</small>
       </div>
 
+      <!-- if no coversation between the two users -->
       {% if not message %}
         <div class="wrapp_form">
           <b>
             <h2>No messages</h2>
           </b>
+          <small>Start conversation with {{msg_receiver.first_name}}</small>
           <hr>
           <div class="wrapp_body">
             <div class="wrapp_null">
@@ -40,152 +42,181 @@
           </div>
         </div>
       {% endif %}
-
-
+      
+      <!-- if there is coversation between the two users -->
       {% if message %}
         <div class="wrapp_form">
           <b>
             <h2>Messages</h2>
           </b>
           <br>
-          <div class="wrapp_pages">
-            <div class="wrapp_pages_column">
-              {% if message.has_previous %}
-                <a href="?page={{message.previous_page_number}}" class="surf">Recent messages</a>
-              {% endif %}
-              &nbsp;
-              <!-- <a href="#" class="surf">previous</a> -->
-              <!-- <a>...</a>
-              <a href="?page={{num}}" class="page_link">3</a>
-              <a href="?page={{num}}" class="page_link">4</a>
-              <a href="?page={{num}}" class="current">5</a>
-              <a href="?page={{num}}" class="page_link">6</a>
-              <a href="?page={{num}}" class="page_link">7</a>
-              <a>...</a> -->
-              <!-- <a href="#" class="surf">Next</a> -->
-              {% if message.has_next %}
-                <a href="?page={{message.next_page_number}}" class="surf">Previous messages</a>
-              {% endif %}
-            </div>
-          </div>
-            <div class="message_div">
-              <div class="message_inner">
-                {% for msg in message %}
-                  <!-- receiver -->
-                  {% if msg.from_sender == request.user and msg.to_receiver == friend %}
-                    {% if msg.from_sender == request.user %}
-                      <div class="msg_receiver">
-                        <div class="msg_2">
-                          <div class="msg_1">
-                            <div class="msg_0">
-                              {% if msg.is_request_to_change_img %}
-                                <b class="req_letter">Request to change acceptance letter</b>
-                              {% endif %}
-                              {% if msg.image %}
-                                <div class="img_div">
-                                  <img src="{{msg.image.url}}" alt="" srcset="">
-                                </div>
-                              {% endif %}
-                              <!-- <div class="img_div">
-                                <img src="{{request.user.profile.image.url}}" alt="" srcset="">
-                              </div> -->
-                              {% if msg.message %}
-                                <p>{{msg.message}}</p>
-                              {% endif %}
-                              <!-- <p>No comment for this logbook entry yet! No comment for this logbook entry yet! No comment for this logbook entry yet!</p> -->
-                              <small>
-                                <img src="{{msg.from_sender.profile.image.url}}" alt="" srcset="">
-                                <!-- Mon, 25 july, 2023 -->
-                                {{msg.timestamp}}
-                                {% if msg.is_view %}
-                                  <b>Seen</b>
-                                {% else %}
-                                  <b>Not Seen</b>
-                                {% endif %}
-                              </small>
-                              {% if msg.is_approved_request %}
-                                {% if msg.is_expired == False %}
-                                  <b class="req_letter">Your request approved</b>
-                                  <form method="POST" action="{% url 'student:update_acceptance_letter' student.level msg.id %}" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    <div class="wrapp_form">
-                                      <input type="file" name="image" accept="image/*">
-                                      <div class="wrapp_info">
-                                        <small>When uploading image make sure it has an extension of PGN, JPG, or JPEG</small>
-                                      </div>
-                                      <button type="submit">change</button>
-                                    </div>
-                                  </form>
-                                {% else %}
-                                  <p>
-                                    <i>Your change acceptance letter using this request</i>
-                                  </p>
-                                {% endif %}
-                              {% endif %}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    {% endif %}
-                  {% endif %}
 
-                  <!-- sender -->
-                  {% if msg.from_sender == friend and msg.to_receiver == request.user %}
-                    {% if msg.from_sender == friend %}
-                      <div class="msg_sender">
-                        <div class="msg_2">
-                          <div class="msg_1">
-                            <div class="msg_0">
-                              {% if msg.is_request_to_change_img %}
-                                {% if not msg.is_approved_request %}
-                                  <b class="req_letter">Request to change acceptance letter</b>
-                                  <a href="{% url 'chat:approve_request' msg.id %}">Accept</a>
-                                {% endif %}
-                              {% endif %}
-                              <small>
-                                {% if msg.from_sender.is_coordinator %}
-                                  <b>Coordinator message:</b>
-                                {% elif msg.from_sender.is_supervisor %}
-                                  <b>Supervisor message:</b>
-                                {% elif msg.from_sender.is_student %}
-                                  <b>Student message:</b>
-                                {% endif %}
-                              </small>
-                              {% if msg.image %}
-                                <div class="img_div">
-                                  <img src="{{msg.image.url}}" alt="" srcset="">
-                                </div>
-                                <a href="{{msg.image.url}}">View image</a>
-                              {% endif %}
-                              <!-- <div class="img_div">
-                                <img src="{{request.user.profile.image.url}}" alt="" srcset="">
-                              </div> -->
-                              {% if msg.message %}
-                                <p>{{msg.message}}</p>
-                              {% endif %}
-                              <!-- <p>No comment for this logbook entry yet! No comment for this logbook entry yet! No comment for this logbook entry yet!</p> -->
-                              <small>
-                                <img src="{{msg.from_sender.profile.image.url}}" alt="" srcset="">
-                                <!-- Mon, 25 july, 2023 -->
-                                {{msg.timestamp}}
-                                {% if msg.is_view %}
-                                  <b>Seen</b>
-                                {% else %}
-                                  <b>Not Seen</b>
-                                {% endif %}
-                              </small>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    {% endif %}
+          <!-- previous and next pages links -->
+          {% if message.paginator.count > 0 %}
+            <div class="wrapp_pages">
+              <div class="wrapp_pages_column">
+                {% if message.has_previous %}
+                  <a href="?page={{message.previous_page_number}}" class="surf">Recent messages</a>
+                {% endif %}
+                &nbsp;
+
+                <!-- {% for num in message.paginator.page_range %}
+                  {% if message.number == num %}
+                      <a href="?page={{num}}" class="current">{{num}}</a>
+                  {% elif num > message.number|add:'-4' and num < message.number|add:'4' %}
+                      <a href="?page={{num}}" class="page_link">{{num}}</a>
                   {% endif %}
-                {% endfor%}
+                {% endfor %} -->
+
+                {% if message.has_next %}
+                  <a href="?page={{message.next_page_number}}" class="surf">Previous messages</a>
+                {% endif %}
               </div>
             </div>
+          {% endif %}
+          
+          <div class="message_div">
+            <div class="message_inner">
+              {% for msg in message %}
+                <!-- receiver -->
+                {% if msg.from_sender == request.user and msg.to_receiver == msg_receiver %}
+                  {% if msg.from_sender == request.user %}
+                    <div class="msg_receiver">
+                      <div class="msg_2">
+                        <div class="msg_1">
+                          <div class="msg_0">
+                            {% if msg.is_request_to_change_img %}
+                              <b class="req_letter">Request to change acceptance letter</b>
+                            {% endif %}
+                            {% if msg.image %}
+                              <div class="img_div">
+                                <img src="{{msg.image.url}}" alt="" srcset="">
+                              </div>
+                            {% endif %}
+                            <!-- <div class="img_div">
+                              <img src="{{request.user.profile.image.url}}" alt="" srcset="">
+                            </div> -->
+                            {% if msg.message %}
+                              <p>{{msg.message}}</p>
+                            {% endif %}
+                            <!-- <p>No comment for this logbook entry yet! No comment for this logbook entry yet! No comment for this logbook entry yet!</p> -->
+                            <small>
+                              <img src="{{msg.from_sender.profile.image.url}}" alt="" srcset="">
+                              <!-- Mon, 25 july, 2023 -->
+                              {{msg.timestamp}}
+                              {% if msg.is_view %}
+                                <b>Seen</b>
+                              {% else %}
+                                <b>Not Seen</b>
+                              {% endif %}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                {% endif %}
+
+                <!-- sender -->
+                {% if msg.from_sender == msg_receiver and msg.to_receiver == request.user %}
+                  {% if msg.from_sender == msg_receiver %}
+                    <div class="msg_sender">
+                      <div class="msg_2">
+                        <div class="msg_1">
+                          <div class="msg_0">
+                            {% if msg.is_request_to_change_img %}
+                              <b class="req_letter">Request to change acceptance letter</b>
+                            {% endif %}
+                            <small>
+                              {% if msg.from_sender.is_coordinator %}
+                                <b>Coordinator message:</b>
+                              {% elif msg.from_sender.is_supervisor %}
+                                <b>Supervisor message:</b>
+                              {% elif msg.from_sender.is_student %}
+                                <b>Student message:</b>
+                              {% endif %}
+                            </small>
+                            {% if msg.image %}
+                              <div class="img_div">
+                                <img src="{{msg.image.url}}" alt="" srcset="">
+                              </div>
+                              <a href="{{msg.image.url}}">View image</a>
+                            {% endif %}
+                            <!-- <div class="img_div">
+                              <img src="{{request.user.profile.image.url}}" alt="" srcset="">
+                            </div> -->
+                            {% if msg.message %}
+                              <p>{{msg.message}}</p>
+                            {% endif %}
+                            <!-- <p>No comment for this logbook entry yet! No comment for this logbook entry yet! No comment for this logbook entry yet!</p> -->
+                            <small>
+                              <img src="{{msg.from_sender.profile.image.url}}" alt="" srcset="">
+                              <!-- Mon, 25 july, 2023 -->
+                              {{msg.timestamp}}
+                              {% if msg.is_view %}
+                                <b>Seen</b>
+                              {% else %}
+                                <b>Not Seen</b>
+                              {% endif %}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                {% endif %}
+              {% endfor%}
+            </div>
+          </div>
         </div>
       {% endif %}
 
+      {% if request.user.is_student %}
+        <!-- notify student if his/her request is not approve -->
+        {% if request_to_change %}
+          <form>
+            <div class="wrapp_form">
+              <div class="wrapp_danger">
+                <small>Your request to change acceptance letter have not been approved!</small>
+              </div>
+            </div>
+          </form>
+        {% endif %}
+
+        <!-- notify student if his/her request is approve, by displaying a file field -->
+        {% if is_approved_student_request %}
+          <form method="POST" action="{% url 'student:update_acceptance_letter' student.level is_approved_student_request.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="wrapp_form">
+              <div class="wrapp_info">
+                <small>Your coordinator accepted your request to change your acceptance letter</small>
+              </div>
+              <input type="file" name="image" accept="image/*" required>
+              <div class="wrapp_warn">
+                <small>When uploading image make sure it has an extension of PGN, JPG, or JPEG</small>
+              </div>
+              <button type="submit">change</button>
+            </div>
+          </form>
+        {% endif %}
+
+      {% elif request.user.is_coordinator %}
+        <!-- notify student coordinator if his/her student want to change his acceptance letter -->
+        {% if request_to_change %}
+          <form>
+            <div class="wrapp_form">
+              <div class="wrapp_warn">
+                <small>Your student sent you request to change acceptance letter:</small>
+              </div>
+              <a href="{% url 'chat:approve_request' request_to_change.id %}" class="good_me">Accept request</a>
+              <br>
+              <a href="{% url 'chat:decline_request' request_to_change.id %}" class="good_me">Decline request</a>
+            </div>
+          </form>
+        {% endif %}
+      {% endif %}
+
+      <!-- message form -->
       <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="wrapp_form">

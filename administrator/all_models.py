@@ -8,6 +8,11 @@ from toolkit import y_session
 # User = settings.AUTH_USER_MODEL
 
 User = get_user_model()
+
+
+"""
+NOTE: arrangement of the below models matter to avoid circular import (one block the other)
+"""
     
 
 class Session(models.Model):

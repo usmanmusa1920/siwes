@@ -18,47 +18,60 @@
     <p>Messages notifications</p>
   </div>
   <br>
-
+  
   {% if msgs %}
     <div class="main_wrapp">
       {% for msg in msgs %}
-          {% if msg.from_sender == request.user %}
-            <div class="wrapp_form">
-              <div class="wrapp_list">
-                <a href="{% url 'auth:general_profile' msg.to_receiver.identification_num %}">{{msg.to_receiver.first_name}} {{msg.to_receiver.last_name}}</a>
-                <a href="{% url 'chat:send_message' msg.to_receiver.identification_num %}">
-                  <small>view message</small>
-                </a>
-              </div>
-              <div class="wrapp_white">
-                {% if msg.is_view == False %}
-                  {% if msg.from_sender == request.user %}
+        <!-- Note: the following condition have to be review carefully, when making change to avoid destructuring it, they are very confuse if not care taking, and have to be viewing the (query tricks) from the view of notification. The reason of doing this is to avoid showing multiple messages div from thesame sender (showing if it is new or not). Actually it is a confused condition -->
+        {% if msg.from_sender == request.user %}
+          <div class="wrapp_form">
+            <div class="wrapp_list">
+              <a href="{% url 'auth:general_profile' msg.to_receiver.identification_num %}">{{msg.to_receiver.first_name}} {{msg.to_receiver.last_name}}</a>
+              <a href="{% url 'chat:send_message' msg.to_receiver.identification_num %}">
+                <small>view message</small>
+              </a>
+            </div>
+            <div class="wrapp_white">
+              {% if msg.is_view == False %}
+                {% if msg.from_sender == request.user %}
+                  <!-- checking if there is text message, else it will check for image -->
+                  {% if msg.message %}
                     {% if msg.message|length >= 12 %}
                       <small>You sent: {{msg.message|truncatechars:10}}</small>
                     {% else %}
                       <small>You sent: {{msg.message}}</small>
                     {% endif %}
-                  {% endif %}
-                {% else %}
-                  {% if msg.to_receiver == request.user %}
-                    {{msg.from_sender.first_name}}:
-                    {% if msg.message|length >= 12 %}
-                      <small>You sent: {{msg.message|truncatechars:10}}</small>
-                    {% else %}
-                      <small>You sent: {{msg.message}}</small>
-                    {% endif %}
-                    <img class="is_view_img" src="{{msg.to_receiver.profile.image.url}}" alt="{{msg.to_receiver.first_name}}-profile-image">
-                  {% else %}
-                    {% if msg.message|length >= 12 %}
-                      <small>You sent: {{msg.message|truncatechars:10}}</small>
-                    {% else %}
-                      <small>You sent: {{msg.message}}</small>
-                    {% endif %}
-                    <img class="is_view_img" src="{{msg.to_receiver.profile.image.url}}" alt="{{msg.to_receiver.first_name}}-profile-image">
+                  <!-- checking if there is image in the message -->
+                  {% elif msg.image %}
+                    <small>You sent: img <strong>&plus;1</strong></small>
                   {% endif %}
                 {% endif %}
-              </div>
+              {% else %}
+                {% if msg.to_receiver == request.user %}
+                  {{msg.from_sender.first_name}}:
+                  {% if msg.message|length >= 12 %}
+                    <small>You sent: {{msg.message|truncatechars:10}}</small>
+                  {% else %}
+                    <small>You sent: {{msg.message}}</small>
+                  {% endif %}
+                  <img class="is_view_img" src="{{msg.to_receiver.profile.image.url}}" alt="{{msg.to_receiver.first_name}}-profile-image">
+                {% else %}
+                  <!-- checking if there is text message, else it will check for image -->
+                  {% if msg.message %}
+                    {% if msg.message|length >= 12 %}
+                      <small>You sent: {{msg.message|truncatechars:10}}</small>
+                    {% else %}
+                      <small>You sent: {{msg.message}}</small>
+                    {% endif %}
+                  <!-- checking if there is image in the message -->
+                  {% elif msg.image %}
+                    <small>You sent: img <strong>&plus;1</strong></small>
+                  {% endif %}
+                  <img class="is_view_img" src="{{msg.to_receiver.profile.image.url}}" alt="{{msg.to_receiver.first_name}}-profile-image">
+                {% endif %}
+              {% endif %}
             </div>
+          </div>
         {% else %}
           <div class="wrapp_form">
             <div class="wrapp_list">
@@ -70,20 +83,34 @@
             <div class="wrapp_white">
               {% if msg.is_view == False %}
                 {% if msg.from_sender != request.user %}
-                  {% if msg.message|length >= 12 %}
-                    <small>{{msg.from_sender.first_name}}: {{msg.message|truncatechars:10}}</small>
-                  {% else %}
+                  <!-- checking if there is text message, else it will check for image -->
+                  {% if msg.message %}
+                    {% if msg.message|length >= 12 %}
+                      <small>{{msg.from_sender.first_name}}: {{msg.message|truncatechars:10}}</small>
+                    {% else %}
+                      <small>
+                        {{msg.from_sender.first_name}}: {{msg.message}} <strong>&plus;1</strong>
+                      </small>
+                    {% endif %}
+                  <!-- checking if there is image in the message -->
+                  {% elif msg.image %}
                     <small>
-                      {{msg.from_sender.first_name}}: {{msg.message}} <strong>&plus;1</strong>
+                      {{msg.from_sender.first_name}}: img <strong>&plus;1</strong>
                     </small>
                   {% endif %}
                 {% endif %}
               {% else %}
                 {% if msg.from_sender != request.user %}
-                  {% if msg.message|length >= 12 %}
-                    <small>{{msg.from_sender.first_name}}: {{msg.message|truncatechars:10}}</small>
-                  {% else %}
-                    <small>{{msg.from_sender.first_name}}: {{msg.message}}</small>
+                  <!-- checking if there is text message, else it will check for image -->
+                  {% if msg.message %}
+                    {% if msg.message|length >= 12 %}
+                      <small>{{msg.from_sender.first_name}}: {{msg.message|truncatechars:10}}</small>
+                    {% else %}
+                      <small>{{msg.from_sender.first_name}}: {{msg.message}}</small>
+                    {% endif %}
+                  <!-- checking if there is image in the message -->
+                  {% elif msg.image %}
+                    <small>{{msg.from_sender.first_name}} sent: img <strong>&plus;1</strong></small>
                   {% endif %}
                   <img class="is_view_img" src="{{msg.to_receiver.profile.image.url}}" alt="{{msg.to_receiver.first_name}}-profile-image">
                 {% endif %}

@@ -58,7 +58,7 @@ class Coordinator:
 
     @coordinator_required
     @staticmethod
-    def sessionStudent(request, which_session=y_session()):
+    def session_student(request, which_session=y_session()):
         """coordinator list of student page"""
         coord_dept_request_user = request.user
         training_tutor = DepartmentTrainingCoordinator.objects.filter(
@@ -104,7 +104,7 @@ class Coordinator:
     
     @coordinator_required
     @staticmethod
-    def viewStudentLetter(request, letter_id):
+    def view_student_letter(request, letter_id):
         """
         If student `active` departmental training coordinator view student acceptance letter,
         it will automatically mark it as reviewed using this view
@@ -120,7 +120,7 @@ class Coordinator:
 
     @coordinator_required
     @staticmethod
-    def acknowledgeStudent(request, student_id):
+    def acknowledge_student(request, student_id):
         """accept student as (coordinator add student in his list)"""
         # filtering student in user model using id
         student_to_add_usr = User.objects.get(id=student_id)
@@ -184,6 +184,8 @@ class Coordinator:
         """this is view that create student result"""
         student_user = TrainingStudent.objects.filter(matrix_no=matrix_no).first()
         student_coord = student_user.student_training_coordinator
+        if student_coord.is_active == False:
+            return False
         student_supervisor = student_user.student_training_coordinator
 
         is_result = StudentResult.objects.filter(
@@ -328,6 +330,8 @@ class Coordinator:
         usr_tab = request.user
         usr = DepartmentTrainingCoordinator.objects.filter(
             coordinator=usr_tab).first()
+        if usr.is_active == False:
+            return False
             
         # current school session
         current_sch_sess = Session.objects.filter(is_current_session=True).last()

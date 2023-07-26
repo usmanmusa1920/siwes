@@ -29,6 +29,20 @@
 
     <div class="wrapp_info">
       <div class="wrapp_info_left">
+        <form method="POST" action="{% url 'auth:update_profile_img' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <!-- if user profile image is the default one this field will be display in other to change it -->
+          {% if request.user.profile.image.url == '/media/default_pic.png' %}
+            Please upload your profile image:
+            <div class="wrapp_form">
+              <input type="file" name="image" accept="image/*" required>
+              <div class="wrapp_info">
+                <small>When uploading profile image make sure it has an extension of PGN, JPG, or JPEG</small>
+              </div>
+              <button type="submit">Upload</button>
+            </div>
+          {% endif %}
+        </form>
         <p>
           <b>Name:</b>
           {{student.first_name}}

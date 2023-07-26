@@ -42,10 +42,10 @@ INSTALLED_APPS = [
     # my apps
     'account.apps.AccountConfig',
     'administrator.apps.AdministratorConfig',
-    'faculty.apps.FacultyConfig',
-    'department.apps.DepartmentConfig',
-    'student.apps.StudentConfig',
     'chat.apps.ChatConfig',
+    'department.apps.DepartmentConfig',
+    'faculty.apps.FacultyConfig',
+    'student.apps.StudentConfig',
 ]
 
 MIDDLEWARE = [

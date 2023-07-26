@@ -1,3 +1,4 @@
+import os
 from django.urls import reverse
 from django.shortcuts import render, redirect, HttpResponseRedirect
 from django.contrib import messages
@@ -8,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import get_user_model
 from .forms import (
-    PasswordChangeForm, AdministratorSignupForm, FacultySignupForm, FacultyDeanSignupForm, DepartmentSignupForm, SchoolVCSignupForm, DepartmentHODSignupForm, DepartmentCoordinatorSignupForm, StudentSupervisorSignupForm, StudentSignupForm, UpdateStudentProfile
+    PasswordChangeForm, AdministratorSignupForm, FacultySignupForm, FacultyDeanSignupForm, DepartmentSignupForm, SchoolVCSignupForm, DepartmentHODSignupForm, DepartmentCoordinatorSignupForm, StudentSupervisorSignupForm, StudentSignupForm, UpdateStudentProfile, UpdateProfileImage
 )
 from toolkit import (picture_name, y_session)
 from toolkit.decorators import (
@@ -16,9 +17,11 @@ from toolkit.decorators import (
 )
 from chat.models import Message
 from administrator.models import Administrator
+from toolkit import (picture_name, y_session)
 from administrator.all_models import(
     Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
 )
+from student.views import Student as student_cls
 
 
 User = get_user_model()
@@ -215,7 +218,7 @@ class Register:
     @check_phone_number(redirect_where='auth:register_department_hod')
     @admin_required
     @staticmethod
-    def schoolVC(request):
+    def school_vc(request):
         """register schoolVC"""
 
         # quering faculties and departments names, which we will be rendering in templates
@@ -273,7 +276,7 @@ class Register:
     @check_phone_number(redirect_where='auth:register_faculty_dean')
     @admin_required
     @staticmethod
-    def facultyDean(request):
+    def faculty_dean(request):
         """register faculty dean"""
 
         # quering departments names, which we will be rendering in templates
@@ -325,7 +328,7 @@ class Register:
     @check_phone_number(redirect_where='auth:register_department_hod')
     @admin_required
     @staticmethod
-    def departmentHOD(request):
+    def department_hod(request):
         """register department hod"""
 
         # quering faculties and departments names, which we will be rendering in templates
@@ -380,7 +383,7 @@ class Register:
     @check_phone_number(redirect_where='auth:register_department_training_coordinator')
     @admin_required
     @staticmethod
-    def departmentTrainingCoordinator(request):
+    def department_training_coordinator(request):
         """register department training coordinator"""
 
         # quering faculties and departments names, which we will be rendering in templates
@@ -435,7 +438,7 @@ class Register:
     @check_phone_number(redirect_where='auth:register_student_training_coordinatro')
     @admin_required
     @staticmethod
-    def studentTrainingSupervisor(request):
+    def student_training_supervisor(request):
         """register department student training supervisor"""
         
         # quering faculties and departments names, which we will be rendering in templates
@@ -543,14 +546,67 @@ class Register:
         return render(request, 'auth/register_student.html', context)
 
 
-class UpdateProfile:
+class Update:
     """class that contains users update functionalities"""
+
+    @staticmethod
+    def profile_image(request):
+        form = UpdateProfileImage(request.POST, request.FILES, instance=request.user.profile)
+        # user previous profile image
+        user_previous_img = request.user.profile.image.path
+        if request.method == 'POST':
+            # current school session
+            current_school_sess = Session.objects.filter(is_current_session=True).last()
+
+            # user profile image instance
+            instance = form.save(commit=False)
+
+            # removing user previous profile image if it is not the default one `default_pic.png`
+            if user_previous_img != '/home/usman/Desktop/acode/fugus/media/default_pic.png':
+                if os.path.exists(user_previous_img):
+                    os.remove(user_previous_img)
+            pic_name = picture_name(instance.image.name)
+
+            # this is the current logged in user
+            user_from_base_table = User.objects.get(id=request.user.id)
+
+            # making a profile image rout to a user base on their ranks
+            if request.user.is_admin:
+                route = f'{current_school_sess.session}/admin/'
+            elif request.user.is_vc:
+                vc = SchoolVC.objects.filter(
+                    id_no=user_from_base_table.identification_num).first()
+                route = f'{current_school_sess.session}/vc/{vc.faculty.name}/{vc.department.name}/'
+            elif request.user.is_dean:
+                dean = FacultyDean.objects.filter(
+                    id_no=user_from_base_table.identification_num).first()
+                route = f'{current_school_sess.session}/dean/{dean.faculty.name}/{dean.department.name}/'
+            elif request.user.is_hod:
+                hod = DepartmentHOD.objects.filter(
+                    id_no=user_from_base_table.identification_num).first()
+                route = f'{current_school_sess.session}/hod/{hod.faculty.name}/{hod.department.name}/'
+            elif request.user.is_coordinator:
+                coordinator = DepartmentTrainingCoordinator.objects.filter(
+                    id_no=user_from_base_table.identification_num).first()
+                route = f'{current_school_sess.session}/coordinator/{coordinator.faculty.name}/{coordinator.department.name}/'
+            elif request.user.is_supervisor:
+                route = f'{current_school_sess.session}/supervisor/'
+            elif request.user.is_student:
+                student = TrainingStudent.objects.filter(
+                    matrix_no=user_from_base_table.identification_num).first()
+                route = f'{current_school_sess.session}/coordinator/{student.faculty.name}/{student.department.name}/'
+            else:
+                route = f'{current_school_sess.session}/other/'
+            instance.image.name = route + pic_name
+            instance.save()
+            messages.success(request, f'Your profile image has been updated!')
+            return redirect('auth:general_profile', id_no=request.user.identification_num)
 
     @check_phone_number(redirect_where='auth:student_profile_update')
     @student_required
     @staticmethod
-    def student(request):
-        """student update profile"""
+    def student_info(request):
+        """student update profile information"""
 
         r_user = request.user
         # querying student from student models

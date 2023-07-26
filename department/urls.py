@@ -10,16 +10,16 @@ urlpatterns = [
         'training/coordinator/profile/<int:id_no>', Coordinator.profile, name='training_coordinator_profile'),
     # student of a session
     path(
-        'training/coordinator/session/student/', Coordinator.sessionStudent, name='training_coordinator_session_student'),
+        'training/coordinator/session/student/', Coordinator.session_student, name='training_coordinator_session_student'),
     # student that ipload acceptance letter
     path(
         'training/coordinator/student/acceptance/letter', Coordinator.students_acceptance_letter, name='training_coordinator_student_acceptance_letter'),
     # view student letter and mark it as viewed
     path(
-        'training/coordinator/view/student/letter/<int:letter_id>', Coordinator.viewStudentLetter, name='training_coordinator_view_student_letter'),
+        'training/coordinator/view/student/letter/<int:letter_id>', Coordinator.view_student_letter, name='training_coordinator_view_student_letter'),
     # add student in to coordintor training student list
     path(
-        'coordinator/acknowledge/student/<int:student_id>', Coordinator.acknowledgeStudent, name='coordinator_acknowledge_student'),
+        'coordinator/acknowledge/student/<int:student_id>', Coordinator.acknowledge_student, name='coordinator_acknowledge_student'),
     # assign supervisor
     path(
         'assign/supervisor/<int:id_no>/<int:level>', Coordinator.assign_supervisor, name='assign_supervisor'),

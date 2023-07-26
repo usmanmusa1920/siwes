@@ -24,7 +24,7 @@ def picture_name(pic_name):
 
 
 def y_session():
-    """this return a yera session, e.g 2023/2024"""
+    """this return a year session, e.g 2023/2024"""
     y1 = the_year
     y2 = the_year + 1
     year_session = f'{y1}/{y2}'

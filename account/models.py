@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django_countries.fields import CountryField
 from django.conf import settings
+from PIL import Image
 from toolkit import y_session
 
 
@@ -126,7 +127,17 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     session = models.CharField(max_length=255, default=y_session())
     image = models.ImageField(
-        default='default_pic.png', upload_to=f'users_profile_pics')
+        default='default_pic.png', upload_to=f'profile_pics')
+    
+    def save(self, *args, **kwargs):
+        """resizing image size"""
+        super().save(*args, **kwargs)
+        img = Image.open(self.image.path)
+        
+        if img.height > 200 or img.width > 200:
+            output_size = (200, 200)
+            img.thumbnail(output_size)
+            img.save(self.image.path)
 
     def __str__(self):
         return f'{self.user.identification_num}\'s profile'

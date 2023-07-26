@@ -28,10 +28,9 @@ class Student:
 
     def student_acceptance_route(self, train, faculty, department, level: str = '200', logbook=False) -> str:
         """
-        this method costruct a route for media files (student uploaded acceptance letter),
-        when you upload a media file via admin page this method will not run,
-        so don`t try changing or uploading any media file via admin, to avoid
-        route mis-functioning
+        this method construct a route for media files (student uploaded acceptance letter),
+        when you upload a student acceptance letter via admin page this method will not run,
+        so don`t try changing or uploading any media file via admin, to avoid route mis-functioning
         """
         if logbook:
             return f'{datetime.today().year}-logbook' + '/' + train + '/' + faculty + '/' + department + '/l' + level + '/'
@@ -88,7 +87,7 @@ class Student:
     
     @student_required
     @staticmethod
-    def applyTraining(request, level):
+    def apply_training(request, level):
         """Student apply for 200/300 level"""
 
         # current login student
@@ -153,7 +152,7 @@ class Student:
 
     @student_required
     @staticmethod
-    def placementLetter(request, level):
+    def placement_letter(request, level):
         """student placement letter for 200 and 300 level"""
 
         # student
@@ -183,7 +182,7 @@ class Student:
 
     @student_required
     @staticmethod
-    def acceptanceLetter(request, level):
+    def acceptance_letter(request, level):
         """student placement letter for 200 and 300 level"""
 
         # student
@@ -207,7 +206,7 @@ class Student:
 
     @student_required
     @staticmethod
-    def uploadAcceptanceLetterPage(request, level):
+    def upload_acceptance_letter_page(request, level):
         """This view show 200 and 300 level student page, that they will upload their acceptance letter for the first time (not update page) acceptance letter"""
 
         # student user
@@ -231,7 +230,7 @@ class Student:
 
     @student_required
     @staticmethod
-    def uploadAcceptanceLetter(request, level_s):
+    def upload_acceptance_letter(request, level_s):
         """this view will be call when a student upload his/her first acceptance letter (200 and 300) level student"""
 
         # student
@@ -288,7 +287,7 @@ class Student:
         
     @student_required
     @staticmethod
-    def updateAcceptanceLetterPage(request, level_s):
+    def update_acceptance_letter_page(request, level_s):
         """this is a view that will show student update acceptance letter page for 200 and 300 level student"""
         
         # student user
@@ -313,7 +312,7 @@ class Student:
         
     # @student_required
     @staticmethod
-    def updateAcceptanceLetter(request, level_s, msg_id=False):
+    def update_acceptance_letter(request, level_s, msg_id=False):
         """
         update acceptance letter for 200 and 300 level student
         this is a view that update student acceptance letter, after he/she make a request to his/her coordinator, also it is a view that update student acceptance letter, before student coordinator view his acceptance letter for the first time.
@@ -332,6 +331,11 @@ class Student:
         else:
             acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='300').first()
 
+        # previous acceptance letter
+        if os.path.exists(acceptance.image.path):
+            prev_acceptance = acceptance.image.path
+
+        # student training, faculty, department, and level which will be use to create his acceptance letter route
         train = student.faculty.training
         faculty = student.faculty.name
         department = student.department.name
@@ -341,15 +345,16 @@ class Student:
         # current school session
         current_sch_sess = Session.objects.filter(is_current_session=True).last()
 
+        # if acceptance letter not found it will return false
         if not acceptance:
             return False
 
         if request.method == 'POST':
             form = UploadAcceptanceLetter(request.POST, request.FILES, instance=acceptance)
             if form.is_valid():
-                # the remove of previous acceptance is not workin, later will be arrange
-                if os.path.exists(acceptance.image.path):
-                    os.remove(acceptance.image.path)
+                # delete previous acceptance letter if exist
+                if os.path.exists(prev_acceptance):
+                    os.remove(prev_acceptance)
                 instance = form.save(commit=False)
                 pic_name = picture_name(instance.image.name)
                 instance.session = current_sch_sess.session
@@ -364,19 +369,22 @@ class Student:
                     stu_letter.is_reviewed = False
                     stu_letter.can_change = False
                     stu_letter.save()
+                
+                # looping over student messages where `is_approved_reques=True` in other to make it to `False` so that the notification in the message page will not display
                 if msg_id:
-                    # messg = Message.objects.get(id=msg_id)
-                    # messg.is_expired = True
-                    # messg.save()
-                    for ms in Message.objects.filter(from_sender=request.user):
-                        ms.is_expired = True
+                    messg = Message.objects.get(id=msg_id)
+                    sender = messg.from_sender
+                    receiver = messg.to_receiver
+                    for ms in Message.objects.filter(
+                        from_sender=sender, to_receiver=receiver, is_approved_request=True).all():
+                        ms.is_approved_request = False
                         ms.save()
                 messages.success(request, f'Your 200 level acceptance letter image has been updated!')
                 return redirect(reverse('student:update_acceptance_letter_page', kwargs={'level_s': level_s}))
     
     @coordinator_or_supervisor_or_student_required
     @staticmethod
-    def logbookEntry(request, matrix_no, student_level):
+    def logbook_entry(request, matrix_no, student_level):
         """
         This method handle the tricks of student logbook entry per week (upload i.e scanned logbook in hardcopy), which can be view by them and their supervisor.
         """
@@ -457,7 +465,7 @@ class Student:
         return render(request, 'student/logbook_entry.html', context)
     
     @staticmethod
-    def additionalWeekImage(request, logbook_id):
+    def additional_logbook_image(request, logbook_id):
         # student
         stu_usr = request.user # student user
         student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
@@ -488,7 +496,7 @@ class Student:
 
     @supervisor_or_student_required
     @staticmethod
-    def logbookComment(request, logbook_id):
+    def logbook_comment(request, logbook_id):
         """supervisor comment on student logbook"""
         
         logbook = WeekScannedLogbook.objects.get(id=logbook_id)

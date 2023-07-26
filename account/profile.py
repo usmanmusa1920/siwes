@@ -24,7 +24,7 @@ User = get_user_model()
 
 @login_required
 def generalProfile(request, id_no):
-    """general profile"""
+    """general profile for any user"""
 
     # querying user using identification number
     user = User.objects.filter(identification_num=id_no).first()

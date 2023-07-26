@@ -78,10 +78,10 @@ urlpatterns = [
     path('', index, name='landing'),
     path('', include('account.urls')),
     path('', include('administrator.urls')),
-    path('', include('faculty.urls')),
-    path('', include('department.urls')),
-    path('', include('student.urls')),
     path('', include('chat.urls')),
+    path('', include('department.urls')),
+    path('', include('faculty.urls')),
+    path('', include('student.urls')),
 ]
 
 if settings.DEBUG:
