@@ -1,6 +1,6 @@
 from django.urls import path, include
 from .views import (
-    LoginCustom, LogoutCustom, changePassword, Register, Update)
+    LoginCustom, LogoutCustom, change_password, Register, Update)
 from .profile import generalProfile
 
 
@@ -14,12 +14,12 @@ urlpatterns = [
     # login
     path(
         'login/', LoginCustom.as_view(template_name='auth/login.html'), name='login'),
-    # log out
+    # logout
     path(
         'logout/', LogoutCustom.as_view(template_name='auth/logout.html'), name='logout'),
     # change password
     path(
-        'change/password/', changePassword, name='change_password'),
+        'change/password/', change_password, name='change_password'),
 
     # register new session
     path(

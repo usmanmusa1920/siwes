@@ -120,7 +120,16 @@
     {% if form.email.errors %}
       <p><i><strong><small>{{form.email.errors}}</small></strong></i></p>
     {% endif %}
-    
+
+    <p>Student bank details:</p>
+    <input type="text" name="bank_name" placeholder="Bank name" class="input" required>
+    <input type="text" name="account_name" placeholder="Bank account name" class="input" required>
+    <input type="text" name="account_number" placeholder="Bank account number" class="input" required>
+    <input type="text" name="bank_sort_code" placeholder="Bank sort code" class="input" required>
+    <div class="links">
+      <a href="https://google.com" target="_blank">Check your bank sort code</a>
+    </div>
+
     <button type="submit">Update</button>
     <div class="links">
       <a href="{% url 'auth:logout' %}">Logout</a>

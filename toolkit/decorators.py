@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 def block_student_update_profile(request, r_user):
     """
-    blocking student from updating his/her profile
+    blocking student from updating his/her profile, if it is up to date
     """
 
     if r_user.first_name != '' and r_user.first_name != None and r_user.last_name != '' and r_user.last_name != None and r_user.is_student == True:

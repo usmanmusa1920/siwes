@@ -13,7 +13,7 @@ def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
         """
-        `usr_in_sep_table` this mean user in separate table
+        `usr_in_sep_table` this mean user in separate table e.g administrator, student, supervisor, coordinator, or dean table etc
         """
         if instance.is_admin:
             usr_in_sep_table = Administrator(

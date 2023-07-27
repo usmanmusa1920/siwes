@@ -214,10 +214,13 @@ class Coordinator:
             # here we assume each day mark is 1 mark, so in a week student may get 5 mark for 1 week, if we times 5 day with 12 weeks number (5 * 12), we will get 60, which is overall score expected that a student will have (100%)
             total_expected = 60
 
+            # calculating percentage
             calc_1 = student_total_mark * 100
             calc_2 = calc_1 / total_expected
+
             def grade_func(t_grade, score):
                 match t_grade:
+                    # A `match` statement takes an expression and compares it to successive patterns given as one or more `case` blocks. This is superficially similar to a `switch` statement in C, Java or JavaScript (and many other languages), but much more powerful.
                     case 'Excellent':
                         return f'Status: {t_grade}, Score: {score}'
                     case 'Very good':
@@ -232,6 +235,11 @@ class Coordinator:
                         return f'Status: {t_grade}, Score: {score}'
                     case _:
                         return f'Status: Absent, Score: {score}'
+                    # Note the last block: the "variable name" `_` acts as a *wildcard* and never fails to match. You can combine several literals in a single pattern using `|` ("or"):
+
+                    # case 'Excellent'|'Very good'|'Good'|:
+                    #   return f'Status: Good, Score: 53.0'
+
             status = {
                 'A': 'Excellent',
                 'B': 'Very good',
@@ -240,6 +248,8 @@ class Coordinator:
                 'E': 'Poor',
                 'F': 'Fail',
             }
+
+            # checking percentage
             if calc_2 >= 70 and calc_2 <= 100:
                 grade = "A"
                 g_status = grade_func(status[grade], calc_2)
@@ -267,36 +277,12 @@ class Coordinator:
             )
         new_result.save()
 
-        # incrementing student level by 100, if it is 200
+        # incrementing student level by 100, if he is 200 level
         if student_user.level == 200:
             # finish 200 level training
             student_user.is_finish_200 = True
             student_user.level += 100
             student_user.save()
-
-        # deactivating any `is_current_session` which is True to False
-        prev_sess = Session.objects.filter(is_current_session=True)
-        last_prev_sess = Session.objects.filter(is_current_session=True).last()
-        for sess in prev_sess:
-            sess.is_current_session = False
-            sess.save()
-
-        # if we find the query, we will use it for the following tricks
-        if last_prev_sess:
-            # grabing data from `last_prev_sess`
-            a_sess = last_prev_sess.session
-            b_sess = a_sess.split('/') # making it a list
-            c_sess = int(b_sess[0])+1 # taking index 0 of the list and plus it with one
-            d_sess = int(b_sess[1])+1 # taking index 1 of the list and plus it with one
-            e_sess = '/'.join([str(c_sess), str(d_sess)]) # new session
-            final_sess = e_sess
-            # creating new session
-            new_sess = Session(session=final_sess, is_current_session=True)
-            new_sess.save()
-        else:
-            # if we don`t find the query we, will create new one
-            new_sess = Session(is_current_session=True)
-            new_sess.save()
 
         messages.success(
             request, f'You just released ({student_user}) result for {student_user.level})')
@@ -309,6 +295,10 @@ class Coordinator:
     def student_result(request, matrix_no, level):
         student = TrainingStudent.objects.filter(matrix_no=matrix_no).first()
         result = StudentResult.objects.filter(student=student, level=level).first()
+
+        # blocking other user from viewing student training letter, if he/she is not the student or the student coordinator
+        if request.user != student.student or request.user != student.student_training_coordinator:
+            return False
 
         # checking result
         if not result:
@@ -330,14 +320,18 @@ class Coordinator:
         usr_tab = request.user
         usr = DepartmentTrainingCoordinator.objects.filter(
             coordinator=usr_tab).first()
+        
+        # blocking user if he is not active cordinator
         if usr.is_active == False:
             return False
             
         # current school session
         current_sch_sess = Session.objects.filter(is_current_session=True).last()
-        # current faculty dean
+
+        # active faculty dean
         dept_hod = DepartmentHOD.objects.filter(
             department=usr.department, is_active=True).last()
+        
         # active school vc
         active_vc = SchoolVC.objects.filter(is_active=True).last()
         

@@ -94,6 +94,22 @@
             {% endif %}
           {% endif %}
         {% endif %}
+
+        {% if request.user.is_coordinator and user.is_student %}
+          <a class="me_good">Bank details:</a>
+          <p>
+            <b>Bank name:</b> {{uuu.bank_name}}
+          </p>
+          <p>
+            <b>Account name:</b> {{uuu.account_name}}
+          </p>
+          <p>
+            <b>Account number:</b> {{uuu.account_number}}
+          </p>
+          <p>
+            <b>Bank sort code:</b> {{uuu.bank_sort_code}}
+          </p>
+        {% endif %}
       </div>
 
       <div class="wrapp_info_right">

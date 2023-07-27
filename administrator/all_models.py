@@ -195,20 +195,36 @@ class TrainingStudent(models.Model):
     date_joined = models.DateTimeField(auto_now_add=True) # date_joined (not editable)
     last_modified = models.DateTimeField(auto_now=True) # last modified (not editable)
 
+    # bank details
+    bank_name = models.CharField(max_length=100, unique=False, blank=False, null=False)
+    account_name = models.CharField(max_length=100, unique=False, blank=False, null=False)
+    account_number = models.CharField(max_length=100, unique=False, blank=False, null=False)
+    bank_sort_code = models.CharField(max_length=100, unique=False, blank=False, null=False)
+
+    # sessions
     session = models.CharField(max_length=255, blank=False, null=False, default=y_session())
+    # sessions student did his 200 level training
     session_200 = models.CharField(max_length=255, blank=False, null=False, default=y_session())
+    # sessions student did his 300 level training
     session_300 = models.CharField(max_length=255, blank=False, null=False, default=y_session())
 
+    # student supervisor id at 200 level training program
     supervisor_id_200 = models.CharField(max_length=255, blank=False, null=False)
+    # student supervisor id at 300 level training program
     supervisor_id_300 = models.CharField(max_length=255, blank=False, null=False)
 
     is_apply_training_200 = models.BooleanField(default=False)
     is_apply_training_300 = models.BooleanField(default=False)
+
+    # did student finish his 200 level training program?
     is_finish_200 = models.BooleanField(default=False)
+    # did student finish his 200 level training program?
     is_finish_300 = models.BooleanField(default=False)
+
+    # is the student in the school currently
     is_in_school = models.BooleanField(default=False)
 
-    # to avoid assigning the student if already have a supervisor (when assigning in html page)
+    # to avoid assigning the student if already have a supervisor (when assigning in html page) for each level
     is_assign_supervisor_200 = models.BooleanField(default=False)
     is_assign_supervisor_300 = models.BooleanField(default=False)
 

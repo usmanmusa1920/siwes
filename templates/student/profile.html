@@ -43,6 +43,7 @@
             </div>
           {% endif %}
         </form>
+        <a class="me_good">Student details:</a>
         <p>
           <b>Name:</b>
           {{student.first_name}}
@@ -96,6 +97,19 @@
           {% else %}
             <b>Department:</b> {{student.department.name}}
           {% endif %}
+        </p>
+        <a class="me_good">Bank details:</a>
+        <p>
+          <b>Bank name:</b> {{student.bank_name}}
+        </p>
+        <p>
+          <b>Account name:</b> {{student.account_name}}
+        </p>
+        <p>
+          <b>Account number:</b> {{student.account_number}}
+        </p>
+        <p>
+          <b>Bank sort code:</b> {{student.bank_sort_code}}
         </p>
         <br>
         <hr>
