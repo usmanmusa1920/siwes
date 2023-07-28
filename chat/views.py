@@ -115,7 +115,7 @@ def send_message(request, user_id):
     # This one we filter a user by his id (user_id), which will allow us to goto his/her message page.
     msg_receiver = User.objects.get(identification_num=user_id)
 
-    # condition to indicate a student request to change acceptance letter is approved or not. Also in the first if statement is for coordinator, while the later is for the student that send the request.
+    # condition to indicate a student request to change acceptance letter is approved or not. Also in the first if statement is for coordinator, the second condition is for the student that send the request, while the later is for supervisor (normal message).
     if request.user.is_coordinator:
         # filtering student request
         request_to_change = Message.objects.filter(to_receiver=request.user, from_sender=msg_receiver, is_request_to_change_img=True, is_approved_request=False).last()
@@ -128,6 +128,12 @@ def send_message(request, user_id):
 
         # since this condition is for student so we filter the student from student table, so that to make it as the keyword within the route for changing his new acceptance letter if approved by his coordinator.
         is_approved_student_request = Message.objects.filter(to_receiver=msg_receiver, from_sender=request.user, is_request_to_change_img=False, is_approved_request=True).last()
+    elif request.user.is_supervisor:
+        # filtering student and supervisor message
+        request_to_change = Message.objects.filter(to_receiver=request.user, from_sender=msg_receiver).last()
+
+        # since this condition is for coordinator so we make student to be None to avoid error, because it did nothing as far as the logged in user is coordinator..
+        is_approved_student_request = None
     
     # This try block we check if there is any message where the receiver of it is the current user (the last message of the query set).
     try:

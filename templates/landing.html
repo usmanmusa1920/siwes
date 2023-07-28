@@ -45,6 +45,10 @@
             <a href="{% url 'department:new_letter' %}">New letter</a>
             <a href="{% url 'chat:notification' %}">Notification</a>
             <a href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Profile</a>
+          {% elif request.user.is_supervisor %}
+            <a href="{% url 'department:supervisor_student' %}">Your students</a>
+            <a href="{% url 'chat:notification' %}">Notification</a>
+            <a href="{% url 'auth:general_profile' request.user.identification_num %}">Profile</a>
           {% elif request.user.is_student %}
             <a href="{% url 'student:profile' request.user.identification_num %}">Student profile</a>
             <a href="{% url 'student:placement_letter' 200 %}">Placement letter 200</a>
@@ -80,6 +84,8 @@
         <a href="{% url 'department:training_coordinator_student_acceptance_letter' %}">student acceptance letter</a>
         <a href="{% url 'department:assign_supervisor' request.user.identification_num 200 %}">Assign supervisor 200</a>
         <a href="{% url 'department:assign_supervisor' request.user.identification_num 300 %}">Assign supervisor 300</a>
+      {% elif request.user.is_supervisor %}
+        <a href="{% url 'department:supervisor_student' %}">Your students</a>
       {% elif request.user.is_student %}
         <a><h4>{{request.user}}</h4></a>
         <a href="{% url 'student:profile' request.user.identification_num %}">View your profile</a>

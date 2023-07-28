@@ -22,7 +22,7 @@
       <div class="wrapp_top_greynish">
         <small>This is your {{logbook.week_no}} week logbook entry</small>
       </div>
-      <form method="POST" action="{% url 'student:additional_log_image' logbook.id  %}" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'student:additional_logbook_image' logbook.id  %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="wrapp_form">
           {% for img in log_images %}

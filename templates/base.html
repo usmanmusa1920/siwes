@@ -116,6 +116,8 @@
           <span class="link_ref">Assignsupervisor</span>
           <a href="{% url 'department:assign_supervisor' request.user.identification_num 200 %}" class="dash_link">Assign supervisor 200</a>
           <a href="{% url 'department:assign_supervisor' request.user.identification_num 300 %}" class="dash_link">Assign supervisor 300</a>
+        {% elif request.user.is_supervisor %}
+          <a href="{% url 'department:supervisor_student' %}" class="dash_link">Your students</a>
         {% elif request.user.is_admin %}
           <span class="link_ref">Profile:</span>
           <a class="dash_link" href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Training Coordinator</a>
@@ -136,8 +138,8 @@
           <a class="dash_link" href="{% url 'administrator:filter_student' %}">Student</a>
 
           <span class="link_ref">Register:</span>
-          <a class="dash_link" href="{% url 'auth:new_session' %}">New session</a>
           <a class="dash_link" href="{% url 'auth:register_administrator' %}">Administrator</a>
+          <a class="dash_link" href="{% url 'auth:new_session' %}">New session</a>
           <a class="dash_link" href="{% url 'auth:register_faculty' %}">Faculty</a>
           <a class="dash_link" href="{% url 'auth:register_department' %}">Department</a>
           <a class="dash_link" href="{% url 'auth:register_school_vc' %}">School VC</a>

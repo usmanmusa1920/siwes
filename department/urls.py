@@ -1,5 +1,6 @@
 from django.urls import path, include
 from .views import (Coordinator)
+from .supervisor import (supervisor_student, submit_student_logbook)
 
 
 app_name = 'department'
@@ -32,4 +33,10 @@ urlpatterns = [
     # release new letter
     path(
         'new/letter', Coordinator.new_letter, name='new_letter'),
+    # supervisor assign
+    path(
+        'supervisor/student', supervisor_student, name='supervisor_student'),
+    # supervisor student logbook
+    path(
+        'supervisor/submit/student/logbook/<int:matrix_no>', submit_student_logbook, name='submit_student_logbook'),
 ]

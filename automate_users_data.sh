@@ -62,9 +62,9 @@ with open('faculty_and_department.json') as f:
 
 for i in json_data:
     if i['faculty'] == 'Education':
-        faculty_training = Faculty(name=i['faculty'], email=i['faculty']+'@mail.com', phone_number=i['phone'], training='tp')
+        faculty_training = Faculty(name=i['faculty'], email=i['faculty']+'@fugusau.edu.ng', phone_number=i['phone'], training='tp')
     else:
-        faculty_training = Faculty(name=i['faculty'], email=i['faculty']+'@mail.com', phone_number=i['phone'])
+        faculty_training = Faculty(name=i['faculty'], email=i['faculty']+'@fugusau.edu.ng', phone_number=i['phone'])
     faculty_training.save()
 
 faculty_1 = Faculty.objects.filter(name='Science').first()
@@ -79,7 +79,7 @@ for idx, i in enumerate(json_data):
     filt_faculty = Faculty.objects.filter(name=json_data[idx]['faculty']).first()
     for j in json_data[idx]['department']:
         rand_num = random.randrange(300, 3000)
-        new_dept = Department(name=j, email=j+'@mail.com', phone_number='+234'+str(rand_num)+j, faculty=filt_faculty)
+        new_dept = Department(name=j, email=j+'@fugusau.edu.ng', phone_number='+234'+str(rand_num)+j, faculty=filt_faculty)
         new_dept.save()
 
 # Science

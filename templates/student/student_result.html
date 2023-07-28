@@ -12,8 +12,21 @@
   <title>Student result ({{result.level}})</title>
 </head>
 <body>
+  
   <div class="wrapp_letter">
     <div class="wrapp_head">
+
+      <!-- flash message -->
+      {% if messages %}
+        {% for flash_msg in messages %}
+          <br>
+          <br>
+          <div class="alert_{{flash_msg.tags}}">{{flash_msg}}</div>
+          <br>
+          <br>
+        {% endfor %}
+      {% endif %}
+
       <img src="{% static 'media/logo.png' %}" alt="">
       <h1>{{student.department|upper}}</h1>
       <h4>{{student.faculty|upper}}</h4>

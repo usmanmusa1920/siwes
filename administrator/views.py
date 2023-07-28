@@ -26,7 +26,7 @@ class Active:
     def faculty_dean(request):
         """active faculty deans"""
         
-        active_department_hod = FacultyDean.objects.filter(is_active=True).all()
+        active_department_hod = FacultyDean.objects.filter(is_active=True).all().order_by('-date_joined')
         paginator = Paginator(active_department_hod, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
@@ -40,7 +40,7 @@ class Active:
     def department_hod(request):
         """active department HOD"""
         
-        active_department_hod = DepartmentHOD.objects.filter(is_active=True).all()
+        active_department_hod = DepartmentHOD.objects.filter(is_active=True).all().order_by('-date_joined')
         paginator = Paginator(active_department_hod, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
@@ -54,7 +54,7 @@ class Active:
     def department_training_coordinator(request):
         """active departmenttraining coordinator"""
         
-        active_department_coord = DepartmentTrainingCoordinator.objects.filter(is_active=True).all()
+        active_department_coord = DepartmentTrainingCoordinator.objects.filter(is_active=True).all().order_by('-date_joined')
         paginator = Paginator(active_department_coord, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)

@@ -517,7 +517,8 @@ class Student:
                 instance.logbook = logbook
                 instance.save()
                 messages.success(request, f'You just comment on logbook entry for {logbook.week_no} week of {logbook.student_lg.matrix_no}')
-                return redirect(reverse('student:logbook_comment', kwargs={'logbook_id': logbook_id}))
+                return redirect(
+                    reverse('student:logbook_entry', kwargs={'matrix_no': logbook.student_lg.matrix_no, 'student_level': logbook.student_lg.level}))
         else:
             form = LogbookEntryComment()
         context = {

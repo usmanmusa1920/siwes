@@ -110,13 +110,12 @@
               <a class="good_me">Once you finish, your result will be out</a>
             {% endif %}
           {% elif request.user.is_coordinator %}
-
             {% if WR.week_no == 12 %}
               <div class="wrapp_info">
                 <p>You can release your student result, now!</p>
               </div>
               <br>
-              <a href="{% url 'department:release_result' student.matrix_no %}" class="good_me">Release</a>
+              <a href="{% url 'department:release_result' student.matrix_no %}" class="good_me">Approve result</a>
             {% else %}
               <div class="wrapp_info">
                 <p>Student have to finish his programme before you can release his/her result</p>
@@ -124,6 +123,13 @@
               <br>
               <a class="good_me">Once he/she finish, result can be release</a>
             {% endif %}
+          {% endif %}
+
+          {% if request.user.is_supervisor %}
+              <div class="wrapp_warn">
+                <p>Please once you finish marking this student logbook submit it to his coordinator by clicking the below link</p>
+              </div>
+            <a href="{% url 'department:submit_student_logbook' student.matrix_no %}" class="good_me">Submit student logbook</a>
           {% endif %}
         </div>
       </form>

@@ -27,6 +27,10 @@
       <!-- pass -->
     {% endif %}
 
+    {% if request.user.is_vc %}
+      <!-- pass -->
+    {% endif %}
+
     {% if request.user.is_dean %}
       <!-- pass -->
     {% endif %}
@@ -119,6 +123,8 @@
         <p><b>Is admin:</b> {{user.is_admin}}</p>
         <p><b>Is superuser:</b> {{user.is_superuser}}</p>
         <!-- others -->
+        <p><b>Is school staff:</b> {{user.is_schoolstaff}}</p>
+        <p><b>Is school VC:</b> {{user.is_vc}}</p>
         <p><b>Is faculty dean:</b> {{user.is_dean}}</p>
         <p><b>Is department HOD:</b> {{user.is_hod}}</p>
         <p><b>Is training coordinator:</b> {{user.is_coordinator}}</p>

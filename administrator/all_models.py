@@ -439,5 +439,8 @@ class StudentResult(models.Model):
     level = models.CharField(max_length=100, unique=False, blank=False, null=False)
     timestamp = models.DateTimeField(default=timezone.now)
 
+    # coordinator will approve student result
+    is_approve = models.BooleanField(default=False)
+
     def __str__(self):
         return f'{self.student} training result for {self.level}'

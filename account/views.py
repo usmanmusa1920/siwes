@@ -448,7 +448,6 @@ class Register:
             form = StudentSupervisorSignupForm(request.POST)
             if form.is_valid():
                 instance = form.save(commit=False)
-                instance.is_staff = True
                 instance.is_supervisor = True
                 instance.is_schoolstaff = True
                 instance.save()
