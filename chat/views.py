@@ -6,7 +6,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from .models import Message
 from .forms import MessageForm
-from administrator.all_models import TrainingStudent
+from administrator.tables import Student
+# from administrator.tables import (
+#     Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
+# )
 
 
 User = get_user_model()
@@ -16,7 +19,7 @@ User = get_user_model()
 def request_to_change_acceptance_letter(request):
     """request to change acceptance letter base on student level"""
     if request.user.is_student:
-        student = TrainingStudent.objects.filter(student=request.user).first()
+        student = Student.objects.filter(student=request.user).first()
         train_coord = User.objects.filter(
             identification_num=student.student_training_coordinator.identification_num
         ).first()
@@ -110,7 +113,7 @@ def send_message(request, user_id):
     """send message view"""
 
     # student instance, it will only be true if the logged in user is a student, since all student user is marked as is_stdent=True when registering him/her.
-    student = TrainingStudent.objects.filter(student=request.user).first()
+    student = Student.objects.filter(student=request.user).first()
 
     # This one we filter a user by his id (user_id), which will allow us to goto his/her message page.
     msg_receiver = User.objects.get(identification_num=user_id)

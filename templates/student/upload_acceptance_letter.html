@@ -9,21 +9,21 @@
 
 <!-- page title -->
 {% block title %}
-  <title>Uploaded student {{level}} acceptance letter page</title>
+  <title>Uploaded student {{student.level}} acceptance letter page</title>
 {% endblock title %}
 
 <!-- content of the page -->
 {% block main %}
   <div class="wrapper">
     <div class="wrapp_head">
-      <h1>Your uploaded {{level}} level acceptance letter</h1>
+      <h1>Your uploaded {{student.level}} level acceptance letter</h1>
     </div>
     
     <div class="wrapp_main">
       <div class="wrapp_top_greynish">
-        <small>This is your {{level}} level acceptance letter you uploaded</small>
+        <small>This is your {{student.level}} level acceptance letter you uploaded</small>
       </div>
-      <form method="POST" action="{% url 'student:upload_acceptance_letter' level %}" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'student:upload_acceptance_letter' student.level %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="wrapp_form">
           {% if acceptance.image %}
@@ -32,13 +32,13 @@
               <img src="{{acceptance.image.url}}" alt="" srcset="">
             </div>
             <br>
-            <a href="{% url 'student:update_acceptance_letter_page' level %}" class="good_me">Change your {{level}} acceptance letter</a>
+            <a href="{% url 'student:update_acceptance_letter_page' student.level %}" class="good_me">Change your {{student.level}} acceptance letter</a>
           {% else %}
             <div class="wrapp_body">
               <div class="wrapp_null">
                 <div class="wrapp_in_null">
                   <div class="main_wrapp_null">
-                    <p>You have not upload your {{level}} level acceptance letter</p>
+                    <p>You have not upload your {{student.level}} level acceptance letter</p>
                   </div>
                 </div>
               </div>

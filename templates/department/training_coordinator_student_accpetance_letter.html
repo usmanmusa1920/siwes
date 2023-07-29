@@ -22,12 +22,12 @@
     {% if students_letters %}
       {%  for student in students_letters %}
         <div class="wrapp_list">
-          <a href="{% url 'auth:general_profile' student.sender_acept.matrix_no %}">
-            {{student.sender_acept.first_name}}
+          <a href="{% url 'auth:general_profile' student.sender.matrix_no %}">
+            {{student.sender.first_name}}
             {% if usr.middle_name %}
-              {{student.sender_acept.middle_name}}
+              {{student.sender.middle_name}}
             {% endif %}
-            {{student.sender_acept.last_name}}
+            {{student.sender.last_name}}
           </a>
           <small>{{student.level}} level student</small>
           {% if student.is_reviewed %}

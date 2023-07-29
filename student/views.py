@@ -5,14 +5,14 @@ from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from .forms import (UploadAcceptanceLetter, UploadLogbookEntry, UploadLogbookImage, LogbookEntryComment)
+from .forms import (UploadAcceptance, WeekEntryForm, WeekEntryImageForm)
 from toolkit import (picture_name, y_session)
 from toolkit.decorators import (
     block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
 )
 from administrator.models import Administrator
-from administrator.all_models import(
-    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, WeekScannedImage, CommentOnLogbook, StudentResult
+from administrator.tables import (
+    Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
 )
 from chat.models import Message
 
@@ -20,7 +20,7 @@ from chat.models import Message
 User = get_user_model()
 
 
-class Student:
+class StudentCls:
     """Students' related views"""
 
     def __init__(self):
@@ -38,11 +38,11 @@ class Student:
 
     @student_required
     @staticmethod
-    def profile(request, matrix_id):
+    def profile(request, matrix_no):
         """student profile"""
 
         # student
-        student = TrainingStudent.objects.filter(matrix_no=matrix_id).first()
+        student = Student.objects.filter(matrix_no=matrix_no).first()
 
         # restricting any student from getting access to other students` profile
         block_other_stu = restrict_access_student_profile(request, student.matrix_no)
@@ -50,36 +50,25 @@ class Student:
             return block_other_stu
         
         # student coordinator
-        coord_id = student.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_id).first()
+        coord_id = student.student_coordinator.identification_num
+        coordinator = Coordinator.objects.filter(id_no=coord_id).first()
 
         # filtering student uploaded acceptance letter
-        acceptance_200 = AcceptanceLetter.objects.filter(
-            sender_acept=student, level='200').last()
-        acceptance_300 = AcceptanceLetter.objects.filter(
-            sender_acept=student, level='300').last()
+        acceptance_200 = Acceptance.objects.filter(sender=student, level='200').last()
+        acceptance_300 = Acceptance.objects.filter(sender=student, level='300').last()
 
-        # acceptance and placement letter for 200 level of which
-        # student `session_200` match with the letter session
-        letter_a_200 = Letter.objects.filter(
-            letter='acceptance letter', coordinator=coord, session=student.session_200).first()
-        letter_p_200 = Letter.objects.filter(
-            letter='placement letter', coordinator=coord, session=student.session_200).first()
-
-        # acceptance and placement letter for 300 level of which
-        # student `session_300` match with the letter session
-        letter_a_300 = Letter.objects.filter(
-            letter='acceptance letter', coordinator=coord, session=student.session_300).first()
-        letter_p_300 = Letter.objects.filter(
-            letter='placement letter', coordinator=coord, session=student.session_300).first()
+        # acceptance and placement letter for 200 level of which student `session_200` match with the letter session
+        letter_200 = Letter.objects.filter(
+            coordinator=coordinator, session=student.session_200).first()
+        # else:
+        letter_300 = Letter.objects.filter(
+            coordinator=coordinator, session=student.session_300).first()
         
         context = {
             'student': student,
-            'coord': coord,
-            'letter_a_200': letter_a_200,
-            'letter_p_200': letter_p_200,
-            'letter_a_300': letter_a_300,
-            'letter_p_300': letter_p_300,
+            'coordinator': coordinator,
+            'letter_200': letter_200,
+            'letter_300': letter_300,
             'acceptance_200': acceptance_200,
             'acceptance_300': acceptance_300,
         }
@@ -87,223 +76,207 @@ class Student:
     
     @student_required
     @staticmethod
-    def apply_training(request, level):
+    def apply_training(request):
         """Student apply for 200/300 level"""
-
-        # current login student
-        student = TrainingStudent.objects.filter(
-            matrix_no=request.user.identification_num).first()
+        student = Student.objects.filter(matrix_no=request.user.identification_num).first()
         
-        # the following, check if the student already
-        # done his training for 200 and 300 level
-        if level == 200 or level == '200':
+        # the following, check if the student already done his training for 200 or 300 level
+        if student.level == 200 or student.level == '200':
             if student.is_apply_training_200 == True:
                 messages.success(
-                    request, f'Your already apply for {level} level training')
-                return redirect(reverse('student:profile', kwargs={'matrix_id': student.matrix_no}))
+                    request, f'Your already apply for {student.level} level training')
+                return redirect(reverse('student:profile', kwargs={'matrix_no': student.matrix_no}))
         else:
             if student.is_apply_training_300 == True:
                 messages.success(
-                    request, f'Your already apply for {level} level training')
-                return redirect(reverse('student:profile', kwargs={'matrix_id': student.matrix_no}))
+                    request, f'Your already apply for {student.level} level training')
+                return redirect(reverse('student:profile', kwargs={'matrix_no': student.matrix_no}))
         
         # coordinator from base `User`
         coord_user = User.objects.filter(
-            identification_num=student.student_training_coordinator.identification_num).first()
-        
-        # coordinator from `DepartmentTrainingCoordinator`
-        coord = DepartmentTrainingCoordinator.objects.filter(
-            coordinator=coord_user).first()
-        
+            identification_num=student.student_coordinator.identification_num).first()
+        # coordinator from `Coordinator`
+        coordinator = Coordinator.objects.filter(coordinator=coord_user).first()
         # current school session
-        current_sch_sess = Session.objects.filter(is_current_session=True).last()
+        school_session = Session.objects.filter(is_current_session=True).last()
 
         # querying last departmental Letter (acceptance/placement)
         current_dept_letter = Letter.objects.filter(
-            session=current_sch_sess.session, coordinator=coord, letter='placement letter'
-        ).last()
-
-        # if the above filter of `current_dept_letter` found, add
-        # the student in the viewers of that letter
+            session=school_session.session, coordinator=coordinator).last()
+        
+        # if the above filter of `current_dept_letter` found, add the student as one of the approvals of that letter
         if current_dept_letter:
-            current_dept_letter.viewers.add(student)
-
+            current_dept_letter.approvals.add(student)
             # checking to save a session that student apply training base on his level
-            if level == 200 or level == '200':
-                student.session_200 = current_sch_sess.session
+            if student.level == 200 or student.level == '200':
+                student.session_200 = school_session.session
             else:
-                student.session_300 = current_sch_sess.session
+                student.session_300 = school_session.session
             student.save()
         else:
             messages.success(
                 request, f'Your department have not release student training letter for this session')
-            return redirect(reverse('student:profile', kwargs={'matrix_id': student.matrix_no}))
+            return redirect(reverse('student:profile', kwargs={'matrix_no': student.matrix_no}))
         
         # he it will check a student boolean field for his specific level that he is (200 or 300)
-        if level == 200 or level == '200':
-            student.is_apply_training_200=True
+        if student.level == 200 or student.level == '200':
+            student.is_apply_training_200 = True
             student.save()
         else:
-            student.is_apply_training_300=True
+            student.is_apply_training_300 = True
             student.save()
         messages.success(
-            request, f'You apply for your {level} level {student.faculty.training} training')
-        return redirect(reverse('student:profile', kwargs={'matrix_id': student.matrix_no}))
+            request, f'You apply for your {student.level} level {student.faculty.training} training')
+        return redirect(reverse('student:profile', kwargs={'matrix_no': student.matrix_no}))
 
     @student_required
     @staticmethod
-    def placement_letter(request, level):
+    def department_student_letter(request, letter_type, level):
         """student placement letter for 200 and 300 level"""
 
         # student
-        the_student_request_user = request.user
-        student = TrainingStudent.objects.filter(student=the_student_request_user).first()
-
+        student = Student.objects.filter(student=request.user).first()
         # coordinator of student
-        coord_id = student.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_id).first()
-        
-        # letter
+        coordinator = Coordinator.objects.filter(id_no=student.student_coordinator.identification_num).first()
+        # current school session
+        school_session = Session.objects.filter(is_current_session=True).last()
         if level == 200 or level == '200':
-            letter = Letter.objects.filter(
-                letter='placement letter', coordinator=coord, session=student.session_200).first()
+            if student.is_apply_training_200 == True:
+                letter = Letter.objects.filter(
+                    coordinator=coordinator, session=student.session_200).first()
+            else:
+                return False
+                # letter = Letter.objects.filter(
+                #     coordinator=coordinator, session=student.session_200).first()
         else:
-            letter = Letter.objects.filter(
-                letter='placement letter', coordinator=coord, session=student.session_300).first()
-        # hod
-        hod = DepartmentHOD.objects.filter(
-            department=student.department, is_active=True).last()
-        context = {
-            'student': student,
-            'letter': letter,
-            'hod': hod,
-        }
-        return render(request, 'student/placement_letter.html', context=context)
-
-    @student_required
-    @staticmethod
-    def acceptance_letter(request, level):
-        """student placement letter for 200 and 300 level"""
-
-        # student
-        the_student_request_user = request.user
-        student = TrainingStudent.objects.filter(student=the_student_request_user).first()
-
-        # coordinator of student
-        coord_id = student.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_id).first()
-
-        # letter
-        if level == 200 or level == '200':
-            letter = Letter.objects.filter(letter='acceptance letter', coordinator=coord, session=student.session_200).first()
-        else:
-            letter = Letter.objects.filter(letter='acceptance letter', coordinator=coord, session=student.session_300).first()
+            if student.is_apply_training_300 == True:
+                letter = Letter.objects.filter(
+                    coordinator=coordinator, session=student.session_300).first()
+            else:
+                return False
+            # letter = Letter.objects.filter(
+            #     coordinator=coordinator, session=student.session_300).first()
         context = {
             'student': student,
             'letter': letter,
         }
-        return render(request, 'student/acceptance_letter.html', context=context)
+        if letter_type == 'placement':
+            return render(request, 'student/placement_letter.html', context=context)
+        elif letter_type == 'acceptance':
+            return render(request, 'student/acceptance_letter.html', context=context)
 
     @student_required
     @staticmethod
     def upload_acceptance_letter_page(request, level):
-        """This view show 200 and 300 level student page, that they will upload their acceptance letter for the first time (not update page) acceptance letter"""
-
-        # student user
-        stu_usr = User.objects.get(id=request.user.id)
-        student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
-
+        """
+        This view show 200 and 300 level student page, that they will upload their acceptance letter for the first time (not update page) acceptance letter
+        """
+        student = Student.objects.filter(matrix_no=request.user.identification_num).first()
         # coordinator
-        coord_tab = student.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
+        coordinator = Coordinator.objects.filter(
+            id_no=student.student_coordinator.identification_num).first()
+        # current school session
+        school_session = Session.objects.filter(is_current_session=True).last()
+        # querying last departmental Letter (acceptance/placement)
+        if level == 200 or level == '200':
+            current_dept_letter = Letter.objects.filter(
+                session=student.session_200, coordinator=coordinator).last()
+        else:
+            current_dept_letter = Letter.objects.filter(
+                session=school_session.session, coordinator=coordinator).last()
 
         # acceptance letter for the student
-        if level == 200 or level == '200':
-            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level=str(level)).last()
-        else:
-            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level=str(level)).last()
+        acceptance = Acceptance.objects.filter(
+            sender=student, receiver=coordinator, letter=current_dept_letter, level=level).last()
         context = {
             'acceptance': acceptance,
-            'level': level,
+            'student': student,
         }
         return render(request, 'student/upload_acceptance_letter.html', context=context)
 
     @student_required
     @staticmethod
     def upload_acceptance_letter(request, level_s):
-        """this view will be call when a student upload his/her first acceptance letter (200 and 300) level student"""
-
-        # student
-        stu_usr = User.objects.get(id=request.user.id)  # student user
-        std = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
+        """
+        this view will be call when a student upload his/her first acceptance letter (200 and 300) level student
+        """
+        student = Student.objects.filter(matrix_no=request.user.identification_num).first()
 
         # coordinator
-        coord_tab = std.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
-
-        train = std.faculty.training
-        faculty = std.faculty.name
-        department = std.department.name
-        level = std.level
-        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
-
+        coordinator = Coordinator.objects.filter(
+            id_no=student.student_coordinator.identification_num).first()
+        # route param
+        train = student.faculty.training
+        faculty = student.faculty.name
+        department = student.department.name
+        level = student.level
+        route = StudentCls.student_acceptance_route('do_nothing', train, faculty, department, level)
         # current school session
-        current_sch_sess = Session.objects.filter(is_current_session=True).last()
+        school_session = Session.objects.filter(is_current_session=True).last()
 
-        form = UploadAcceptanceLetter(request.POST, request.FILES)
+        # querying last departmental Letter (acceptance/placement)
+        current_dept_letter = Letter.objects.filter(
+            session=school_session.session, coordinator=coordinator).last()
+
+        form = UploadAcceptance(request.POST, request.FILES)
         if form.is_valid():
             instance = form.save(commit=False)
             pic_name = picture_name(instance.image.name)
             instance.image.name = route + pic_name
-            instance.sender_acept = std
-            instance.session = current_sch_sess.session
-            instance.receiver_acept = coord
-            if level_s == '200' or level_s == 200:
+            instance.sender = student
+            instance.session = school_session.session
+            instance.receiver = coordinator
+            instance.letter = current_dept_letter
+            if level == '200' or level == 200:
                 instance.level = '200'
             else:
                 instance.level = '300'
             instance.save()
 
-            # creating student weekly reader (for logbook entry for 200 level)
+            # creating student weekly reader (for logbook entry)
             if level == '200' or level == 200:
+                # querying to see if whether student week raeder of his 200 level already created, if not it will create one and also fill in the student `session_200` with the current school session
                 WR_prev = WeekReader.objects.filter(
-                    student=std, session=current_sch_sess.session, is_200=True).last()
+                    student=student, acceptance=instance, session=school_session.session, level=level).last()
                 if not WR_prev:
-                    WR = WeekReader(student=std, session=current_sch_sess.session, is_200=True)
+                    WR = WeekReader(
+                        student=student, acceptance=instance, session=school_session.session, level=level)
                     WR.save()
-                std.session_200 = current_sch_sess.session
-                std.save()
+                    student.session_200 = school_session.session
+                    student.save()
             else:
+                # querying to see if whether student week raeder of his 300 level already created, if not it will create one and also fill in the student `session_300` with the current school session
                 WR_prev = WeekReader.objects.filter(
-                    student=std, session=current_sch_sess.session, is_300=True).last()
+                    student=student, acceptance=instance, session=school_session.session, level=level).last()
                 if not WR_prev:
-                    WR = WeekReader(student=std, session=current_sch_sess.session, is_300=True)
+                    WR = WeekReader(
+                        student=student, acceptance=instance, session=school_session.session, level=level)
                     WR.save()
-                std.session_300 = current_sch_sess.session
-                std.save()
+                    student.session_300 = school_session.session
+                    student.save()
             messages.success(request, f'Your {level_s} level acceptance letter image has been uploaded!')
-            return redirect(reverse('student:upload_acceptance_letter_page', kwargs={'level': level_s}))
+            return redirect(reverse('student:upload_acceptance_letter_page'))
     
         
     @student_required
     @staticmethod
     def update_acceptance_letter_page(request, level_s):
-        """this is a view that will show student update acceptance letter page for 200 and 300 level student"""
-        
-        # student user
-        stu_usr = User.objects.get(id=request.user.id)
-        student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
-
+        """
+        This is a view that will show student update acceptance letter page for 200 and 300 level student
+        """
+        student = Student.objects.filter(matrix_no=request.user.identification_num).first()
         # coordinator
-        coord_tab = student.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
-
-        if level_s == '200' or level_s == 200:
-            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='200').first()
-        else:
-            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='300').first()
+        coordinator = Coordinator.objects.filter(
+            id_no=student.student_coordinator.identification_num).first()
+        # current school session
+        school_session = Session.objects.filter(is_current_session=True).last()
+        # querying last departmental Letter (acceptance/placement)
+        current_dept_letter = Letter.objects.filter(
+            session=school_session.session, coordinator=coordinator).last()
+        acceptance = Acceptance.objects.filter(
+            sender=student, receiver=coordinator, letter=current_dept_letter, level=str(student.level)).last()
         context = {
-            'form': UploadAcceptanceLetter(instance=acceptance),
+            'form': UploadAcceptance(instance=acceptance),
             'level_s': level_s,
             'student': student,
             'acceptance': acceptance,
@@ -317,19 +290,19 @@ class Student:
         update acceptance letter for 200 and 300 level student
         this is a view that update student acceptance letter, after he/she make a request to his/her coordinator, also it is a view that update student acceptance letter, before student coordinator view his acceptance letter for the first time.
         """
-        
-        # student user
-        stu_usr = User.objects.get(id=request.user.id)
-        student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
+        student = Student.objects.filter(matrix_no=request.user.identification_num).first()
 
         # coordinator
-        coord_tab = student.student_training_coordinator.identification_num
-        coord = DepartmentTrainingCoordinator.objects.filter(id_no=coord_tab).first()
-
-        if level_s == '200' or level_s == 200:
-            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='200').first()
-        else:
-            acceptance = AcceptanceLetter.objects.filter(sender_acept=student, receiver_acept=coord, level='300').first()
+        coordinator = Coordinator.objects.filter(
+            id_no=student.student_coordinator.identification_num).first()
+        # current school session
+        school_session = Session.objects.filter(is_current_session=True).last()
+        # querying last departmental Letter (acceptance/placement)
+        current_dept_letter = Letter.objects.filter(
+            session=school_session.session, coordinator=coordinator).last()
+        
+        acceptance = Acceptance.objects.filter(
+            sender=student, receiver=coordinator, letter=current_dept_letter, level=str(student.level)).last()
 
         # previous acceptance letter
         if os.path.exists(acceptance.image.path):
@@ -340,37 +313,33 @@ class Student:
         faculty = student.faculty.name
         department = student.department.name
         level = student.level
-        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level)
-
-        # current school session
-        current_sch_sess = Session.objects.filter(is_current_session=True).last()
+        route = StudentCls.student_acceptance_route('do_nothing', train, faculty, department, level)
 
         # if acceptance letter not found it will return false
         if not acceptance:
-            return False
+            messages.success(
+                request, f'Can\'t find your acceptance letter, contact your coordinator!')
+            return redirect(reverse('landing'))
 
         if request.method == 'POST':
-            form = UploadAcceptanceLetter(request.POST, request.FILES, instance=acceptance)
+            form = UploadAcceptance(request.POST, request.FILES, instance=acceptance)
             if form.is_valid():
                 # delete previous acceptance letter if exist
                 if os.path.exists(prev_acceptance):
                     os.remove(prev_acceptance)
                 instance = form.save(commit=False)
                 pic_name = picture_name(instance.image.name)
-                instance.session = current_sch_sess.session
+                instance.session = school_session.session
                 instance.image.name = route + pic_name
                 instance.save()
-
-                if level_s == '200' or level_s == 200:
-                    stu_letter = AcceptanceLetter.objects.filter(sender_acept=student, level='200').first()
-                else:
-                    stu_letter = AcceptanceLetter.objects.filter(sender_acept=student, level='300').first()
-                if stu_letter:
-                    stu_letter.is_reviewed = False
-                    stu_letter.can_change = False
-                    stu_letter.save()
                 
-                # looping over student messages where `is_approved_reques=True` in other to make it to `False` so that the notification in the message page will not display
+                student_letter = Acceptance.objects.filter(sender=student, level='200').first()
+                if student_letter:
+                    student_letter.is_reviewed = False
+                    student_letter.can_change = False
+                    student_letter.save()
+                
+                # The belo if condition will run only if student going to update his acceptance lettaer, after sending requst to his coordinator, via message pag. And what it do is: looping over student messages where `is_approved_reques=True` in other to make it to `False` so that the notification in the message page will not display
                 if msg_id:
                     messg = Message.objects.get(id=msg_id)
                     sender = messg.from_sender
@@ -380,7 +349,7 @@ class Student:
                         ms.is_approved_request = False
                         ms.save()
                 messages.success(request, f'Your 200 level acceptance letter image has been updated!')
-                return redirect(reverse('student:update_acceptance_letter_page', kwargs={'level_s': level_s}))
+                return redirect(reverse('student:update_acceptance_letter_page'))
     
     @coordinator_or_supervisor_or_student_required
     @staticmethod
@@ -390,17 +359,34 @@ class Student:
         """
 
         # student
-        stu_usr = User.objects.filter(identification_num=matrix_no).first() # student user
-        student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
-
+        student = Student.objects.filter(matrix_no=matrix_no).first()
+        # route param
         train = student.faculty.training
         faculty = student.faculty.name
         department = student.department.name
         level = student.level
-        route = Student.student_acceptance_route('do_nothing', train, faculty, department, level, logbook=True)
+        route = StudentCls.student_acceptance_route(
+            'do_nothing', train, faculty, department, level, logbook=True)
+        # current school session
+        school_session = Session.objects.filter(is_current_session=True).last()
 
-        # filtering student week reader
-        WR = WeekReader.objects.filter(student=student).last()
+        # # if student `supervisor_id_200` or `supervisor_id_300` base on his level don't have it value, it won't allow him to upload week entry, because we need to add the supervisor in the weekentry that the student want to add
+        # if student.level == 200 or student.level == '200':
+        #     if not student.supervisor_id_200:
+        #         return False
+        # else:
+        #     if not student.supervisor_id_300:
+        #         return False
+
+        """control how to see if student finish his first program"""
+
+        # filtering student week reader base on his level
+        if student_level == 200 or student_level == '200':
+            WR = WeekReader.objects.filter(
+                student=student, session=student.session_200, level=student_level).last()
+        else:
+            WR = WeekReader.objects.filter(
+                student=student, session=student.session_300, level=student_level).last()
 
         # increment week by one, but it doesn't save it into the database,
         # just to make it the start of our range below (w)
@@ -419,27 +405,44 @@ class Student:
         week_no = WR.week_no + 1
 
         # student logbook entry instance
-        logbook_entries = WeekScannedLogbook.objects.filter(
-            student_lg=student, week=WR, level=student_level).all()
-        log_images = WeekScannedImage.objects.filter(student=student).all()
+        # if level == 200 or level == '200':
+        #     if student.is_apply_training_200:
+        #         pass
+        logbook_entries = WeekEntry.objects.filter(
+            student=student, week_reader=WR, level=student_level).all()
+        log_images = WeekEntryImage.objects.filter(student=student).all()
+
+        # default supervisor in the entire site
+        default_supervisor = Supervisor.objects.filter(id_no='0000000000').first()
 
         if request.method == 'POST':
-            form = UploadLogbookEntry(request.POST)
-            pic_form = UploadLogbookImage(request.POST, request.FILES)
-            if form.is_valid() and pic_form.is_valid():
-                instance = form.save(commit=False)
+            # form = WeekEntryForm(request.POST)
+            pic_form = WeekEntryImageForm(request.POST, request.FILES)
+            if pic_form.is_valid():
+                new_week_entry = WeekEntry(
+                    student=student, commentator=default_supervisor, week_reader=WR, week_no=WR.week_no + 1)
+                new_week_entry.save()
+                # querying if student week entry exists
+                if student.level == 200 or student.level == '200':
+                    instance = WeekEntry.objects.filter(
+                    student=student, session=student.session_200).first()
+                else:
+                    instance = WeekEntry.objects.filter(
+                    student=student, session=student.session_300).first()
+                
+                # if it is not (exist) it will create one, with default supervisor
+                if not instance:
+                    instance = WeekEntry(
+                        student=student, commentator=default_supervisor, week_reader=WR)
+                    instance.save()
+                    
+                # pics instance
                 pic_instance = pic_form.save(commit=False)
-                # pic_name = picture_name(instance.image.name)
                 pic_name = picture_name(pic_instance.image.name)
-                # instance.image.name = route + pic_name
-                pic_instance.logbook = instance
+                pic_instance.week_entry = new_week_entry
                 pic_instance.student = student
                 pic_instance.image.name = route + pic_name
-                instance.student_lg = student
-                instance.week = WR
-
-                # incrementing the week number of (within logbook field)
-                instance.week_no = WR.week_no + 1
+                
                 instance.save()
                 pic_instance.save()
 
@@ -450,8 +453,8 @@ class Student:
                 return redirect(
                     reverse('student:logbook_entry', kwargs={'matrix_no': student.matrix_no, 'student_level': student_level}))
         else:
-            form = UploadLogbookEntry()
-            pic_form = UploadLogbookImage()
+            form = WeekEntryForm()
+            pic_form = WeekEntryImageForm()
         context = {
             'form': form,
             'pic_form': pic_form,
@@ -468,21 +471,21 @@ class Student:
     def additional_logbook_image(request, logbook_id):
         # student
         stu_usr = request.user # student user
-        student = TrainingStudent.objects.filter(matrix_no=stu_usr.identification_num).first()
+        student = Student.objects.filter(matrix_no=stu_usr.identification_num).first()
 
         train = student.faculty.training
         faculty = student.faculty.name
         department = student.department.name
         level = student.level
-        route = Student.student_acceptance_route(
+        route = StudentCls.student_acceptance_route(
             'do_nothing', train, faculty, department, level, logbook=True)
-        log_parent = WeekScannedLogbook.objects.get(id=logbook_id)
+        log_parent = WeekEntry.objects.get(id=logbook_id)
         if request.method == 'POST':
-            form = UploadLogbookImage(request.POST, request.FILES)
+            form = WeekEntryImageForm(request.POST, request.FILES)
             if form.is_valid():
                 instance = form.save(commit=False)
                 pic_name = picture_name(instance.image.name)
-                instance.logbook = log_parent
+                instance.week_entry = log_parent
                 instance.student = student
                 instance.image.name = route + pic_name
                 instance.save()
@@ -499,28 +502,32 @@ class Student:
     def logbook_comment(request, logbook_id):
         """supervisor comment on student logbook"""
         
-        logbook = WeekScannedLogbook.objects.get(id=logbook_id)
-        log_images = WeekScannedImage.objects.filter(logbook=logbook).all()
-        commentator = StudentSupervisor.objects.filter(supervisor=request.user).first()
+        logbook = WeekEntry.objects.get(id=logbook_id)
+        log_images = WeekEntryImage.objects.filter(week_entry=logbook).all()
+        commentator = Supervisor.objects.filter(supervisor=request.user).first()
 
         if request.method == 'POST':
-            form = LogbookEntryComment(request.POST)
+            form = WeekEntryForm(request.POST)
             if form.is_valid():
                 g_list = [1,2,3,4,5] # grade list
                 grade = form.cleaned_data.get('grade')
-                print(grade, type(grade))
+                comment = form.cleaned_data.get('comment')
+                # print(grade, type(grade))
                 if grade not in g_list:
                     messages.warning(request, f'Invalid grade ({grade}), you can only grade student with {g_list} grades')
                     return redirect(reverse('student:logbook_comment', kwargs={'logbook_id': logbook_id}))
-                instance = form.save(commit=False)
+                # instance = form.save(commit=False)
+                instance = logbook
                 instance.commentator = commentator
-                instance.logbook = logbook
+                # instance.logbook = logbook
+                instance.grade = grade
+                instance.comment = comment
                 instance.save()
-                messages.success(request, f'You just comment on logbook entry for {logbook.week_no} week of {logbook.student_lg.matrix_no}')
+                messages.success(request, f'You just comment on logbook entry for {logbook.week_no} week of {logbook.student.matrix_no}')
                 return redirect(
-                    reverse('student:logbook_entry', kwargs={'matrix_no': logbook.student_lg.matrix_no, 'student_level': logbook.student_lg.level}))
+                    reverse('student:logbook_entry', kwargs={'matrix_no': logbook.student.matrix_no, 'student_level': logbook.student.level}))
         else:
-            form = LogbookEntryComment()
+            form = WeekEntryForm()
         context = {
             # 'form': form,
             'log_images': log_images,

@@ -66,14 +66,14 @@
         </span>
         
         {% if request.user.is_admin %}
-          <h3 class="category">Campus Admin</h3>
-          <a class="dash_link">Admin on student SIWES</a>
+          <h3 class="category">Administrator</h3>
+          <a class="dash_link">In student SIWES portal</a>
         {% elif request.user.is_coordinator %}
-          <h3 class="category">Training Coordinator</h3>
-          <a class="dash_link">Coordinator on student SIWES</a>
-        {% elif request.user.is_student %}
-          <h3 class="category">200/300 level</h3>
-          <a class="dash_link">Student SIWES</a>
+          <h3 class="category">Coordinator</h3>
+          <a class="dash_link">In student SIWES portal</a>
+        {% elif request.user.is_supervisor %}
+          <h3 class="category">Supervisor</h3>
+          <a class="dash_link">In student SIWES portal</a>
         {% else %}
           <h3 class="category">200/300 level</h3>
           <a class="dash_link">Student SIWES</a>
@@ -82,6 +82,7 @@
         <span class="link_ref">Notification</span>
         <a href="{% url 'chat:notification' %}" class="dash_link">Notification</a>
 
+        <!-- student -->
         {% if request.user.is_student %}
           <span class="link_ref">Fees</span>
           <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Pay Fees</a>
@@ -104,6 +105,8 @@
           <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Exam Card</a>
           <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">View Result</a>
           <a href="https://ugs.fugusau.edu.ng" target="_blank" class="dash_link">Senate Approved Result</a>
+
+        <!-- coordinator -->
         {% elif request.user.is_coordinator %}
           <span class="link_ref">Links</span>
           <a href="{% url 'department:new_letter' %}"class="dash_link">New letter</a>
@@ -114,24 +117,27 @@
           <a href="{% url 'department:training_coordinator_student_acceptance_letter' %}" class="dash_link">student acceptance letter</a>
 
           <span class="link_ref">Assignsupervisor</span>
-          <a href="{% url 'department:assign_supervisor' request.user.identification_num 200 %}" class="dash_link">Assign supervisor 200</a>
-          <a href="{% url 'department:assign_supervisor' request.user.identification_num 300 %}" class="dash_link">Assign supervisor 300</a>
+          <a href="{% url 'department:assign_supervisor' request.user.identification_num %}" class="dash_link">Assign student supervisor</a>
+          
+        <!-- supervisor -->
         {% elif request.user.is_supervisor %}
           <a href="{% url 'department:supervisor_student' %}" class="dash_link">Your students</a>
+
+        <!-- administrator -->
         {% elif request.user.is_admin %}
           <span class="link_ref">Profile:</span>
           <a class="dash_link" href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Training Coordinator</a>
           <a class="dash_link" href="{% url 'auth:general_profile' request.user.identification_num %}">General profile</a>
 
           <span class="link_ref">Incumbent:</span>
-          <a class="dash_link" href="{% url 'administrator:active_faculty_dean' %}">Incumbent dean of faculties</a>
+          <a class="dash_link" href="#">Incumbent VC of school</a>
           <a class="dash_link" href="{% url 'administrator:active_department_hod' %}">Incumbent departments HOD</a>
           <a class="dash_link" href="{% url 'administrator:active_department_training_coord' %}">Incumbent department training coordinators</a>
 
           <span class="link_ref">Filter:</span>
           <a class="dash_link" href="{% url 'administrator:filter_staff' %}">Staff</a>
           <a class="dash_link" href="{% url 'administrator:filter_administrator' %}">Administrator</a>
-          <a class="dash_link" href="{% url 'administrator:filter_faculty_dean' %}">Faculty dean</a>
+          <a class="dash_link" href="#">School VC</a>
           <a class="dash_link" href="{% url 'administrator:filter_department_hod' %}">Department HOD</a>
           <a class="dash_link" href="{% url 'administrator:filter_department_training_coordinator' %}">Department training coordinator</a>
           <a class="dash_link" href="{% url 'administrator:filter_student_supervisor' %}">Student training supervisor</a>
@@ -143,7 +149,6 @@
           <a class="dash_link" href="{% url 'auth:register_faculty' %}">Faculty</a>
           <a class="dash_link" href="{% url 'auth:register_department' %}">Department</a>
           <a class="dash_link" href="{% url 'auth:register_school_vc' %}">School VC</a>
-          <a class="dash_link" href="{% url 'auth:register_faculty_dean' %}">Faculty dean</a>
           <a class="dash_link" href="{% url 'auth:register_department_hod' %}">Department HOD</a>
           <a class="dash_link" href="{% url 'auth:register_department_training_coordinator' %}">Department training coordinator</a>
           <a class="dash_link" href="{% url 'auth:register_student_training_coordinatro' %}">Student training supervisor</a>
@@ -178,14 +183,16 @@
           </div>
 
           <div class="header_right">
-            {% if request.user.is_staff %}
-              <a href="{% url 'auth:general_profile' request.user.identification_num %}">Profile</a>
-            {% elif request.user.is_coordinator %}
-              <a href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">Profile</a>
+            {% if request.user.is_coordinator %}
+              <a href="{% url 'department:training_coordinator_profile' request.user.identification_num %}">
+                <h4>Profile</h4>
+              </a>
             {% elif request.user.is_student %}
-              <a href="{% url 'student:profile' request.user.identification_num %}"><h4>Profile</h4></a>
+              <a href="{% url 'student:profile' request.user.identification_num %}">
+                <h4>Profile</h4>
+              </a>
             {% else %}
-              <a href="#"><h4>Profile</h4></a>
+              <a href="{% url 'auth:general_profile' request.user.identification_num %}"><h4>Profile</h4></a>
             {% endif %}
           </div>
         </div>

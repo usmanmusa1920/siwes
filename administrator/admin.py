@@ -4,13 +4,16 @@ from toolkit.decorators import (
     block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
 )
 from .models import Administrator
-from .all_models import(
-    Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, WeekScannedImage, CommentOnLogbook, StudentResult
+# from .all_models import(
+#     Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, WeekScannedImage, CommentOnLogbook, StudentResult
+# )
+from administrator.tables import (
+    Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
 )
 
 
 admin.site.register(Administrator)
-admin.site.register(SchoolVC)
-admin.site.register(StudentResult)
+admin.site.register(Vc)
+admin.site.register(Result)
 admin.site.register(Session)
-admin.site.register(WeekScannedImage)
+admin.site.register(WeekEntryImage)

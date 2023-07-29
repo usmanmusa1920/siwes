@@ -12,7 +12,7 @@ def block_student_update_profile(request, r_user):
 
     if r_user.first_name != '' and r_user.first_name != None and r_user.last_name != '' and r_user.last_name != None and r_user.is_student == True:
         messages.success(request, f'Your profile is already updated {r_user.first_name}!')
-        return redirect(reverse('student:profile', kwargs={'matrix_id': r_user.identification_num}))
+        return redirect(reverse('student:profile', kwargs={'matrix_no': r_user.identification_num}))
 
 
 def restrict_access_student_profile(request, id_no):
@@ -23,7 +23,7 @@ def restrict_access_student_profile(request, id_no):
 
     if request.user.is_schoolstaff == False and request.user.identification_num != id_no:
         messages.warning(request, f'Can\'t get access to ({id_no}) profile')
-        return redirect('student:profile', matrix_id=request.user.identification_num)
+        return redirect('student:profile', matrix_no=request.user.identification_num)
 
 
 def val_id_num(request, raw_identification_num):
@@ -85,7 +85,7 @@ def dean_required(view):
 
     @login_required
     def wrapper(request, *args, **kwargs):
-        if request.user.is_dean == False:
+        if request.user.is_vc == False:
             return False
         return view(request, *args, **kwargs)
     return wrapper
@@ -169,7 +169,7 @@ def supervisor_or_student_required(view):
 
     @login_required
     def wrapper(request, *args, **kwargs):
-        if request.user.is_admin or request.user.is_dean or request.user.is_hod or request.user.is_coordinator:
+        if request.user.is_admin or request.user.is_vc or request.user.is_hod or request.user.is_coordinator:
             return False
         return view(request, *args, **kwargs)
     return wrapper
@@ -183,7 +183,7 @@ def coordinator_or_supervisor_or_student_required(view):
 
     @login_required
     def wrapper(request, *args, **kwargs):
-        if request.user.is_admin or request.user.is_dean or request.user.is_hod:
+        if request.user.is_admin or request.user.is_vc or request.user.is_hod:
             return False
         return view(request, *args, **kwargs)
     return wrapper

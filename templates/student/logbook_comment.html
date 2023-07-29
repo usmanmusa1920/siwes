@@ -33,13 +33,15 @@
             <hr>
             <br>
           {% endfor %}
-          {% if log_images.all.count == 1 or log_images.all.count == '1' %}
-            <div class="wrapp_info">
-              <p>You can upload another (one more) scanned page of this week logbook (optional), when uploading make sure it has an extension of PGN, JPG, or JPEG</p>
-            </div>
-            <input type="file" name="image" accept="image/*" required>
-            <br>
-            <button type="submit">Upload</button>
+          {% if request.user.is_student %}
+            {% if log_images.all.count == 1 or log_images.all.count == '1' %}
+              <div class="wrapp_info">
+                <p>You can upload another (one more) scanned page of this week logbook (optional), when uploading make sure it has an extension of PGN, JPG, or JPEG</p>
+              </div>
+              <input type="file" name="image" accept="image/*" required>
+              <br>
+              <button type="submit">Upload</button>
+            {% endif %}
           {% endif %}
         </div>
       </form>
@@ -50,11 +52,11 @@
         </b>
         <hr>
         <br>
-        {% if logbook.commentonlogbook %}
-          <p><b>Supervisor</b>: {{logbook.commentonlogbook.commentator.first_name}} {{logbook.commentonlogbook.commentator.last_name}}</p>
-          <p><b>Grade</b>: {{logbook.commentonlogbook.grade}}/100</p>
-          <p><b>Date</b>: {{logbook.commentonlogbook.timestamp|date:'d F, Y'}}</p>
-          <p><b>Comment</b>: {{logbook.commentonlogbook.comment}}</p>
+        {% if logbook.comment != None and logbook.comment != '' and logbook.grade != None and logbook.grade != '' %}
+          <p><b>Supervisor</b>: {{logbook.commentator.first_name}} {{logbook.commentator.last_name}}</p>
+          <p><b>Grade</b>: {{logbook.grade}}/5</p>
+          <p><b>Date</b>: {{logbook.timestamp|date:'d F, Y'}}</p>
+          <p><b>Comment</b>: {{logbook.comment}}</p>
           <hr>
           <br>
         {% else %}
@@ -70,8 +72,8 @@
         {% endif %}
       </div>
 
-      {% if not logbook.commentonlogbook %}
-        {% if request.user.identification_num != logbook.student_lg.matrix_no %}
+      {% if logbook.comment == None or logbook.comment == '' or logbook.grade == None or logbook.grade == '' %}
+        {% if request.user.is_supervisor %}
           <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="wrapp_form">

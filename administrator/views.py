@@ -10,8 +10,8 @@ from toolkit.decorators import (
     block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
 )
 from .models import Administrator
-from .all_models import(
-    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+from .tables import (
+    Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
 )
 
 
@@ -23,24 +23,24 @@ class Active:
 
     @admin_required
     @staticmethod
-    def faculty_dean(request):
+    def vc(request):
         """active faculty deans"""
         
-        active_department_hod = FacultyDean.objects.filter(is_active=True).all().order_by('-date_joined')
+        active_department_hod = Vc.objects.filter(is_active=True).all().order_by('-date_joined')
         paginator = Paginator(active_department_hod, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
         context = {
             'users': users,
         }
-        return render(request, 'administrator/active_faculty_dean.html', context=context)
+        return render(request, 'administrator/active_vc.html', context=context)
     
     @admin_required
     @staticmethod
     def department_hod(request):
         """active department HOD"""
         
-        active_department_hod = DepartmentHOD.objects.filter(is_active=True).all().order_by('-date_joined')
+        active_department_hod = Hod.objects.filter(is_active=True).all().order_by('-date_joined')
         paginator = Paginator(active_department_hod, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
@@ -54,7 +54,7 @@ class Active:
     def department_training_coordinator(request):
         """active departmenttraining coordinator"""
         
-        active_department_coord = DepartmentTrainingCoordinator.objects.filter(is_active=True).all().order_by('-date_joined')
+        active_department_coord = Coordinator.objects.filter(is_active=True).all().order_by('-date_joined')
         paginator = Paginator(active_department_coord, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
@@ -69,15 +69,15 @@ class Activate:
 
     @admin_required
     @staticmethod
-    def faculty_dean(request, staff_user_id):
+    def vc(request, staff_user_id):
         """activate (and also deactivate previous) new faculty dean"""
         
-        new_active_dean = FacultyDean.objects.filter(id_no=staff_user_id).first()
+        new_active_dean = Vc.objects.filter(id_no=staff_user_id).first()
         if new_active_dean.is_active:
             messages.success(request, f'This ({new_active_dean.id_no}) is already the dean of faculty of {new_active_dean.faculty.name}')
             return redirect('auth:general_profile', id_no=staff_user_id)
         # deactivating previous deans
-        for dean in FacultyDean.objects.filter(is_active=True, faculty=new_active_dean.faculty):
+        for dean in Vc.objects.filter(is_active=True, faculty=new_active_dean.faculty):
             dean.is_active = False
             dean.save()
         # activating new dean
@@ -85,19 +85,19 @@ class Activate:
         new_active_dean.save()
         messages.success(
             request, f'You just activate {new_active_dean.id_no} as faculty of {new_active_dean.faculty.name} new dean')
-        return redirect('administrator:filter_faculty_dean')
+        return redirect('administrator:filter_vc')
 
     @admin_required
     @staticmethod
     def department_hod(request, staff_user_id):
         """activate (and also deactivate previous) new department HOD"""
         
-        new_active_hod = DepartmentHOD.objects.filter(id_no=staff_user_id).first()
+        new_active_hod = Hod.objects.filter(id_no=staff_user_id).first()
         if new_active_hod.is_active == True:
             messages.success(request, f'This ({new_active_hod.id_no}) is already the {new_active_hod.department.name} department H.O.D')
             return redirect('auth:general_profile', id_no=staff_user_id)
         # deactivating previous hods
-        for hod in DepartmentHOD.objects.filter(is_active=True, department=new_active_hod.department):
+        for hod in Hod.objects.filter(is_active=True, department=new_active_hod.department):
             hod.is_active = False
             hod.save()
         # activating new hod
@@ -112,7 +112,7 @@ class Activate:
     def department_training_coordinator(request, staff_user_id):
         """activate (and also deactivate previous) new department training coordinator"""
         
-        new_active_coord = DepartmentTrainingCoordinator.objects.filter(
+        new_active_coord = Coordinator.objects.filter(
             id_no=staff_user_id).first()
         coord_dept = new_active_coord.department
         
@@ -120,7 +120,7 @@ class Activate:
         if new_active_coord.is_active == True:
             messages.success(request, f'This ({new_active_coord.id_no}) is already the {new_active_coord.dept_hod.department.name} department training coordinator!')
             return redirect('auth:general_profile', id_no=staff_user_id)
-        for coord in DepartmentTrainingCoordinator.objects.filter(is_active=True, dept_hod=new_active_coord.dept_hod):
+        for coord in Coordinator.objects.filter(is_active=True, dept_hod=new_active_coord.dept_hod):
             coord.is_active = False
             coord.save()
         # activating new coordinator
@@ -176,15 +176,15 @@ class Filter:
 
     @admin_required
     @staticmethod
-    def faculty_dean(request):
+    def vc(request):
         """filter faculty dean by ID number"""
         
         search_panel = request.GET.get('search_q')
         # quering all registered faculty dean
         try:
-            deans_search = FacultyDean.objects.filter(Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
+            deans_search = Vc.objects.filter(Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
         except:
-            deans_search = FacultyDean.objects.filter(Q(id_no=search_panel)).order_by('-date_joined')
+            deans_search = Vc.objects.filter(Q(id_no=search_panel)).order_by('-date_joined')
         paginator = Paginator(deans_search, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
@@ -192,7 +192,7 @@ class Filter:
             'users': users,
             'search_panel': search_panel,
         }
-        return render(request, 'administrator/filter_faculty_dean.html', context=context)
+        return render(request, 'administrator/filter_vc.html', context=context)
     
     @admin_required
     @staticmethod
@@ -202,9 +202,9 @@ class Filter:
         search_panel = request.GET.get('search_q')
         # quering all registered department HOD
         try:
-            deans_search = DepartmentHOD.objects.filter(Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
+            deans_search = Hod.objects.filter(Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
         except:
-            deans_search = DepartmentHOD.objects.filter(Q(id_no=search_panel)).order_by('-date_joined')
+            deans_search = Hod.objects.filter(Q(id_no=search_panel)).order_by('-date_joined')
         paginator = Paginator(deans_search, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
@@ -222,9 +222,9 @@ class Filter:
         search_panel = request.GET.get('search_q')
         # quering all registered department training coordinator
         try:
-            deans_search = DepartmentTrainingCoordinator.objects.filter(Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
+            deans_search = Coordinator.objects.filter(Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
         except:
-            deans_search = DepartmentTrainingCoordinator.objects.filter(Q(id_no=search_panel)).order_by('-date_joined')
+            deans_search = Coordinator.objects.filter(Q(id_no=search_panel)).order_by('-date_joined')
         paginator = Paginator(deans_search, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
@@ -242,9 +242,9 @@ class Filter:
         search_panel = request.GET.get('search_q')
         # quering all student supervisor
         try:
-            users_search = StudentSupervisor.objects.filter(Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
+            users_search = Supervisor.objects.filter(Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
         except:
-            users_search = StudentSupervisor.objects.filter(Q(id_no=search_panel)).order_by('-date_joined')
+            users_search = Supervisor.objects.filter(Q(id_no=search_panel)).order_by('-date_joined')
         paginator = Paginator(users_search, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
@@ -262,9 +262,9 @@ class Filter:
         search_panel = request.GET.get('search_q')
         # quering all student
         try:
-            users_search = TrainingStudent.objects.filter(Q(matrix_no__istartswith=search_panel) | Q(matrix_no__contains=search_panel)).order_by('-date_joined')
+            users_search = Student.objects.filter(Q(matrix_no__istartswith=search_panel) | Q(matrix_no__contains=search_panel)).order_by('-date_joined')
         except:
-            users_search = TrainingStudent.objects.filter(Q(matrix_no=search_panel)).order_by('-date_joined')
+            users_search = Student.objects.filter(Q(matrix_no=search_panel)).order_by('-date_joined')
         paginator = Paginator(users_search, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)

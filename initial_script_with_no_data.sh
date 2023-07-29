@@ -21,7 +21,10 @@ python manage.py shell
 
 from datetime import datetime
 from django.contrib.auth import get_user_model
-from administrator.all_models import Session
+# from administrator.all_models import Session
+from administrator.tables import (
+    Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
+)
 
 dob = datetime.utcnow()
 User = get_user_model()

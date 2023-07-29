@@ -29,8 +29,11 @@ from toolkit.decorators import (
 )
 from chat.models import Message
 from administrator.models import Administrator
-from administrator.all_models import(
-    Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+# from administrator.all_models import(
+#     Session, Faculty, Department, Vc, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+# )
+from administrator.tables import (
+    Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
 )
 from django.contrib.auth import get_user_model
 
@@ -41,6 +44,14 @@ User = get_user_model()
 # Session
 curr_sess = Session(is_current_session=True)
 curr_sess.save()
+
+# default supervisor giving to student comment, but later will be change to the correct one
+default_supervisor_user = User.objects.create_superuser(
+    first_name='Default', last_name='Supervisor', identification_num='0000000000', email='defaultsupervisor@gmail.com.com', phone_number='+234800000000', date_of_birth=dob, is_supervisor=True, is_schoolstaff=True, password='19991125u')
+default_supervisor_user.save()
+default_supervisor = Supervisor(
+    supervisor=default_supervisor_user, first_name=default_supervisor_user.first_name, last_name=default_supervisor_user.last_name, email=default_supervisor_user.email, phone_number=default_supervisor_user.phone_number, id_no=default_supervisor_user.identification_num, small_desc='No. 0.0 street AZ, from heaven', is_active=True)
+default_supervisor.save()
 
 
 ### _______________________
@@ -128,42 +139,10 @@ sch_vc_user = User.objects.create_user(
 sch_vc_user.save()
 
 #<!-- faculty dean -->
-sch_vc = SchoolVC(
+sch_vc = Vc(
     vc=sch_vc_user, faculty=faculty_1, department=dept_1 , first_name=sch_vc_user.first_name, last_name=sch_vc_user.last_name, email=sch_vc_user.email, email_other='magusau@hotmail.com', phone_number=sch_vc_user.phone_number, phone_number_other='+2348181959199', id_no=sch_vc_user.identification_num, ranks='B.Sc (UDUS) M.Sc (Surrey UK), Ph.D (Surrey UK)', level_rank_title_1='Prof', level_rank_title_2='Ph.D', professorship='Professor of Toxicology', is_active=True)
 
 sch_vc.save()
-
-
-### _____________________
-### FACULTY DEAN (4 dean)
-dean_user_1 = User.objects.create_user(
-    first_name='Ahmad', last_name='Galadima', identification_num='20161666', email='ahmadgaladima@yahoo.com', phone_number='+2348144807203', is_dean=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
-dean_user_2 = User.objects.create_user(
-    first_name='Sani', last_name='Aliyu', identification_num='20161667', email='sanialiyu@yahoo.com', phone_number='+2348144807204', is_dean=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
-dean_user_3 = User.objects.create_user(
-    first_name='Alameen', last_name='Sambo', identification_num='20161668', email='alameensambo@yahoo.com', phone_number='+2348144807205', is_dean=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
-dean_user_4 = User.objects.create_user(
-    first_name='Suraj', last_name='Haqil', identification_num='20161669', email='surajhaqil@yahoo.com', phone_number='+2348144807206', is_dean=True, date_of_birth=dob, is_schoolstaff=True) # user_password_not_set
-
-dean_user_1.save()
-dean_user_2.save()
-dean_user_3.save()
-dean_user_4.save()
-
-#<!-- faculty dean -->
-dean_1 = FacultyDean(
-    dean=dean_user_1, faculty=faculty_1, department=dept_1 , first_name=dean_user_1.first_name, last_name=dean_user_1.last_name, email=dean_user_1.email, phone_number=dean_user_1.phone_number, id_no=dean_user_1.identification_num, is_active=True)
-dean_2 = FacultyDean(
-    dean=dean_user_1, faculty=faculty_2, department=dept_12 , first_name=dean_user_2.first_name, last_name=dean_user_2.last_name, email=dean_user_2.email, phone_number=dean_user_2.phone_number, id_no=dean_user_2.identification_num, is_active=True)
-dean_3 = FacultyDean(
-    dean=dean_user_1, faculty=faculty_3, department=dept_25, first_name=dean_user_3.first_name, last_name=dean_user_3.last_name, email=dean_user_3.email, phone_number=dean_user_3.phone_number, id_no=dean_user_3.identification_num, is_active=True)
-dean_4 = FacultyDean(
-    dean=dean_user_1, faculty=faculty_4, department=dept_32, first_name=dean_user_4.first_name, last_name=dean_user_4.last_name, email=dean_user_4.email, phone_number=dean_user_4.phone_number, id_no=dean_user_4.identification_num, is_active=True)
-
-dean_1.save()
-dean_2.save()
-dean_3.save()
-dean_4.save()
 
 ### _______________________
 ### DEPARTMENT HOD (32 hod)
@@ -265,69 +244,69 @@ hod_user_31.save()
 hod_user_32.save()
 
 #<!-- department hod -->
-hod_1 = DepartmentHOD(
+hod_1 = Hod(
     hod=hod_user_1, faculty=faculty_1, department=dept_1, first_name=hod_user_1.first_name, last_name=hod_user_1.last_name, email=hod_user_1.email, email_other='lawalsaad@fugusau.edu.ng', phone_number=hod_user_1.phone_number, phone_number_other='+2348097750488', id_no=hod_user_1.identification_num, ranks='B.Sc (Ed), (UDUSOK Nig); PGDIP (BUK, Nig.); Msc, PhD (USIM Malaysia); CFTO', level_rank_title_1='Dr', level_rank_title_2='Ph.D', is_active=True)
-hod_2 = DepartmentHOD(
+hod_2 = Hod(
     hod=hod_user_2, faculty=faculty_1, department=dept_2, first_name=hod_user_2.first_name, last_name=hod_user_2.last_name, email=hod_user_2.email, phone_number=hod_user_2.phone_number, id_no=hod_user_2.identification_num, is_active=True)
-hod_3 = DepartmentHOD(
+hod_3 = Hod(
     hod=hod_user_3, faculty=faculty_1, department=dept_3, first_name=hod_user_3.first_name, last_name=hod_user_3.last_name, email=hod_user_3.email, phone_number=hod_user_3.phone_number, id_no=hod_user_3.identification_num, is_active=True)
-hod_4 = DepartmentHOD(
+hod_4 = Hod(
     hod=hod_user_4, faculty=faculty_1, department=dept_4, first_name=hod_user_4.first_name, last_name=hod_user_4.last_name, email=hod_user_4.email, phone_number=hod_user_4.phone_number, id_no=hod_user_4.identification_num, is_active=True)
-hod_5 = DepartmentHOD(
+hod_5 = Hod(
     hod=hod_user_5, faculty=faculty_1, department=dept_5, first_name=hod_user_5.first_name, last_name=hod_user_5.last_name, email=hod_user_5.email, phone_number=hod_user_5.phone_number, id_no=hod_user_5.identification_num, is_active=True)
-hod_6 = DepartmentHOD(
+hod_6 = Hod(
     hod=hod_user_6, faculty=faculty_1, department=dept_6, first_name=hod_user_6.first_name, last_name=hod_user_6.last_name, email=hod_user_6.email, phone_number=hod_user_6.phone_number, id_no=hod_user_6.identification_num, is_active=True)
-hod_7 = DepartmentHOD(
+hod_7 = Hod(
     hod=hod_user_7, faculty=faculty_1, department=dept_7, first_name=hod_user_7.first_name, last_name=hod_user_7.last_name, email=hod_user_7.email, phone_number=hod_user_7.phone_number, id_no=hod_user_7.identification_num, is_active=True)
-hod_8 = DepartmentHOD(
+hod_8 = Hod(
     hod=hod_user_8, faculty=faculty_1, department=dept_8, first_name=hod_user_8.first_name, last_name=hod_user_8.last_name, email=hod_user_8.email, phone_number=hod_user_8.phone_number, id_no=hod_user_8.identification_num, is_active=True)
-hod_9 = DepartmentHOD(
+hod_9 = Hod(
     hod=hod_user_9, faculty=faculty_1, department=dept_9, first_name=hod_user_9.first_name, last_name=hod_user_9.last_name, email=hod_user_9.email, phone_number=hod_user_9.phone_number, id_no=hod_user_9.identification_num, is_active=True)
-hod_10 = DepartmentHOD(
+hod_10 = Hod(
     hod=hod_user_10, faculty=faculty_1, department=dept_10, first_name=hod_user_10.first_name, last_name=hod_user_10.last_name, email=hod_user_10.email, phone_number=hod_user_10.phone_number, id_no=hod_user_10.identification_num, is_active=True)
-hod_11 = DepartmentHOD(
+hod_11 = Hod(
     hod=hod_user_11, faculty=faculty_2, department=dept_11, first_name=hod_user_11.first_name, last_name=hod_user_11.last_name, email=hod_user_11.email, phone_number=hod_user_11.phone_number, id_no=hod_user_11.identification_num, is_active=True)
-hod_12 = DepartmentHOD(
+hod_12 = Hod(
     hod=hod_user_12, faculty=faculty_2, department=dept_12, first_name=hod_user_12.first_name, last_name=hod_user_12.last_name, email=hod_user_12.email, phone_number=hod_user_12.phone_number, id_no=hod_user_12.identification_num, is_active=True)
-hod_13 = DepartmentHOD(
+hod_13 = Hod(
     hod=hod_user_13, faculty=faculty_2, department=dept_13, first_name=hod_user_13.first_name, last_name=hod_user_13.last_name, email=hod_user_13.email, phone_number=hod_user_13.phone_number, id_no=hod_user_13.identification_num, is_active=True)
-hod_14 = DepartmentHOD(
+hod_14 = Hod(
     hod=hod_user_14, faculty=faculty_2, department=dept_14, first_name=hod_user_14.first_name, last_name=hod_user_14.last_name, email=hod_user_14.email, phone_number=hod_user_14.phone_number, id_no=hod_user_14.identification_num, is_active=True)
-hod_15 = DepartmentHOD(
+hod_15 = Hod(
     hod=hod_user_15, faculty=faculty_2, department=dept_15, first_name=hod_user_15.first_name, last_name=hod_user_15.last_name, email=hod_user_15.email, phone_number=hod_user_15.phone_number, id_no=hod_user_15.identification_num, is_active=True)
-hod_16 = DepartmentHOD(
+hod_16 = Hod(
     hod=hod_user_16, faculty=faculty_2, department=dept_16, first_name=hod_user_16.first_name, last_name=hod_user_16.last_name, email=hod_user_16.email, phone_number=hod_user_16.phone_number, id_no=hod_user_16.identification_num, is_active=True)
-hod_17 = DepartmentHOD(
+hod_17 = Hod(
     hod=hod_user_17, faculty=faculty_3, department=dept_17, first_name=hod_user_17.first_name, last_name=hod_user_17.last_name, email=hod_user_17.email, phone_number=hod_user_17.phone_number, id_no=hod_user_17.identification_num, is_active=True)
-hod_18 = DepartmentHOD(
+hod_18 = Hod(
     hod=hod_user_18, faculty=faculty_3, department=dept_18, first_name=hod_user_18.first_name, last_name=hod_user_18.last_name, email=hod_user_18.email, phone_number=hod_user_18.phone_number, id_no=hod_user_18.identification_num, is_active=True)
-hod_19 = DepartmentHOD(
+hod_19 = Hod(
     hod=hod_user_19, faculty=faculty_3, department=dept_19, first_name=hod_user_19.first_name, last_name=hod_user_19.last_name, email=hod_user_19.email, phone_number=hod_user_19.phone_number, id_no=hod_user_19.identification_num, is_active=True)
-hod_20 = DepartmentHOD(
+hod_20 = Hod(
     hod=hod_user_20, faculty=faculty_3, department=dept_20, first_name=hod_user_20.first_name, last_name=hod_user_20.last_name, email=hod_user_20.email, phone_number=hod_user_20.phone_number, id_no=hod_user_20.identification_num, is_active=True)
-hod_21 = DepartmentHOD(
+hod_21 = Hod(
     hod=hod_user_21, faculty=faculty_3, department=dept_21, first_name=hod_user_21.first_name, last_name=hod_user_21.last_name, email=hod_user_21.email, phone_number=hod_user_21.phone_number, id_no=hod_user_21.identification_num, is_active=True)
-hod_22 = DepartmentHOD(
+hod_22 = Hod(
     hod=hod_user_22, faculty=faculty_3, department=dept_22, first_name=hod_user_22.first_name, last_name=hod_user_22.last_name, email=hod_user_22.email, phone_number=hod_user_22.phone_number, id_no=hod_user_22.identification_num, is_active=True)
-hod_23 = DepartmentHOD(
+hod_23 = Hod(
     hod=hod_user_23, faculty=faculty_3, department=dept_23, first_name=hod_user_23.first_name, last_name=hod_user_23.last_name, email=hod_user_23.email, phone_number=hod_user_23.phone_number, id_no=hod_user_23.identification_num, is_active=True)
-hod_24 = DepartmentHOD(
+hod_24 = Hod(
     hod=hod_user_24, faculty=faculty_3, department=dept_24, first_name=hod_user_24.first_name, last_name=hod_user_24.last_name, email=hod_user_24.email, phone_number=hod_user_24.phone_number, id_no=hod_user_24.identification_num, is_active=True)
-hod_25 = DepartmentHOD(
+hod_25 = Hod(
     hod=hod_user_25, faculty=faculty_3, department=dept_25, first_name=hod_user_25.first_name, last_name=hod_user_25.last_name, email=hod_user_25.email, phone_number=hod_user_25.phone_number, id_no=hod_user_25.identification_num, is_active=True)
-hod_26 = DepartmentHOD(
+hod_26 = Hod(
     hod=hod_user_26, faculty=faculty_3, department=dept_26, first_name=hod_user_26.first_name, last_name=hod_user_26.last_name, email=hod_user_26.email, phone_number=hod_user_26.phone_number, id_no=hod_user_26.identification_num, is_active=True)
-hod_27 = DepartmentHOD(
+hod_27 = Hod(
     hod=hod_user_27, faculty=faculty_4, department=dept_27, first_name=hod_user_27.first_name, last_name=hod_user_27.last_name, email=hod_user_27.email, phone_number=hod_user_27.phone_number, id_no=hod_user_27.identification_num, is_active=True)
-hod_28 = DepartmentHOD(
+hod_28 = Hod(
     hod=hod_user_28, faculty=faculty_4, department=dept_28, first_name=hod_user_28.first_name, last_name=hod_user_28.last_name, email=hod_user_28.email, phone_number=hod_user_28.phone_number, id_no=hod_user_28.identification_num, is_active=True)
-hod_29 = DepartmentHOD(
+hod_29 = Hod(
     hod=hod_user_29, faculty=faculty_4, department=dept_29, first_name=hod_user_29.first_name, last_name=hod_user_29.last_name, email=hod_user_29.email, phone_number=hod_user_29.phone_number, id_no=hod_user_29.identification_num, is_active=True)
-hod_30 = DepartmentHOD(
+hod_30 = Hod(
     hod=hod_user_30, faculty=faculty_4, department=dept_30, first_name=hod_user_30.first_name, last_name=hod_user_30.last_name, email=hod_user_30.email, phone_number=hod_user_30.phone_number, id_no=hod_user_30.identification_num, is_active=True)
-hod_31 = DepartmentHOD(
+hod_31 = Hod(
     hod=hod_user_31, faculty=faculty_4, department=dept_31, first_name=hod_user_31.first_name, last_name=hod_user_31.last_name, email=hod_user_31.email, phone_number=hod_user_31.phone_number, id_no=hod_user_31.identification_num, is_active=True)
-hod_32 = DepartmentHOD(
+hod_32 = Hod(
     hod=hod_user_32, faculty=faculty_4, department=dept_32, first_name=hod_user_32.first_name, last_name=hod_user_32.last_name, email=hod_user_32.email, phone_number=hod_user_32.phone_number, id_no=hod_user_32.identification_num, is_active=True)
 
 hod_1.save()
@@ -464,70 +443,70 @@ coord_user_31.save()
 coord_user_32.save()
 
 # training coordinator models
-coord_1 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_1, faculty=faculty_1, department=dept_1, dept_hod=hod_1, first_name=coord_user_1.first_name, middle_name=coord_user_1.middle_name, last_name=coord_user_1.last_name, email=coord_user_1.email, phone_number=coord_user_1.phone_number, id_no=coord_user_1.identification_num, is_active=True)
-coord_2 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_2, faculty=faculty_1, department=dept_2, dept_hod=hod_2, first_name=coord_user_2.first_name, last_name=coord_user_2.last_name, email=coord_user_2.email, phone_number=coord_user_2.phone_number, id_no=coord_user_2.identification_num, is_active=True)
-coord_3 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_3, faculty=faculty_1, department=dept_3, dept_hod=hod_3, first_name=coord_user_3.first_name, last_name=coord_user_3.last_name, email=coord_user_3.email, phone_number=coord_user_3.phone_number, id_no=coord_user_3.identification_num, is_active=True)
-coord_4 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_4, faculty=faculty_1, department=dept_4, dept_hod=hod_4, first_name=coord_user_4.first_name, last_name=coord_user_4.last_name, email=coord_user_4.email, phone_number=coord_user_4.phone_number, id_no=coord_user_4.identification_num, is_active=True)
-coord_5 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_5, faculty=faculty_1, department=dept_5, dept_hod=hod_5, first_name=coord_user_5.first_name, last_name=coord_user_5.last_name, email=coord_user_5.email, phone_number=coord_user_5.phone_number, id_no=coord_user_5.identification_num, is_active=True)
-coord_6 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_6, faculty=faculty_1, department=dept_6, dept_hod=hod_6, first_name=coord_user_6.first_name, last_name=coord_user_6.last_name, email=coord_user_6.email, phone_number=coord_user_6.phone_number, id_no=coord_user_6.identification_num, is_active=True)
-coord_7 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_7, faculty=faculty_1, department=dept_7, dept_hod=hod_7, first_name=coord_user_7.first_name, last_name=coord_user_7.last_name, email=coord_user_7.email, phone_number=coord_user_7.phone_number, id_no=coord_user_7.identification_num, is_active=True)
-coord_8 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_8, faculty=faculty_1, department=dept_8, dept_hod=hod_8, first_name=coord_user_8.first_name, last_name=coord_user_8.last_name, email=coord_user_8.email, phone_number=coord_user_8.phone_number, id_no=coord_user_8.identification_num, is_active=True)
-coord_9 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_9, faculty=faculty_1, department=dept_9, dept_hod=hod_9, first_name=coord_user_9.first_name, last_name=coord_user_9.last_name, email=coord_user_9.email, phone_number=coord_user_9.phone_number, id_no=coord_user_9.identification_num, is_active=True)
-coord_10 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_10, faculty=faculty_1, department=dept_10, dept_hod=hod_10, first_name=coord_user_10.first_name, last_name=coord_user_10.last_name, email=coord_user_10.email, phone_number=coord_user_10.phone_number, id_no=coord_user_10.identification_num, is_active=True)
-coord_11 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_11, faculty=faculty_2, department=dept_11, dept_hod=hod_11, first_name=coord_user_11.first_name, last_name=coord_user_11.last_name, email=coord_user_11.email, phone_number=coord_user_11.phone_number, id_no=coord_user_11.identification_num, is_active=True)
-coord_12 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_12, faculty=faculty_2, department=dept_12, dept_hod=hod_12, first_name=coord_user_12.first_name, last_name=coord_user_12.last_name, email=coord_user_12.email, phone_number=coord_user_12.phone_number, id_no=coord_user_12.identification_num, is_active=True)
-coord_13 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_13, faculty=faculty_2, department=dept_13, dept_hod=hod_13, first_name=coord_user_13.first_name, last_name=coord_user_13.last_name, email=coord_user_13.email, phone_number=coord_user_13.phone_number, id_no=coord_user_13.identification_num, is_active=True)
-coord_14 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_14, faculty=faculty_2, department=dept_14, dept_hod=hod_14, first_name=coord_user_14.first_name, last_name=coord_user_14.last_name, email=coord_user_14.email, phone_number=coord_user_14.phone_number, id_no=coord_user_14.identification_num, is_active=True)
-coord_15 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_15, faculty=faculty_2, department=dept_15, dept_hod=hod_15, first_name=coord_user_15.first_name, last_name=coord_user_15.last_name, email=coord_user_15.email, phone_number=coord_user_15.phone_number, id_no=coord_user_15.identification_num, is_active=True)
-coord_16 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_16, faculty=faculty_2, department=dept_16, dept_hod=hod_16, first_name=coord_user_16.first_name, last_name=coord_user_16.last_name, email=coord_user_16.email, phone_number=coord_user_16.phone_number, id_no=coord_user_16.identification_num, is_active=True)
-coord_17 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_17, faculty=faculty_3, department=dept_17, dept_hod=hod_17, first_name=coord_user_17.first_name, last_name=coord_user_17.last_name, email=coord_user_17.email, phone_number=coord_user_17.phone_number, id_no=coord_user_17.identification_num, is_active=True)
-coord_18 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_18, faculty=faculty_3, department=dept_18, dept_hod=hod_18, first_name=coord_user_18.first_name, last_name=coord_user_18.last_name, email=coord_user_18.email, phone_number=coord_user_18.phone_number, id_no=coord_user_18.identification_num, is_active=True)
-coord_19 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_19, faculty=faculty_3, department=dept_19, dept_hod=hod_19, first_name=coord_user_19.first_name, last_name=coord_user_19.last_name, email=coord_user_19.email, phone_number=coord_user_19.phone_number, id_no=coord_user_19.identification_num, is_active=True)
-coord_20 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_20, faculty=faculty_3, department=dept_20, dept_hod=hod_20, first_name=coord_user_20.first_name, last_name=coord_user_20.last_name, email=coord_user_20.email, phone_number=coord_user_20.phone_number, id_no=coord_user_20.identification_num, is_active=True)
-coord_21 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_21, faculty=faculty_3, department=dept_21, dept_hod=hod_21, first_name=coord_user_21.first_name, last_name=coord_user_21.last_name, email=coord_user_21.email, phone_number=coord_user_21.phone_number, id_no=coord_user_21.identification_num, is_active=True)
-coord_22 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_22, faculty=faculty_3, department=dept_22, dept_hod=hod_22, first_name=coord_user_22.first_name, last_name=coord_user_22.last_name, email=coord_user_22.email, phone_number=coord_user_22.phone_number, id_no=coord_user_22.identification_num, is_active=True)
-coord_23 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_23, faculty=faculty_3, department=dept_23, dept_hod=hod_23, first_name=coord_user_23.first_name, last_name=coord_user_23.last_name, email=coord_user_23.email, phone_number=coord_user_23.phone_number, id_no=coord_user_23.identification_num, is_active=True)
-coord_24 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_24, faculty=faculty_3, department=dept_24, dept_hod=hod_24, first_name=coord_user_24.first_name, last_name=coord_user_24.last_name, email=coord_user_24.email, phone_number=coord_user_24.phone_number, id_no=coord_user_24.identification_num, is_active=True)
-coord_25 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_25, faculty=faculty_3, department=dept_25, dept_hod=hod_25, first_name=coord_user_25.first_name, last_name=coord_user_25.last_name, email=coord_user_25.email, phone_number=coord_user_25.phone_number, id_no=coord_user_25.identification_num, is_active=True)
-coord_26 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_26, faculty=faculty_3, department=dept_26, dept_hod=hod_26, first_name=coord_user_26.first_name, last_name=coord_user_26.last_name, email=coord_user_26.email, phone_number=coord_user_26.phone_number, id_no=coord_user_26.identification_num, is_active=True)
-coord_27 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_27, faculty=faculty_4, department=dept_27, dept_hod=hod_27, first_name=coord_user_27.first_name, last_name=coord_user_27.last_name, email=coord_user_27.email, phone_number=coord_user_27.phone_number, id_no=coord_user_27.identification_num, is_active=True)
-coord_28 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_28, faculty=faculty_4, department=dept_28, dept_hod=hod_28, first_name=coord_user_28.first_name, last_name=coord_user_28.last_name, email=coord_user_28.email, phone_number=coord_user_28.phone_number, id_no=coord_user_28.identification_num, is_active=True)
-coord_29 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_29, faculty=faculty_4, department=dept_29, dept_hod=hod_29, first_name=coord_user_29.first_name, last_name=coord_user_29.last_name, email=coord_user_29.email, phone_number=coord_user_29.phone_number, id_no=coord_user_29.identification_num, is_active=True)
-coord_30 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_30, faculty=faculty_4, department=dept_30, dept_hod=hod_30, first_name=coord_user_30.first_name, last_name=coord_user_30.last_name, email=coord_user_30.email, phone_number=coord_user_30.phone_number, id_no=coord_user_30.identification_num, is_active=True)
-coord_31 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_31, faculty=faculty_4, department=dept_31, dept_hod=hod_31, first_name=coord_user_31.first_name, last_name=coord_user_31.last_name, email=coord_user_31.email, phone_number=coord_user_31.phone_number, id_no=coord_user_31.identification_num, is_active=True)
-coord_32 = DepartmentTrainingCoordinator(
-    coordinator=coord_user_32, faculty=faculty_4, department=dept_32, dept_hod=hod_32, first_name=coord_user_32.first_name, last_name=coord_user_32.last_name, email=coord_user_32.email, phone_number=coord_user_32.phone_number, id_no=coord_user_32.identification_num, is_active=True)
+coord_1 = Coordinator(
+    coordinator=coord_user_1, faculty=faculty_1, department=dept_1, first_name=coord_user_1.first_name, middle_name=coord_user_1.middle_name, last_name=coord_user_1.last_name, email=coord_user_1.email, phone_number=coord_user_1.phone_number, id_no=coord_user_1.identification_num, is_active=True)
+coord_2 = Coordinator(
+    coordinator=coord_user_2, faculty=faculty_1, department=dept_2, first_name=coord_user_2.first_name, last_name=coord_user_2.last_name, email=coord_user_2.email, phone_number=coord_user_2.phone_number, id_no=coord_user_2.identification_num, is_active=True)
+coord_3 = Coordinator(
+    coordinator=coord_user_3, faculty=faculty_1, department=dept_3, first_name=coord_user_3.first_name, last_name=coord_user_3.last_name, email=coord_user_3.email, phone_number=coord_user_3.phone_number, id_no=coord_user_3.identification_num, is_active=True)
+coord_4 = Coordinator(
+    coordinator=coord_user_4, faculty=faculty_1, department=dept_4, first_name=coord_user_4.first_name, last_name=coord_user_4.last_name, email=coord_user_4.email, phone_number=coord_user_4.phone_number, id_no=coord_user_4.identification_num, is_active=True)
+coord_5 = Coordinator(
+    coordinator=coord_user_5, faculty=faculty_1, department=dept_5, first_name=coord_user_5.first_name, last_name=coord_user_5.last_name, email=coord_user_5.email, phone_number=coord_user_5.phone_number, id_no=coord_user_5.identification_num, is_active=True)
+coord_6 = Coordinator(
+    coordinator=coord_user_6, faculty=faculty_1, department=dept_6, first_name=coord_user_6.first_name, last_name=coord_user_6.last_name, email=coord_user_6.email, phone_number=coord_user_6.phone_number, id_no=coord_user_6.identification_num, is_active=True)
+coord_7 = Coordinator(
+    coordinator=coord_user_7, faculty=faculty_1, department=dept_7, first_name=coord_user_7.first_name, last_name=coord_user_7.last_name, email=coord_user_7.email, phone_number=coord_user_7.phone_number, id_no=coord_user_7.identification_num, is_active=True)
+coord_8 = Coordinator(
+    coordinator=coord_user_8, faculty=faculty_1, department=dept_8, first_name=coord_user_8.first_name, last_name=coord_user_8.last_name, email=coord_user_8.email, phone_number=coord_user_8.phone_number, id_no=coord_user_8.identification_num, is_active=True)
+coord_9 = Coordinator(
+    coordinator=coord_user_9, faculty=faculty_1, department=dept_9, first_name=coord_user_9.first_name, last_name=coord_user_9.last_name, email=coord_user_9.email, phone_number=coord_user_9.phone_number, id_no=coord_user_9.identification_num, is_active=True)
+coord_10 = Coordinator(
+    coordinator=coord_user_10, faculty=faculty_1, department=dept_10, first_name=coord_user_10.first_name, last_name=coord_user_10.last_name, email=coord_user_10.email, phone_number=coord_user_10.phone_number, id_no=coord_user_10.identification_num, is_active=True)
+coord_11 = Coordinator(
+    coordinator=coord_user_11, faculty=faculty_2, department=dept_11, first_name=coord_user_11.first_name, last_name=coord_user_11.last_name, email=coord_user_11.email, phone_number=coord_user_11.phone_number, id_no=coord_user_11.identification_num, is_active=True)
+coord_12 = Coordinator(
+    coordinator=coord_user_12, faculty=faculty_2, department=dept_12, first_name=coord_user_12.first_name, last_name=coord_user_12.last_name, email=coord_user_12.email, phone_number=coord_user_12.phone_number, id_no=coord_user_12.identification_num, is_active=True)
+coord_13 = Coordinator(
+    coordinator=coord_user_13, faculty=faculty_2, department=dept_13, first_name=coord_user_13.first_name, last_name=coord_user_13.last_name, email=coord_user_13.email, phone_number=coord_user_13.phone_number, id_no=coord_user_13.identification_num, is_active=True)
+coord_14 = Coordinator(
+    coordinator=coord_user_14, faculty=faculty_2, department=dept_14, first_name=coord_user_14.first_name, last_name=coord_user_14.last_name, email=coord_user_14.email, phone_number=coord_user_14.phone_number, id_no=coord_user_14.identification_num, is_active=True)
+coord_15 = Coordinator(
+    coordinator=coord_user_15, faculty=faculty_2, department=dept_15, first_name=coord_user_15.first_name, last_name=coord_user_15.last_name, email=coord_user_15.email, phone_number=coord_user_15.phone_number, id_no=coord_user_15.identification_num, is_active=True)
+coord_16 = Coordinator(
+    coordinator=coord_user_16, faculty=faculty_2, department=dept_16, first_name=coord_user_16.first_name, last_name=coord_user_16.last_name, email=coord_user_16.email, phone_number=coord_user_16.phone_number, id_no=coord_user_16.identification_num, is_active=True)
+coord_17 = Coordinator(
+    coordinator=coord_user_17, faculty=faculty_3, department=dept_17, first_name=coord_user_17.first_name, last_name=coord_user_17.last_name, email=coord_user_17.email, phone_number=coord_user_17.phone_number, id_no=coord_user_17.identification_num, is_active=True)
+coord_18 = Coordinator(
+    coordinator=coord_user_18, faculty=faculty_3, department=dept_18, first_name=coord_user_18.first_name, last_name=coord_user_18.last_name, email=coord_user_18.email, phone_number=coord_user_18.phone_number, id_no=coord_user_18.identification_num, is_active=True)
+coord_19 = Coordinator(
+    coordinator=coord_user_19, faculty=faculty_3, department=dept_19, first_name=coord_user_19.first_name, last_name=coord_user_19.last_name, email=coord_user_19.email, phone_number=coord_user_19.phone_number, id_no=coord_user_19.identification_num, is_active=True)
+coord_20 = Coordinator(
+    coordinator=coord_user_20, faculty=faculty_3, department=dept_20, first_name=coord_user_20.first_name, last_name=coord_user_20.last_name, email=coord_user_20.email, phone_number=coord_user_20.phone_number, id_no=coord_user_20.identification_num, is_active=True)
+coord_21 = Coordinator(
+    coordinator=coord_user_21, faculty=faculty_3, department=dept_21, first_name=coord_user_21.first_name, last_name=coord_user_21.last_name, email=coord_user_21.email, phone_number=coord_user_21.phone_number, id_no=coord_user_21.identification_num, is_active=True)
+coord_22 = Coordinator(
+    coordinator=coord_user_22, faculty=faculty_3, department=dept_22, first_name=coord_user_22.first_name, last_name=coord_user_22.last_name, email=coord_user_22.email, phone_number=coord_user_22.phone_number, id_no=coord_user_22.identification_num, is_active=True)
+coord_23 = Coordinator(
+    coordinator=coord_user_23, faculty=faculty_3, department=dept_23, first_name=coord_user_23.first_name, last_name=coord_user_23.last_name, email=coord_user_23.email, phone_number=coord_user_23.phone_number, id_no=coord_user_23.identification_num, is_active=True)
+coord_24 = Coordinator(
+    coordinator=coord_user_24, faculty=faculty_3, department=dept_24, first_name=coord_user_24.first_name, last_name=coord_user_24.last_name, email=coord_user_24.email, phone_number=coord_user_24.phone_number, id_no=coord_user_24.identification_num, is_active=True)
+coord_25 = Coordinator(
+    coordinator=coord_user_25, faculty=faculty_3, department=dept_25, first_name=coord_user_25.first_name, last_name=coord_user_25.last_name, email=coord_user_25.email, phone_number=coord_user_25.phone_number, id_no=coord_user_25.identification_num, is_active=True)
+coord_26 = Coordinator(
+    coordinator=coord_user_26, faculty=faculty_3, department=dept_26, first_name=coord_user_26.first_name, last_name=coord_user_26.last_name, email=coord_user_26.email, phone_number=coord_user_26.phone_number, id_no=coord_user_26.identification_num, is_active=True)
+coord_27 = Coordinator(
+    coordinator=coord_user_27, faculty=faculty_4, department=dept_27, first_name=coord_user_27.first_name, last_name=coord_user_27.last_name, email=coord_user_27.email, phone_number=coord_user_27.phone_number, id_no=coord_user_27.identification_num, is_active=True)
+coord_28 = Coordinator(
+    coordinator=coord_user_28, faculty=faculty_4, department=dept_28, first_name=coord_user_28.first_name, last_name=coord_user_28.last_name, email=coord_user_28.email, phone_number=coord_user_28.phone_number, id_no=coord_user_28.identification_num, is_active=True)
+coord_29 = Coordinator(
+    coordinator=coord_user_29, faculty=faculty_4, department=dept_29, first_name=coord_user_29.first_name, last_name=coord_user_29.last_name, email=coord_user_29.email, phone_number=coord_user_29.phone_number, id_no=coord_user_29.identification_num, is_active=True)
+coord_30 = Coordinator(
+    coordinator=coord_user_30, faculty=faculty_4, department=dept_30, first_name=coord_user_30.first_name, last_name=coord_user_30.last_name, email=coord_user_30.email, phone_number=coord_user_30.phone_number, id_no=coord_user_30.identification_num, is_active=True)
+coord_31 = Coordinator(
+    coordinator=coord_user_31, faculty=faculty_4, department=dept_31, first_name=coord_user_31.first_name, last_name=coord_user_31.last_name, email=coord_user_31.email, phone_number=coord_user_31.phone_number, id_no=coord_user_31.identification_num, is_active=True)
+coord_32 = Coordinator(
+    coordinator=coord_user_32, faculty=faculty_4, department=dept_32, first_name=coord_user_32.first_name, last_name=coord_user_32.last_name, email=coord_user_32.email, phone_number=coord_user_32.phone_number, id_no=coord_user_32.identification_num, is_active=True)
 
 coord_1.save()
 coord_2.save()
@@ -855,197 +834,197 @@ sup_user_95.save()
 sup_user_96.save()
 
 #<!-- supervisor hod -->
-super_1 = StudentSupervisor(
+super_1 = Supervisor(
     supervisor=sup_user_1, first_name=sup_user_1.first_name, last_name=sup_user_1.last_name, email=sup_user_1.email, phone_number=sup_user_1.phone_number, id_no=sup_user_1.identification_num, small_desc='No. 118 anguwan shanu, gusau GRA Zamfara state Nigeria', is_active=True)
-super_2 = StudentSupervisor(
+super_2 = Supervisor(
     supervisor=sup_user_2, first_name=sup_user_2.first_name, last_name=sup_user_2.last_name, email=sup_user_2.email, phone_number=sup_user_2.phone_number, id_no=sup_user_2.identification_num, is_active=True)
-super_3 = StudentSupervisor(
+super_3 = Supervisor(
     supervisor=sup_user_3, first_name=sup_user_3.first_name, last_name=sup_user_3.last_name, email=sup_user_3.email, phone_number=sup_user_3.phone_number, id_no=sup_user_3.identification_num, is_active=True)
-super_4 = StudentSupervisor(
+super_4 = Supervisor(
     supervisor=sup_user_4, first_name=sup_user_4.first_name, last_name=sup_user_4.last_name, email=sup_user_4.email, phone_number=sup_user_4.phone_number, id_no=sup_user_4.identification_num, is_active=True)
-super_5 = StudentSupervisor(
+super_5 = Supervisor(
     supervisor=sup_user_5, first_name=sup_user_5.first_name, last_name=sup_user_5.last_name, email=sup_user_5.email, phone_number=sup_user_5.phone_number, id_no=sup_user_5.identification_num, is_active=True)
-super_6 = StudentSupervisor(
+super_6 = Supervisor(
     supervisor=sup_user_6, first_name=sup_user_6.first_name, last_name=sup_user_6.last_name, email=sup_user_6.email, phone_number=sup_user_6.phone_number, id_no=sup_user_6.identification_num, is_active=True)
-super_7 = StudentSupervisor(
+super_7 = Supervisor(
     supervisor=sup_user_7, first_name=sup_user_7.first_name, last_name=sup_user_7.last_name, email=sup_user_7.email, phone_number=sup_user_7.phone_number, id_no=sup_user_7.identification_num, is_active=True)
-super_8 = StudentSupervisor(
+super_8 = Supervisor(
     supervisor=sup_user_8, first_name=sup_user_8.first_name, last_name=sup_user_8.last_name, email=sup_user_8.email, phone_number=sup_user_8.phone_number, id_no=sup_user_8.identification_num, is_active=True)
-super_9 = StudentSupervisor(
+super_9 = Supervisor(
     supervisor=sup_user_9, first_name=sup_user_9.first_name, last_name=sup_user_9.last_name, email=sup_user_9.email, phone_number=sup_user_9.phone_number, id_no=sup_user_9.identification_num, is_active=True)
-super_10 = StudentSupervisor(
+super_10 = Supervisor(
     supervisor=sup_user_10, first_name=sup_user_10.first_name, last_name=sup_user_10.last_name, email=sup_user_10.email, phone_number=sup_user_10.phone_number, id_no=sup_user_10.identification_num, is_active=True)
-super_11 = StudentSupervisor(
+super_11 = Supervisor(
     supervisor=sup_user_11, first_name=sup_user_11.first_name, last_name=sup_user_11.last_name, email=sup_user_11.email, phone_number=sup_user_11.phone_number, id_no=sup_user_11.identification_num, is_active=True)
-super_12 = StudentSupervisor(
+super_12 = Supervisor(
     supervisor=sup_user_12, first_name=sup_user_12.first_name, last_name=sup_user_12.last_name, email=sup_user_12.email, phone_number=sup_user_12.phone_number, id_no=sup_user_12.identification_num, is_active=True)
-super_13 = StudentSupervisor(
+super_13 = Supervisor(
     supervisor=sup_user_13, first_name=sup_user_13.first_name, last_name=sup_user_13.last_name, email=sup_user_13.email, phone_number=sup_user_13.phone_number, id_no=sup_user_13.identification_num, is_active=True)
-super_14 = StudentSupervisor(
+super_14 = Supervisor(
     supervisor=sup_user_14, first_name=sup_user_14.first_name, last_name=sup_user_14.last_name, email=sup_user_14.email, phone_number=sup_user_14.phone_number, id_no=sup_user_14.identification_num, is_active=True)
-super_15 = StudentSupervisor(
+super_15 = Supervisor(
     supervisor=sup_user_15, first_name=sup_user_15.first_name, last_name=sup_user_15.last_name, email=sup_user_15.email, phone_number=sup_user_15.phone_number, id_no=sup_user_15.identification_num, is_active=True)
-super_16 = StudentSupervisor(
+super_16 = Supervisor(
     supervisor=sup_user_16, first_name=sup_user_16.first_name, last_name=sup_user_16.last_name, email=sup_user_16.email, phone_number=sup_user_16.phone_number, id_no=sup_user_16.identification_num, is_active=True)
-super_17 = StudentSupervisor(
+super_17 = Supervisor(
     supervisor=sup_user_17, first_name=sup_user_17.first_name, last_name=sup_user_17.last_name, email=sup_user_17.email, phone_number=sup_user_17.phone_number, id_no=sup_user_17.identification_num, is_active=True)
-super_18 = StudentSupervisor(
+super_18 = Supervisor(
     supervisor=sup_user_18, first_name=sup_user_18.first_name, last_name=sup_user_18.last_name, email=sup_user_18.email, phone_number=sup_user_18.phone_number, id_no=sup_user_18.identification_num, is_active=True)
-super_19 = StudentSupervisor(
+super_19 = Supervisor(
     supervisor=sup_user_19, first_name=sup_user_19.first_name, last_name=sup_user_19.last_name, email=sup_user_19.email, phone_number=sup_user_19.phone_number, id_no=sup_user_19.identification_num, is_active=True)
-super_20 = StudentSupervisor(
+super_20 = Supervisor(
     supervisor=sup_user_20, first_name=sup_user_20.first_name, last_name=sup_user_20.last_name, email=sup_user_20.email, phone_number=sup_user_20.phone_number, id_no=sup_user_20.identification_num, is_active=True)
-super_21 = StudentSupervisor(
+super_21 = Supervisor(
     supervisor=sup_user_21, first_name=sup_user_21.first_name, last_name=sup_user_21.last_name, email=sup_user_21.email, phone_number=sup_user_21.phone_number, id_no=sup_user_21.identification_num, is_active=True)
-super_22 = StudentSupervisor(
+super_22 = Supervisor(
     supervisor=sup_user_22, first_name=sup_user_22.first_name, last_name=sup_user_22.last_name, email=sup_user_22.email, phone_number=sup_user_22.phone_number, id_no=sup_user_22.identification_num, is_active=True)
-super_23 = StudentSupervisor(
+super_23 = Supervisor(
     supervisor=sup_user_23, first_name=sup_user_23.first_name, last_name=sup_user_23.last_name, email=sup_user_23.email, phone_number=sup_user_23.phone_number, id_no=sup_user_23.identification_num, is_active=True)
-super_24 = StudentSupervisor(
+super_24 = Supervisor(
     supervisor=sup_user_24, first_name=sup_user_24.first_name, last_name=sup_user_24.last_name, email=sup_user_24.email, phone_number=sup_user_24.phone_number, id_no=sup_user_24.identification_num, is_active=True)
-super_25 = StudentSupervisor(
+super_25 = Supervisor(
     supervisor=sup_user_25, first_name=sup_user_25.first_name, last_name=sup_user_25.last_name, email=sup_user_25.email, phone_number=sup_user_25.phone_number, id_no=sup_user_25.identification_num, is_active=True)
-super_26 = StudentSupervisor(
+super_26 = Supervisor(
     supervisor=sup_user_26, first_name=sup_user_26.first_name, last_name=sup_user_26.last_name, email=sup_user_26.email, phone_number=sup_user_26.phone_number, id_no=sup_user_26.identification_num, is_active=True)
-super_27 = StudentSupervisor(
+super_27 = Supervisor(
     supervisor=sup_user_27, first_name=sup_user_27.first_name, last_name=sup_user_27.last_name, email=sup_user_27.email, phone_number=sup_user_27.phone_number, id_no=sup_user_27.identification_num, is_active=True)
-super_28 = StudentSupervisor(
+super_28 = Supervisor(
     supervisor=sup_user_28, first_name=sup_user_28.first_name, last_name=sup_user_28.last_name, email=sup_user_28.email, phone_number=sup_user_28.phone_number, id_no=sup_user_28.identification_num, is_active=True)
-super_29 = StudentSupervisor(
+super_29 = Supervisor(
     supervisor=sup_user_29, first_name=sup_user_29.first_name, last_name=sup_user_29.last_name, email=sup_user_29.email, phone_number=sup_user_29.phone_number, id_no=sup_user_29.identification_num, is_active=True)
-super_30 = StudentSupervisor(
+super_30 = Supervisor(
     supervisor=sup_user_30, first_name=sup_user_30.first_name, last_name=sup_user_30.last_name, email=sup_user_30.email, phone_number=sup_user_30.phone_number, id_no=sup_user_30.identification_num, is_active=True)
-super_31 = StudentSupervisor(
+super_31 = Supervisor(
     supervisor=sup_user_31, first_name=sup_user_31.first_name, last_name=sup_user_31.last_name, email=sup_user_31.email, phone_number=sup_user_31.phone_number, id_no=sup_user_31.identification_num, is_active=True)
-super_32 = StudentSupervisor(
+super_32 = Supervisor(
     supervisor=sup_user_32, first_name=sup_user_32.first_name, last_name=sup_user_32.last_name, email=sup_user_32.email, phone_number=sup_user_32.phone_number, id_no=sup_user_32.identification_num, is_active=True)
-super_33 = StudentSupervisor(
+super_33 = Supervisor(
     supervisor=sup_user_33, first_name=sup_user_33.first_name, last_name=sup_user_33.last_name, email=sup_user_33.email, phone_number=sup_user_33.phone_number, id_no=sup_user_33.identification_num, is_active=True)
-super_34 = StudentSupervisor(
+super_34 = Supervisor(
     supervisor=sup_user_34, first_name=sup_user_34.first_name, last_name=sup_user_34.last_name, email=sup_user_34.email, phone_number=sup_user_34.phone_number, id_no=sup_user_34.identification_num, is_active=True)
-super_35 = StudentSupervisor(
+super_35 = Supervisor(
     supervisor=sup_user_35, first_name=sup_user_35.first_name, last_name=sup_user_35.last_name, email=sup_user_35.email, phone_number=sup_user_35.phone_number, id_no=sup_user_35.identification_num, is_active=True)
-super_36 = StudentSupervisor(
+super_36 = Supervisor(
     supervisor=sup_user_36, first_name=sup_user_36.first_name, last_name=sup_user_36.last_name, email=sup_user_36.email, phone_number=sup_user_36.phone_number, id_no=sup_user_36.identification_num, is_active=True)
-super_37 = StudentSupervisor(
+super_37 = Supervisor(
     supervisor=sup_user_37, first_name=sup_user_37.first_name, last_name=sup_user_37.last_name, email=sup_user_37.email, phone_number=sup_user_37.phone_number, id_no=sup_user_37.identification_num, is_active=True)
-super_38 = StudentSupervisor(
+super_38 = Supervisor(
     supervisor=sup_user_38, first_name=sup_user_38.first_name, last_name=sup_user_38.last_name, email=sup_user_38.email, phone_number=sup_user_38.phone_number, id_no=sup_user_38.identification_num, is_active=True)
-super_39 = StudentSupervisor(
+super_39 = Supervisor(
     supervisor=sup_user_39, first_name=sup_user_39.first_name, last_name=sup_user_39.last_name, email=sup_user_39.email, phone_number=sup_user_39.phone_number, id_no=sup_user_39.identification_num, is_active=True)
-super_40 = StudentSupervisor(
+super_40 = Supervisor(
     supervisor=sup_user_40, first_name=sup_user_40.first_name, last_name=sup_user_40.last_name, email=sup_user_40.email, phone_number=sup_user_40.phone_number, id_no=sup_user_40.identification_num, is_active=True)
-super_41 = StudentSupervisor(
+super_41 = Supervisor(
     supervisor=sup_user_41, first_name=sup_user_41.first_name, last_name=sup_user_41.last_name, email=sup_user_41.email, phone_number=sup_user_41.phone_number, id_no=sup_user_41.identification_num, is_active=True)
-super_42 = StudentSupervisor(
+super_42 = Supervisor(
     supervisor=sup_user_42, first_name=sup_user_42.first_name, last_name=sup_user_42.last_name, email=sup_user_42.email, phone_number=sup_user_42.phone_number, id_no=sup_user_42.identification_num, is_active=True)
-super_43 = StudentSupervisor(
+super_43 = Supervisor(
     supervisor=sup_user_43, first_name=sup_user_43.first_name, last_name=sup_user_43.last_name, email=sup_user_43.email, phone_number=sup_user_43.phone_number, id_no=sup_user_43.identification_num, is_active=True)
-super_44 = StudentSupervisor(
+super_44 = Supervisor(
     supervisor=sup_user_44, first_name=sup_user_44.first_name, last_name=sup_user_44.last_name, email=sup_user_44.email, phone_number=sup_user_44.phone_number, id_no=sup_user_44.identification_num, is_active=True)
-super_45 = StudentSupervisor(
+super_45 = Supervisor(
     supervisor=sup_user_45, first_name=sup_user_45.first_name, last_name=sup_user_45.last_name, email=sup_user_45.email, phone_number=sup_user_45.phone_number, id_no=sup_user_45.identification_num, is_active=True)
-super_46 = StudentSupervisor(
+super_46 = Supervisor(
     supervisor=sup_user_46, first_name=sup_user_46.first_name, last_name=sup_user_46.last_name, email=sup_user_46.email, phone_number=sup_user_46.phone_number, id_no=sup_user_46.identification_num, is_active=True)
-super_47 = StudentSupervisor(
+super_47 = Supervisor(
     supervisor=sup_user_47, first_name=sup_user_47.first_name, last_name=sup_user_47.last_name, email=sup_user_47.email, phone_number=sup_user_47.phone_number, id_no=sup_user_47.identification_num, is_active=True)
-super_48 = StudentSupervisor(
+super_48 = Supervisor(
     supervisor=sup_user_48, first_name=sup_user_48.first_name, last_name=sup_user_48.last_name, email=sup_user_48.email, phone_number=sup_user_48.phone_number, id_no=sup_user_48.identification_num, is_active=True)
-super_49 = StudentSupervisor(
+super_49 = Supervisor(
     supervisor=sup_user_49, first_name=sup_user_49.first_name, last_name=sup_user_49.last_name, email=sup_user_49.email, phone_number=sup_user_49.phone_number, id_no=sup_user_49.identification_num, is_active=True)
-super_50 = StudentSupervisor(
+super_50 = Supervisor(
     supervisor=sup_user_50, first_name=sup_user_50.first_name, last_name=sup_user_50.last_name, email=sup_user_50.email, phone_number=sup_user_50.phone_number, id_no=sup_user_50.identification_num, is_active=True)
-super_51 = StudentSupervisor(
+super_51 = Supervisor(
     supervisor=sup_user_51, first_name=sup_user_51.first_name, last_name=sup_user_51.last_name, email=sup_user_51.email, phone_number=sup_user_51.phone_number, id_no=sup_user_51.identification_num, is_active=True)
-super_52 = StudentSupervisor(
+super_52 = Supervisor(
     supervisor=sup_user_52, first_name=sup_user_52.first_name, last_name=sup_user_52.last_name, email=sup_user_52.email, phone_number=sup_user_52.phone_number, id_no=sup_user_52.identification_num, is_active=True)
-super_53 = StudentSupervisor(
+super_53 = Supervisor(
     supervisor=sup_user_53, first_name=sup_user_53.first_name, last_name=sup_user_53.last_name, email=sup_user_53.email, phone_number=sup_user_53.phone_number, id_no=sup_user_53.identification_num, is_active=True)
-super_54 = StudentSupervisor(
+super_54 = Supervisor(
     supervisor=sup_user_54, first_name=sup_user_54.first_name, last_name=sup_user_54.last_name, email=sup_user_54.email, phone_number=sup_user_54.phone_number, id_no=sup_user_54.identification_num, is_active=True)
-super_55 = StudentSupervisor(
+super_55 = Supervisor(
     supervisor=sup_user_55, first_name=sup_user_55.first_name, last_name=sup_user_55.last_name, email=sup_user_55.email, phone_number=sup_user_55.phone_number, id_no=sup_user_55.identification_num, is_active=True)
-super_56 = StudentSupervisor(
+super_56 = Supervisor(
     supervisor=sup_user_56, first_name=sup_user_56.first_name, last_name=sup_user_56.last_name, email=sup_user_56.email, phone_number=sup_user_56.phone_number, id_no=sup_user_56.identification_num, is_active=True)
-super_57 = StudentSupervisor(
+super_57 = Supervisor(
     supervisor=sup_user_57, first_name=sup_user_57.first_name, last_name=sup_user_57.last_name, email=sup_user_57.email, phone_number=sup_user_57.phone_number, id_no=sup_user_57.identification_num, is_active=True)
-super_58 = StudentSupervisor(
+super_58 = Supervisor(
     supervisor=sup_user_58, first_name=sup_user_58.first_name, last_name=sup_user_58.last_name, email=sup_user_58.email, phone_number=sup_user_58.phone_number, id_no=sup_user_58.identification_num, is_active=True)
-super_59 = StudentSupervisor(
+super_59 = Supervisor(
     supervisor=sup_user_59, first_name=sup_user_59.first_name, last_name=sup_user_59.last_name, email=sup_user_59.email, phone_number=sup_user_59.phone_number, id_no=sup_user_59.identification_num, is_active=True)
-super_60 = StudentSupervisor(
+super_60 = Supervisor(
     supervisor=sup_user_60, first_name=sup_user_60.first_name, last_name=sup_user_60.last_name, email=sup_user_60.email, phone_number=sup_user_60.phone_number, id_no=sup_user_60.identification_num, is_active=True)
-super_61 = StudentSupervisor(
+super_61 = Supervisor(
     supervisor=sup_user_61, first_name=sup_user_61.first_name, last_name=sup_user_61.last_name, email=sup_user_61.email, phone_number=sup_user_61.phone_number, id_no=sup_user_61.identification_num, is_active=True)
-super_62 = StudentSupervisor(
+super_62 = Supervisor(
     supervisor=sup_user_62, first_name=sup_user_62.first_name, last_name=sup_user_62.last_name, email=sup_user_62.email, phone_number=sup_user_62.phone_number, id_no=sup_user_62.identification_num, is_active=True)
-super_63 = StudentSupervisor(
+super_63 = Supervisor(
     supervisor=sup_user_63, first_name=sup_user_63.first_name, last_name=sup_user_63.last_name, email=sup_user_63.email, phone_number=sup_user_63.phone_number, id_no=sup_user_63.identification_num, is_active=True)
-super_64 = StudentSupervisor(
+super_64 = Supervisor(
     supervisor=sup_user_64, first_name=sup_user_64.first_name, last_name=sup_user_64.last_name, email=sup_user_64.email, phone_number=sup_user_64.phone_number, id_no=sup_user_64.identification_num, is_active=True)
-super_65 = StudentSupervisor(
+super_65 = Supervisor(
     supervisor=sup_user_65, first_name=sup_user_65.first_name, last_name=sup_user_65.last_name, email=sup_user_65.email, phone_number=sup_user_65.phone_number, id_no=sup_user_65.identification_num, is_active=True)
-super_66 = StudentSupervisor(
+super_66 = Supervisor(
     supervisor=sup_user_66, first_name=sup_user_66.first_name, last_name=sup_user_66.last_name, email=sup_user_66.email, phone_number=sup_user_66.phone_number, id_no=sup_user_66.identification_num, is_active=True)
-super_67 = StudentSupervisor(
+super_67 = Supervisor(
     supervisor=sup_user_67, first_name=sup_user_67.first_name, last_name=sup_user_67.last_name, email=sup_user_67.email, phone_number=sup_user_67.phone_number, id_no=sup_user_67.identification_num, is_active=True)
-super_68 = StudentSupervisor(
+super_68 = Supervisor(
     supervisor=sup_user_68, first_name=sup_user_68.first_name, last_name=sup_user_68.last_name, email=sup_user_68.email, phone_number=sup_user_68.phone_number, id_no=sup_user_68.identification_num, is_active=True)
-super_69 = StudentSupervisor(
+super_69 = Supervisor(
     supervisor=sup_user_69, first_name=sup_user_69.first_name, last_name=sup_user_69.last_name, email=sup_user_69.email, phone_number=sup_user_69.phone_number, id_no=sup_user_69.identification_num, is_active=True)
-super_70 = StudentSupervisor(
+super_70 = Supervisor(
     supervisor=sup_user_70, first_name=sup_user_70.first_name, last_name=sup_user_70.last_name, email=sup_user_70.email, phone_number=sup_user_70.phone_number, id_no=sup_user_70.identification_num, is_active=True)
-super_71 = StudentSupervisor(
+super_71 = Supervisor(
     supervisor=sup_user_71, first_name=sup_user_71.first_name, last_name=sup_user_71.last_name, email=sup_user_71.email, phone_number=sup_user_71.phone_number, id_no=sup_user_71.identification_num, is_active=True)
-super_72 = StudentSupervisor(
+super_72 = Supervisor(
     supervisor=sup_user_72, first_name=sup_user_72.first_name, last_name=sup_user_72.last_name, email=sup_user_72.email, phone_number=sup_user_72.phone_number, id_no=sup_user_72.identification_num, is_active=True)
-super_73 = StudentSupervisor(
+super_73 = Supervisor(
     supervisor=sup_user_73, first_name=sup_user_73.first_name, last_name=sup_user_73.last_name, email=sup_user_73.email, phone_number=sup_user_73.phone_number, id_no=sup_user_73.identification_num, is_active=True)
-super_74 = StudentSupervisor(
+super_74 = Supervisor(
     supervisor=sup_user_74, first_name=sup_user_74.first_name, last_name=sup_user_74.last_name, email=sup_user_74.email, phone_number=sup_user_74.phone_number, id_no=sup_user_74.identification_num, is_active=True)
-super_75 = StudentSupervisor(
+super_75 = Supervisor(
     supervisor=sup_user_75, first_name=sup_user_75.first_name, last_name=sup_user_75.last_name, email=sup_user_75.email, phone_number=sup_user_75.phone_number, id_no=sup_user_75.identification_num, is_active=True)
-super_76 = StudentSupervisor(
+super_76 = Supervisor(
     supervisor=sup_user_76, first_name=sup_user_76.first_name, last_name=sup_user_76.last_name, email=sup_user_76.email, phone_number=sup_user_76.phone_number, id_no=sup_user_76.identification_num, is_active=True)
-super_77 = StudentSupervisor(
+super_77 = Supervisor(
     supervisor=sup_user_77, first_name=sup_user_77.first_name, last_name=sup_user_77.last_name, email=sup_user_77.email, phone_number=sup_user_77.phone_number, id_no=sup_user_77.identification_num, is_active=True)
-super_78 = StudentSupervisor(
+super_78 = Supervisor(
     supervisor=sup_user_78, first_name=sup_user_78.first_name, last_name=sup_user_78.last_name, email=sup_user_78.email, phone_number=sup_user_78.phone_number, id_no=sup_user_78.identification_num, is_active=True)
-super_79 = StudentSupervisor(
+super_79 = Supervisor(
     supervisor=sup_user_79, first_name=sup_user_79.first_name, last_name=sup_user_79.last_name, email=sup_user_79.email, phone_number=sup_user_79.phone_number, id_no=sup_user_79.identification_num, is_active=True)
-super_80 = StudentSupervisor(
+super_80 = Supervisor(
     supervisor=sup_user_80, first_name=sup_user_80.first_name, last_name=sup_user_80.last_name, email=sup_user_80.email, phone_number=sup_user_80.phone_number, id_no=sup_user_80.identification_num, is_active=True)
-super_81 = StudentSupervisor(
+super_81 = Supervisor(
     supervisor=sup_user_81, first_name=sup_user_81.first_name, last_name=sup_user_81.last_name, email=sup_user_81.email, phone_number=sup_user_81.phone_number, id_no=sup_user_81.identification_num, is_active=True)
-super_82 = StudentSupervisor(
+super_82 = Supervisor(
     supervisor=sup_user_82, first_name=sup_user_82.first_name, last_name=sup_user_82.last_name, email=sup_user_82.email, phone_number=sup_user_82.phone_number, id_no=sup_user_82.identification_num, is_active=True)
-super_83 = StudentSupervisor(
+super_83 = Supervisor(
     supervisor=sup_user_83, first_name=sup_user_83.first_name, last_name=sup_user_83.last_name, email=sup_user_83.email, phone_number=sup_user_83.phone_number, id_no=sup_user_83.identification_num, is_active=True)
-super_84 = StudentSupervisor(
+super_84 = Supervisor(
     supervisor=sup_user_84, first_name=sup_user_84.first_name, last_name=sup_user_84.last_name, email=sup_user_84.email, phone_number=sup_user_84.phone_number, id_no=sup_user_84.identification_num, is_active=True)
-super_85 = StudentSupervisor(
+super_85 = Supervisor(
     supervisor=sup_user_85, first_name=sup_user_85.first_name, last_name=sup_user_85.last_name, email=sup_user_85.email, phone_number=sup_user_85.phone_number, id_no=sup_user_85.identification_num, is_active=True)
-super_86 = StudentSupervisor(
+super_86 = Supervisor(
     supervisor=sup_user_86, first_name=sup_user_86.first_name, last_name=sup_user_86.last_name, email=sup_user_86.email, phone_number=sup_user_86.phone_number, id_no=sup_user_86.identification_num, is_active=True)
-super_87 = StudentSupervisor(
+super_87 = Supervisor(
     supervisor=sup_user_87, first_name=sup_user_87.first_name, last_name=sup_user_87.last_name, email=sup_user_87.email, phone_number=sup_user_87.phone_number, id_no=sup_user_87.identification_num, is_active=True)
-super_88 = StudentSupervisor(
+super_88 = Supervisor(
     supervisor=sup_user_88, first_name=sup_user_88.first_name, last_name=sup_user_88.last_name, email=sup_user_88.email, phone_number=sup_user_88.phone_number, id_no=sup_user_88.identification_num, is_active=True)
-super_89 = StudentSupervisor(
+super_89 = Supervisor(
     supervisor=sup_user_89, first_name=sup_user_89.first_name, last_name=sup_user_89.last_name, email=sup_user_89.email, phone_number=sup_user_89.phone_number, id_no=sup_user_89.identification_num, is_active=True)
-super_90 = StudentSupervisor(
+super_90 = Supervisor(
     supervisor=sup_user_90, first_name=sup_user_90.first_name, last_name=sup_user_90.last_name, email=sup_user_90.email, phone_number=sup_user_90.phone_number, id_no=sup_user_90.identification_num, is_active=True)
-super_91 = StudentSupervisor(
+super_91 = Supervisor(
     supervisor=sup_user_91, first_name=sup_user_91.first_name, last_name=sup_user_91.last_name, email=sup_user_91.email, phone_number=sup_user_91.phone_number, id_no=sup_user_91.identification_num, is_active=True)
-super_92 = StudentSupervisor(
+super_92 = Supervisor(
     supervisor=sup_user_92, first_name=sup_user_92.first_name, last_name=sup_user_92.last_name, email=sup_user_92.email, phone_number=sup_user_92.phone_number, id_no=sup_user_92.identification_num, is_active=True)
-super_93 = StudentSupervisor(
+super_93 = Supervisor(
     supervisor=sup_user_93, first_name=sup_user_93.first_name, last_name=sup_user_93.last_name, email=sup_user_93.email, phone_number=sup_user_93.phone_number, id_no=sup_user_93.identification_num, is_active=True)
-super_94 = StudentSupervisor(
+super_94 = Supervisor(
     supervisor=sup_user_94, first_name=sup_user_94.first_name, last_name=sup_user_94.last_name, email=sup_user_94.email, phone_number=sup_user_94.phone_number, id_no=sup_user_94.identification_num, is_active=True)
-super_95 = StudentSupervisor(
+super_95 = Supervisor(
     supervisor=sup_user_95, first_name=sup_user_95.first_name, last_name=sup_user_95.last_name, email=sup_user_95.email, phone_number=sup_user_95.phone_number, id_no=sup_user_95.identification_num, is_active=True)
-super_96 = StudentSupervisor(
+super_96 = Supervisor(
     supervisor=sup_user_96, first_name=sup_user_96.first_name, last_name=sup_user_96.last_name, email=sup_user_96.email, phone_number=sup_user_96.phone_number, id_no=sup_user_96.identification_num, is_active=True)
 
 super_1.save()
@@ -1149,164 +1128,164 @@ super_96.save()
 ### Adding supervisors to departments
 
 # physics
-coord_1.training_supervisors.add(super_1)
-coord_1.training_supervisors.add(super_2)
-coord_1.training_supervisors.add(super_3)
+coord_1.supervisors.add(super_1)
+coord_1.supervisors.add(super_2)
+coord_1.supervisors.add(super_3)
 
 # Computer Science
-coord_2.training_supervisors.add(super_4)
-coord_2.training_supervisors.add(super_5)
-coord_2.training_supervisors.add(super_6)
+coord_2.supervisors.add(super_4)
+coord_2.supervisors.add(super_5)
+coord_2.supervisors.add(super_6)
 
 # Mathematics
-coord_3.training_supervisors.add(super_7)
-coord_3.training_supervisors.add(super_8)
-coord_3.training_supervisors.add(super_9)
+coord_3.supervisors.add(super_7)
+coord_3.supervisors.add(super_8)
+coord_3.supervisors.add(super_9)
 
 # Chemistry
-coord_4.training_supervisors.add(super_10)
-coord_4.training_supervisors.add(super_11)
-coord_4.training_supervisors.add(super_12)
+coord_4.supervisors.add(super_10)
+coord_4.supervisors.add(super_11)
+coord_4.supervisors.add(super_12)
 
 # Biochemistry
-coord_5.training_supervisors.add(super_13)
-coord_5.training_supervisors.add(super_14)
-coord_5.training_supervisors.add(super_15)
+coord_5.supervisors.add(super_13)
+coord_5.supervisors.add(super_14)
+coord_5.supervisors.add(super_15)
 
 # Geology
-coord_6.training_supervisors.add(super_16)
-coord_6.training_supervisors.add(super_17)
-coord_6.training_supervisors.add(super_18)
+coord_6.supervisors.add(super_16)
+coord_6.supervisors.add(super_17)
+coord_6.supervisors.add(super_18)
 
 # Microbiology
-coord_7.training_supervisors.add(super_19)
-coord_7.training_supervisors.add(super_20)
-coord_7.training_supervisors.add(super_21)
+coord_7.supervisors.add(super_19)
+coord_7.supervisors.add(super_20)
+coord_7.supervisors.add(super_21)
 
 # Plant science & biotechnology
-coord_8.training_supervisors.add(super_22)
-coord_8.training_supervisors.add(super_23)
-coord_8.training_supervisors.add(super_24)
+coord_8.supervisors.add(super_22)
+coord_8.supervisors.add(super_23)
+coord_8.supervisors.add(super_24)
 
 # Zoology
-coord_9.training_supervisors.add(super_25)
-coord_9.training_supervisors.add(super_26)
-coord_9.training_supervisors.add(super_27)
+coord_9.supervisors.add(super_25)
+coord_9.supervisors.add(super_26)
+coord_9.supervisors.add(super_27)
 
 # Biology
-coord_10.training_supervisors.add(super_28)
-coord_10.training_supervisors.add(super_29)
-coord_10.training_supervisors.add(super_30)
+coord_10.supervisors.add(super_28)
+coord_10.supervisors.add(super_29)
+coord_10.supervisors.add(super_30)
 
 # Arabic Language
-coord_11.training_supervisors.add(super_31)
-coord_11.training_supervisors.add(super_32)
-coord_11.training_supervisors.add(super_33)
+coord_11.supervisors.add(super_31)
+coord_11.supervisors.add(super_32)
+coord_11.supervisors.add(super_33)
 
 # English Language
-coord_12.training_supervisors.add(super_34)
-coord_12.training_supervisors.add(super_35)
-coord_12.training_supervisors.add(super_36)
+coord_12.supervisors.add(super_34)
+coord_12.supervisors.add(super_35)
+coord_12.supervisors.add(super_36)
 
 # French
-coord_13.training_supervisors.add(super_37)
-coord_13.training_supervisors.add(super_38)
-coord_13.training_supervisors.add(super_39)
+coord_13.supervisors.add(super_37)
+coord_13.supervisors.add(super_38)
+coord_13.supervisors.add(super_39)
 
 # Hausa Language
-coord_14.training_supervisors.add(super_40)
-coord_14.training_supervisors.add(super_41)
-coord_14.training_supervisors.add(super_42)
+coord_14.supervisors.add(super_40)
+coord_14.supervisors.add(super_41)
+coord_14.supervisors.add(super_42)
 
 # History
-coord_15.training_supervisors.add(super_43)
-coord_15.training_supervisors.add(super_44)
-coord_15.training_supervisors.add(super_45)
+coord_15.supervisors.add(super_43)
+coord_15.supervisors.add(super_44)
+coord_15.supervisors.add(super_45)
 
 # Islamic Studies
-coord_16.training_supervisors.add(super_46)
-coord_16.training_supervisors.add(super_47)
-coord_16.training_supervisors.add(super_48)
+coord_16.supervisors.add(super_46)
+coord_16.supervisors.add(super_47)
+coord_16.supervisors.add(super_48)
 
 # Education Arabic
-coord_17.training_supervisors.add(super_49)
-coord_17.training_supervisors.add(super_50)
-coord_17.training_supervisors.add(super_51)
+coord_17.supervisors.add(super_49)
+coord_17.supervisors.add(super_50)
+coord_17.supervisors.add(super_51)
 
 # Education Biology
-coord_18.training_supervisors.add(super_52)
-coord_18.training_supervisors.add(super_53)
-coord_18.training_supervisors.add(super_54)
+coord_18.supervisors.add(super_52)
+coord_18.supervisors.add(super_53)
+coord_18.supervisors.add(super_54)
 
 # Education Chemistry
-coord_19.training_supervisors.add(super_55)
-coord_19.training_supervisors.add(super_56)
-coord_19.training_supervisors.add(super_57)
+coord_19.supervisors.add(super_55)
+coord_19.supervisors.add(super_56)
+coord_19.supervisors.add(super_57)
 
 # Education Economics
-coord_20.training_supervisors.add(super_58)
-coord_20.training_supervisors.add(super_59)
-coord_20.training_supervisors.add(super_60)
+coord_20.supervisors.add(super_58)
+coord_20.supervisors.add(super_59)
+coord_20.supervisors.add(super_60)
 
 # Education English
-coord_21.training_supervisors.add(super_61)
-coord_21.training_supervisors.add(super_62)
-coord_21.training_supervisors.add(super_63)
+coord_21.supervisors.add(super_61)
+coord_21.supervisors.add(super_62)
+coord_21.supervisors.add(super_63)
 
 # Education Hausa
-coord_22.training_supervisors.add(super_64)
-coord_22.training_supervisors.add(super_65)
-coord_22.training_supervisors.add(super_66)
+coord_22.supervisors.add(super_64)
+coord_22.supervisors.add(super_65)
+coord_22.supervisors.add(super_66)
 
 # Education History
-coord_23.training_supervisors.add(super_67)
-coord_23.training_supervisors.add(super_68)
-coord_23.training_supervisors.add(super_69)
+coord_23.supervisors.add(super_67)
+coord_23.supervisors.add(super_68)
+coord_23.supervisors.add(super_69)
 
 # Education Islamic Studies
-coord_24.training_supervisors.add(super_70)
-coord_24.training_supervisors.add(super_71)
-coord_24.training_supervisors.add(super_72)
+coord_24.supervisors.add(super_70)
+coord_24.supervisors.add(super_71)
+coord_24.supervisors.add(super_72)
 
 # Education Mathematics
-coord_25.training_supervisors.add(super_73)
-coord_25.training_supervisors.add(super_74)
-coord_25.training_supervisors.add(super_75)
+coord_25.supervisors.add(super_73)
+coord_25.supervisors.add(super_74)
+coord_25.supervisors.add(super_75)
 
 # Education Physics
-coord_26.training_supervisors.add(super_76)
-coord_26.training_supervisors.add(super_77)
-coord_26.training_supervisors.add(super_78)
+coord_26.supervisors.add(super_76)
+coord_26.supervisors.add(super_77)
+coord_26.supervisors.add(super_78)
 
 # Accounting
-coord_27.training_supervisors.add(super_79)
-coord_27.training_supervisors.add(super_80)
-coord_27.training_supervisors.add(super_81)
+coord_27.supervisors.add(super_79)
+coord_27.supervisors.add(super_80)
+coord_27.supervisors.add(super_81)
 
 # Business Administration
-coord_28.training_supervisors.add(super_82)
-coord_28.training_supervisors.add(super_83)
-coord_28.training_supervisors.add(super_84)
+coord_28.supervisors.add(super_82)
+coord_28.supervisors.add(super_83)
+coord_28.supervisors.add(super_84)
 
 # Economics
-coord_29.training_supervisors.add(super_85)
-coord_29.training_supervisors.add(super_86)
-coord_29.training_supervisors.add(super_87)
+coord_29.supervisors.add(super_85)
+coord_29.supervisors.add(super_86)
+coord_29.supervisors.add(super_87)
 
 # Political science
-coord_30.training_supervisors.add(super_88)
-coord_30.training_supervisors.add(super_89)
-coord_30.training_supervisors.add(super_90)
+coord_30.supervisors.add(super_88)
+coord_30.supervisors.add(super_89)
+coord_30.supervisors.add(super_90)
 
 # Public Administration
-coord_31.training_supervisors.add(super_91)
-coord_31.training_supervisors.add(super_92)
-coord_31.training_supervisors.add(super_93)
+coord_31.supervisors.add(super_91)
+coord_31.supervisors.add(super_92)
+coord_31.supervisors.add(super_93)
 
 # Sociology
-coord_32.training_supervisors.add(super_94)
-coord_32.training_supervisors.add(super_95)
-coord_32.training_supervisors.add(super_96)
+coord_32.supervisors.add(super_94)
+coord_32.supervisors.add(super_95)
+coord_32.supervisors.add(super_96)
 
 ### _________________________________________________________________________________________________________
 ### TRAINING STUDENTS (320 student, 10 student for each department where 5 are 200L and the other 5 are 300L)
@@ -2337,708 +2316,708 @@ student_user_320.save()
 
 #<!-- student models -->
 # Physics students
-student_1 = TrainingStudent(
-    student=student_user_1, faculty=faculty_1, department=dept_1, student_training_coordinator=coord_user_1, first_name=student_user_1.first_name, last_name=student_user_1.last_name, matrix_no=student_user_1.identification_num, email=student_user_1.email, phone_number=student_user_1.phone_number, level='300', is_in_school=True, session=curr_sess.session)
-student_2 = TrainingStudent(
-    student=student_user_2, faculty=faculty_1, department=dept_1, student_training_coordinator=coord_user_1, first_name=student_user_2.first_name, last_name=student_user_2.last_name, matrix_no=student_user_2.identification_num, email=student_user_2.email, phone_number=student_user_2.phone_number, is_in_school=True, session=curr_sess.session)
-student_3 = TrainingStudent(
-    student=student_user_3, faculty=faculty_1, department=dept_1, student_training_coordinator=coord_user_1, first_name=student_user_3.first_name, last_name=student_user_3.last_name, matrix_no=student_user_3.identification_num, email=student_user_3.email, phone_number=student_user_3.phone_number, is_in_school=True, session=curr_sess.session)
-student_4 = TrainingStudent(
-    student=student_user_4, faculty=faculty_1, department=dept_1, student_training_coordinator=coord_user_1, first_name=student_user_4.first_name, last_name=student_user_4.last_name, matrix_no=student_user_4.identification_num, email=student_user_4.email, phone_number=student_user_4.phone_number, is_in_school=True, session=curr_sess.session)
-student_5 = TrainingStudent(
-    student=student_user_5, faculty=faculty_1, department=dept_1, student_training_coordinator=coord_user_1, first_name=student_user_5.first_name, last_name=student_user_5.last_name, matrix_no=student_user_5.identification_num, email=student_user_5.email, phone_number=student_user_5.phone_number, is_in_school=True, session=curr_sess.session)
-student_6 = TrainingStudent(
-    student=student_user_6, faculty=faculty_1, department=dept_1, student_training_coordinator=coord_user_1, first_name=student_user_6.first_name, last_name=student_user_6.last_name, matrix_no=student_user_6.identification_num, email=student_user_6.email, phone_number=student_user_6.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_7 = TrainingStudent(
-    student=student_user_7, faculty=faculty_1, department=dept_1, student_training_coordinator=coord_user_1, first_name=student_user_7.first_name, last_name=student_user_7.last_name, matrix_no=student_user_7.identification_num, email=student_user_7.email, phone_number=student_user_7.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_8 = TrainingStudent(
-    student=student_user_8, faculty=faculty_1, department=dept_1, student_training_coordinator=coord_user_1, first_name=student_user_8.first_name, last_name=student_user_8.last_name, matrix_no=student_user_8.identification_num, email=student_user_8.email, phone_number=student_user_8.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_9 = TrainingStudent(
-    student=student_user_9, faculty=faculty_1, department=dept_1, student_training_coordinator=coord_user_1, first_name=student_user_9.first_name, last_name=student_user_9.last_name, matrix_no=student_user_9.identification_num, email=student_user_9.email, phone_number=student_user_9.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_10 = TrainingStudent(
-    student=student_user_10, faculty=faculty_1, department=dept_1, student_training_coordinator=coord_user_1, first_name=student_user_10.first_name, last_name=student_user_10.last_name, matrix_no=student_user_10.identification_num, email=student_user_10.email, phone_number=student_user_10.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_1 = Student(
+    student=student_user_1, faculty=faculty_1, department=dept_1, student_coordinator=coord_user_1, first_name=student_user_1.first_name, last_name=student_user_1.last_name, matrix_no=student_user_1.identification_num, email=student_user_1.email, phone_number=student_user_1.phone_number, is_in_school=True)
+student_2 = Student(
+    student=student_user_2, faculty=faculty_1, department=dept_1, student_coordinator=coord_user_1, first_name=student_user_2.first_name, last_name=student_user_2.last_name, matrix_no=student_user_2.identification_num, email=student_user_2.email, phone_number=student_user_2.phone_number, is_in_school=True)
+student_3 = Student(
+    student=student_user_3, faculty=faculty_1, department=dept_1, student_coordinator=coord_user_1, first_name=student_user_3.first_name, last_name=student_user_3.last_name, matrix_no=student_user_3.identification_num, email=student_user_3.email, phone_number=student_user_3.phone_number, is_in_school=True)
+student_4 = Student(
+    student=student_user_4, faculty=faculty_1, department=dept_1, student_coordinator=coord_user_1, first_name=student_user_4.first_name, last_name=student_user_4.last_name, matrix_no=student_user_4.identification_num, email=student_user_4.email, phone_number=student_user_4.phone_number, is_in_school=True)
+student_5 = Student(
+    student=student_user_5, faculty=faculty_1, department=dept_1, student_coordinator=coord_user_1, first_name=student_user_5.first_name, last_name=student_user_5.last_name, matrix_no=student_user_5.identification_num, email=student_user_5.email, phone_number=student_user_5.phone_number, is_in_school=True)
+student_6 = Student(
+    student=student_user_6, faculty=faculty_1, department=dept_1, student_coordinator=coord_user_1, first_name=student_user_6.first_name, last_name=student_user_6.last_name, matrix_no=student_user_6.identification_num, email=student_user_6.email, phone_number=student_user_6.phone_number, is_in_school=True)
+student_7 = Student(
+    student=student_user_7, faculty=faculty_1, department=dept_1, student_coordinator=coord_user_1, first_name=student_user_7.first_name, last_name=student_user_7.last_name, matrix_no=student_user_7.identification_num, email=student_user_7.email, phone_number=student_user_7.phone_number, is_in_school=True)
+student_8 = Student(
+    student=student_user_8, faculty=faculty_1, department=dept_1, student_coordinator=coord_user_1, first_name=student_user_8.first_name, last_name=student_user_8.last_name, matrix_no=student_user_8.identification_num, email=student_user_8.email, phone_number=student_user_8.phone_number, is_in_school=True)
+student_9 = Student(
+    student=student_user_9, faculty=faculty_1, department=dept_1, student_coordinator=coord_user_1, first_name=student_user_9.first_name, last_name=student_user_9.last_name, matrix_no=student_user_9.identification_num, email=student_user_9.email, phone_number=student_user_9.phone_number, is_in_school=True)
+student_10 = Student(
+    student=student_user_10, faculty=faculty_1, department=dept_1, student_coordinator=coord_user_1, first_name=student_user_10.first_name, last_name=student_user_10.last_name, matrix_no=student_user_10.identification_num, email=student_user_10.email, phone_number=student_user_10.phone_number, is_in_school=True)
 
 # Computer Science students
-student_11 = TrainingStudent(
-    student=student_user_11, faculty=faculty_1, department=dept_2, student_training_coordinator=coord_user_2, first_name=student_user_11.first_name, last_name=student_user_11.last_name, matrix_no=student_user_11.identification_num, email=student_user_11.email, phone_number=student_user_11.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_12 = TrainingStudent(
-    student=student_user_12, faculty=faculty_1, department=dept_2, student_training_coordinator=coord_user_2, first_name=student_user_12.first_name, last_name=student_user_12.last_name, matrix_no=student_user_12.identification_num, email=student_user_12.email, phone_number=student_user_12.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_13 = TrainingStudent(
-    student=student_user_13, faculty=faculty_1, department=dept_2, student_training_coordinator=coord_user_2, first_name=student_user_13.first_name, last_name=student_user_13.last_name, matrix_no=student_user_13.identification_num, email=student_user_13.email, phone_number=student_user_13.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_14 = TrainingStudent(
-    student=student_user_14, faculty=faculty_1, department=dept_2, student_training_coordinator=coord_user_2, first_name=student_user_14.first_name, last_name=student_user_14.last_name, matrix_no=student_user_14.identification_num, email=student_user_14.email, phone_number=student_user_14.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_15 = TrainingStudent(
-    student=student_user_15, faculty=faculty_1, department=dept_2, student_training_coordinator=coord_user_2, first_name=student_user_15.first_name, last_name=student_user_15.last_name, matrix_no=student_user_15.identification_num, email=student_user_15.email, phone_number=student_user_15.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_16 = TrainingStudent(
-    student=student_user_16, faculty=faculty_1, department=dept_2, student_training_coordinator=coord_user_2, first_name=student_user_16.first_name, last_name=student_user_16.last_name, matrix_no=student_user_16.identification_num, email=student_user_16.email, phone_number=student_user_16.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_17 = TrainingStudent(
-    student=student_user_17, faculty=faculty_1, department=dept_2, student_training_coordinator=coord_user_2, first_name=student_user_17.first_name, last_name=student_user_17.last_name, matrix_no=student_user_17.identification_num, email=student_user_17.email, phone_number=student_user_17.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_18 = TrainingStudent(
-    student=student_user_18, faculty=faculty_1, department=dept_2, student_training_coordinator=coord_user_2, first_name=student_user_18.first_name, last_name=student_user_18.last_name, matrix_no=student_user_18.identification_num, email=student_user_18.email, phone_number=student_user_18.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_19 = TrainingStudent(
-    student=student_user_19, faculty=faculty_1, department=dept_2, student_training_coordinator=coord_user_2, first_name=student_user_19.first_name, last_name=student_user_19.last_name, matrix_no=student_user_19.identification_num, email=student_user_19.email, phone_number=student_user_19.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_20 = TrainingStudent(
-    student=student_user_20, faculty=faculty_1, department=dept_2, student_training_coordinator=coord_user_2, first_name=student_user_20.first_name, last_name=student_user_20.last_name, matrix_no=student_user_20.identification_num, email=student_user_20.email, phone_number=student_user_20.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_11 = Student(
+    student=student_user_11, faculty=faculty_1, department=dept_2, student_coordinator=coord_user_2, first_name=student_user_11.first_name, last_name=student_user_11.last_name, matrix_no=student_user_11.identification_num, email=student_user_11.email, phone_number=student_user_11.phone_number, is_in_school=True)
+student_12 = Student(
+    student=student_user_12, faculty=faculty_1, department=dept_2, student_coordinator=coord_user_2, first_name=student_user_12.first_name, last_name=student_user_12.last_name, matrix_no=student_user_12.identification_num, email=student_user_12.email, phone_number=student_user_12.phone_number, is_in_school=True)
+student_13 = Student(
+    student=student_user_13, faculty=faculty_1, department=dept_2, student_coordinator=coord_user_2, first_name=student_user_13.first_name, last_name=student_user_13.last_name, matrix_no=student_user_13.identification_num, email=student_user_13.email, phone_number=student_user_13.phone_number, is_in_school=True)
+student_14 = Student(
+    student=student_user_14, faculty=faculty_1, department=dept_2, student_coordinator=coord_user_2, first_name=student_user_14.first_name, last_name=student_user_14.last_name, matrix_no=student_user_14.identification_num, email=student_user_14.email, phone_number=student_user_14.phone_number, is_in_school=True)
+student_15 = Student(
+    student=student_user_15, faculty=faculty_1, department=dept_2, student_coordinator=coord_user_2, first_name=student_user_15.first_name, last_name=student_user_15.last_name, matrix_no=student_user_15.identification_num, email=student_user_15.email, phone_number=student_user_15.phone_number, is_in_school=True)
+student_16 = Student(
+    student=student_user_16, faculty=faculty_1, department=dept_2, student_coordinator=coord_user_2, first_name=student_user_16.first_name, last_name=student_user_16.last_name, matrix_no=student_user_16.identification_num, email=student_user_16.email, phone_number=student_user_16.phone_number, is_in_school=True)
+student_17 = Student(
+    student=student_user_17, faculty=faculty_1, department=dept_2, student_coordinator=coord_user_2, first_name=student_user_17.first_name, last_name=student_user_17.last_name, matrix_no=student_user_17.identification_num, email=student_user_17.email, phone_number=student_user_17.phone_number, is_in_school=True)
+student_18 = Student(
+    student=student_user_18, faculty=faculty_1, department=dept_2, student_coordinator=coord_user_2, first_name=student_user_18.first_name, last_name=student_user_18.last_name, matrix_no=student_user_18.identification_num, email=student_user_18.email, phone_number=student_user_18.phone_number, is_in_school=True)
+student_19 = Student(
+    student=student_user_19, faculty=faculty_1, department=dept_2, student_coordinator=coord_user_2, first_name=student_user_19.first_name, last_name=student_user_19.last_name, matrix_no=student_user_19.identification_num, email=student_user_19.email, phone_number=student_user_19.phone_number, is_in_school=True)
+student_20 = Student(
+    student=student_user_20, faculty=faculty_1, department=dept_2, student_coordinator=coord_user_2, first_name=student_user_20.first_name, last_name=student_user_20.last_name, matrix_no=student_user_20.identification_num, email=student_user_20.email, phone_number=student_user_20.phone_number, is_in_school=True)
 
 # Mathematics students
-student_21 = TrainingStudent(
-    student=student_user_21, faculty=faculty_1, department=dept_3, student_training_coordinator=coord_user_3, first_name=student_user_21.first_name, last_name=student_user_21.last_name, matrix_no=student_user_21.identification_num, email=student_user_21.email, phone_number=student_user_21.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_22 = TrainingStudent(
-    student=student_user_22, faculty=faculty_1, department=dept_3, student_training_coordinator=coord_user_3, first_name=student_user_22.first_name, last_name=student_user_22.last_name, matrix_no=student_user_22.identification_num, email=student_user_22.email, phone_number=student_user_22.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_23 = TrainingStudent(
-    student=student_user_23, faculty=faculty_1, department=dept_3, student_training_coordinator=coord_user_3, first_name=student_user_23.first_name, last_name=student_user_23.last_name, matrix_no=student_user_23.identification_num, email=student_user_23.email, phone_number=student_user_23.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_24 = TrainingStudent(
-    student=student_user_24, faculty=faculty_1, department=dept_3, student_training_coordinator=coord_user_3, first_name=student_user_24.first_name, last_name=student_user_24.last_name, matrix_no=student_user_24.identification_num, email=student_user_24.email, phone_number=student_user_24.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_25 = TrainingStudent(
-    student=student_user_25, faculty=faculty_1, department=dept_3, student_training_coordinator=coord_user_3, first_name=student_user_25.first_name, last_name=student_user_25.last_name, matrix_no=student_user_25.identification_num, email=student_user_25.email, phone_number=student_user_25.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_26 = TrainingStudent(
-    student=student_user_26, faculty=faculty_1, department=dept_3, student_training_coordinator=coord_user_3, first_name=student_user_26.first_name, last_name=student_user_26.last_name, matrix_no=student_user_26.identification_num, email=student_user_26.email, phone_number=student_user_26.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_27 = TrainingStudent(
-    student=student_user_27, faculty=faculty_1, department=dept_3, student_training_coordinator=coord_user_3, first_name=student_user_27.first_name, last_name=student_user_27.last_name, matrix_no=student_user_27.identification_num, email=student_user_27.email, phone_number=student_user_27.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_28 = TrainingStudent(
-    student=student_user_28, faculty=faculty_1, department=dept_3, student_training_coordinator=coord_user_3, first_name=student_user_28.first_name, last_name=student_user_28.last_name, matrix_no=student_user_28.identification_num, email=student_user_28.email, phone_number=student_user_28.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_29 = TrainingStudent(
-    student=student_user_29, faculty=faculty_1, department=dept_3, student_training_coordinator=coord_user_3, first_name=student_user_29.first_name, last_name=student_user_29.last_name, matrix_no=student_user_29.identification_num, email=student_user_29.email, phone_number=student_user_29.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_30 = TrainingStudent(
-    student=student_user_30, faculty=faculty_1, department=dept_3, student_training_coordinator=coord_user_3, first_name=student_user_30.first_name, last_name=student_user_30.last_name, matrix_no=student_user_30.identification_num, email=student_user_30.email, phone_number=student_user_30.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_21 = Student(
+    student=student_user_21, faculty=faculty_1, department=dept_3, student_coordinator=coord_user_3, first_name=student_user_21.first_name, last_name=student_user_21.last_name, matrix_no=student_user_21.identification_num, email=student_user_21.email, phone_number=student_user_21.phone_number, is_in_school=True)
+student_22 = Student(
+    student=student_user_22, faculty=faculty_1, department=dept_3, student_coordinator=coord_user_3, first_name=student_user_22.first_name, last_name=student_user_22.last_name, matrix_no=student_user_22.identification_num, email=student_user_22.email, phone_number=student_user_22.phone_number, is_in_school=True)
+student_23 = Student(
+    student=student_user_23, faculty=faculty_1, department=dept_3, student_coordinator=coord_user_3, first_name=student_user_23.first_name, last_name=student_user_23.last_name, matrix_no=student_user_23.identification_num, email=student_user_23.email, phone_number=student_user_23.phone_number, is_in_school=True)
+student_24 = Student(
+    student=student_user_24, faculty=faculty_1, department=dept_3, student_coordinator=coord_user_3, first_name=student_user_24.first_name, last_name=student_user_24.last_name, matrix_no=student_user_24.identification_num, email=student_user_24.email, phone_number=student_user_24.phone_number, is_in_school=True)
+student_25 = Student(
+    student=student_user_25, faculty=faculty_1, department=dept_3, student_coordinator=coord_user_3, first_name=student_user_25.first_name, last_name=student_user_25.last_name, matrix_no=student_user_25.identification_num, email=student_user_25.email, phone_number=student_user_25.phone_number, is_in_school=True)
+student_26 = Student(
+    student=student_user_26, faculty=faculty_1, department=dept_3, student_coordinator=coord_user_3, first_name=student_user_26.first_name, last_name=student_user_26.last_name, matrix_no=student_user_26.identification_num, email=student_user_26.email, phone_number=student_user_26.phone_number, is_in_school=True)
+student_27 = Student(
+    student=student_user_27, faculty=faculty_1, department=dept_3, student_coordinator=coord_user_3, first_name=student_user_27.first_name, last_name=student_user_27.last_name, matrix_no=student_user_27.identification_num, email=student_user_27.email, phone_number=student_user_27.phone_number, is_in_school=True)
+student_28 = Student(
+    student=student_user_28, faculty=faculty_1, department=dept_3, student_coordinator=coord_user_3, first_name=student_user_28.first_name, last_name=student_user_28.last_name, matrix_no=student_user_28.identification_num, email=student_user_28.email, phone_number=student_user_28.phone_number, is_in_school=True)
+student_29 = Student(
+    student=student_user_29, faculty=faculty_1, department=dept_3, student_coordinator=coord_user_3, first_name=student_user_29.first_name, last_name=student_user_29.last_name, matrix_no=student_user_29.identification_num, email=student_user_29.email, phone_number=student_user_29.phone_number, is_in_school=True)
+student_30 = Student(
+    student=student_user_30, faculty=faculty_1, department=dept_3, student_coordinator=coord_user_3, first_name=student_user_30.first_name, last_name=student_user_30.last_name, matrix_no=student_user_30.identification_num, email=student_user_30.email, phone_number=student_user_30.phone_number, is_in_school=True)
 
 # Chemistry students
-student_31 = TrainingStudent(
-    student=student_user_31, faculty=faculty_1, department=dept_4, student_training_coordinator=coord_user_4, first_name=student_user_31.first_name, last_name=student_user_31.last_name, matrix_no=student_user_31.identification_num, email=student_user_31.email, phone_number=student_user_31.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_32 = TrainingStudent(
-    student=student_user_32, faculty=faculty_1, department=dept_4, student_training_coordinator=coord_user_4, first_name=student_user_32.first_name, last_name=student_user_32.last_name, matrix_no=student_user_32.identification_num, email=student_user_32.email, phone_number=student_user_32.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_33 = TrainingStudent(
-    student=student_user_33, faculty=faculty_1, department=dept_4, student_training_coordinator=coord_user_4, first_name=student_user_33.first_name, last_name=student_user_33.last_name, matrix_no=student_user_33.identification_num, email=student_user_33.email, phone_number=student_user_33.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_34 = TrainingStudent(
-    student=student_user_34, faculty=faculty_1, department=dept_4, student_training_coordinator=coord_user_4, first_name=student_user_34.first_name, last_name=student_user_34.last_name, matrix_no=student_user_34.identification_num, email=student_user_34.email, phone_number=student_user_34.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_35 = TrainingStudent(
-    student=student_user_35, faculty=faculty_1, department=dept_4, student_training_coordinator=coord_user_4, first_name=student_user_35.first_name, last_name=student_user_35.last_name, matrix_no=student_user_35.identification_num, email=student_user_35.email, phone_number=student_user_35.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_36 = TrainingStudent(
-    student=student_user_36, faculty=faculty_1, department=dept_4, student_training_coordinator=coord_user_4, first_name=student_user_36.first_name, last_name=student_user_36.last_name, matrix_no=student_user_36.identification_num, email=student_user_36.email, phone_number=student_user_36.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_37 = TrainingStudent(
-    student=student_user_37, faculty=faculty_1, department=dept_4, student_training_coordinator=coord_user_4, first_name=student_user_37.first_name, last_name=student_user_37.last_name, matrix_no=student_user_37.identification_num, email=student_user_37.email, phone_number=student_user_37.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_38 = TrainingStudent(
-    student=student_user_38, faculty=faculty_1, department=dept_4, student_training_coordinator=coord_user_4, first_name=student_user_38.first_name, last_name=student_user_38.last_name, matrix_no=student_user_38.identification_num, email=student_user_38.email, phone_number=student_user_38.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_39 = TrainingStudent(
-    student=student_user_39, faculty=faculty_1, department=dept_4, student_training_coordinator=coord_user_4, first_name=student_user_39.first_name, last_name=student_user_39.last_name, matrix_no=student_user_39.identification_num, email=student_user_39.email, phone_number=student_user_39.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_40 = TrainingStudent(
-    student=student_user_40, faculty=faculty_1, department=dept_4, student_training_coordinator=coord_user_4, first_name=student_user_40.first_name, last_name=student_user_40.last_name, matrix_no=student_user_40.identification_num, email=student_user_40.email, phone_number=student_user_40.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_31 = Student(
+    student=student_user_31, faculty=faculty_1, department=dept_4, student_coordinator=coord_user_4, first_name=student_user_31.first_name, last_name=student_user_31.last_name, matrix_no=student_user_31.identification_num, email=student_user_31.email, phone_number=student_user_31.phone_number, is_in_school=True)
+student_32 = Student(
+    student=student_user_32, faculty=faculty_1, department=dept_4, student_coordinator=coord_user_4, first_name=student_user_32.first_name, last_name=student_user_32.last_name, matrix_no=student_user_32.identification_num, email=student_user_32.email, phone_number=student_user_32.phone_number, is_in_school=True)
+student_33 = Student(
+    student=student_user_33, faculty=faculty_1, department=dept_4, student_coordinator=coord_user_4, first_name=student_user_33.first_name, last_name=student_user_33.last_name, matrix_no=student_user_33.identification_num, email=student_user_33.email, phone_number=student_user_33.phone_number, is_in_school=True)
+student_34 = Student(
+    student=student_user_34, faculty=faculty_1, department=dept_4, student_coordinator=coord_user_4, first_name=student_user_34.first_name, last_name=student_user_34.last_name, matrix_no=student_user_34.identification_num, email=student_user_34.email, phone_number=student_user_34.phone_number, is_in_school=True)
+student_35 = Student(
+    student=student_user_35, faculty=faculty_1, department=dept_4, student_coordinator=coord_user_4, first_name=student_user_35.first_name, last_name=student_user_35.last_name, matrix_no=student_user_35.identification_num, email=student_user_35.email, phone_number=student_user_35.phone_number, is_in_school=True)
+student_36 = Student(
+    student=student_user_36, faculty=faculty_1, department=dept_4, student_coordinator=coord_user_4, first_name=student_user_36.first_name, last_name=student_user_36.last_name, matrix_no=student_user_36.identification_num, email=student_user_36.email, phone_number=student_user_36.phone_number, is_in_school=True)
+student_37 = Student(
+    student=student_user_37, faculty=faculty_1, department=dept_4, student_coordinator=coord_user_4, first_name=student_user_37.first_name, last_name=student_user_37.last_name, matrix_no=student_user_37.identification_num, email=student_user_37.email, phone_number=student_user_37.phone_number, is_in_school=True)
+student_38 = Student(
+    student=student_user_38, faculty=faculty_1, department=dept_4, student_coordinator=coord_user_4, first_name=student_user_38.first_name, last_name=student_user_38.last_name, matrix_no=student_user_38.identification_num, email=student_user_38.email, phone_number=student_user_38.phone_number, is_in_school=True)
+student_39 = Student(
+    student=student_user_39, faculty=faculty_1, department=dept_4, student_coordinator=coord_user_4, first_name=student_user_39.first_name, last_name=student_user_39.last_name, matrix_no=student_user_39.identification_num, email=student_user_39.email, phone_number=student_user_39.phone_number, is_in_school=True)
+student_40 = Student(
+    student=student_user_40, faculty=faculty_1, department=dept_4, student_coordinator=coord_user_4, first_name=student_user_40.first_name, last_name=student_user_40.last_name, matrix_no=student_user_40.identification_num, email=student_user_40.email, phone_number=student_user_40.phone_number, is_in_school=True)
 
 # Biochemistry students
-student_41 = TrainingStudent(
-    student=student_user_41, faculty=faculty_1, department=dept_5, student_training_coordinator=coord_user_5, first_name=student_user_41.first_name, last_name=student_user_41.last_name, matrix_no=student_user_41.identification_num, email=student_user_41.email, phone_number=student_user_41.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_42 = TrainingStudent(
-    student=student_user_42, faculty=faculty_1, department=dept_5, student_training_coordinator=coord_user_5, first_name=student_user_42.first_name, last_name=student_user_42.last_name, matrix_no=student_user_42.identification_num, email=student_user_42.email, phone_number=student_user_42.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_43 = TrainingStudent(
-    student=student_user_43, faculty=faculty_1, department=dept_5, student_training_coordinator=coord_user_5, first_name=student_user_43.first_name, last_name=student_user_43.last_name, matrix_no=student_user_43.identification_num, email=student_user_43.email, phone_number=student_user_43.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_44 = TrainingStudent(
-    student=student_user_44, faculty=faculty_1, department=dept_5, student_training_coordinator=coord_user_5, first_name=student_user_44.first_name, last_name=student_user_44.last_name, matrix_no=student_user_44.identification_num, email=student_user_44.email, phone_number=student_user_44.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_45 = TrainingStudent(
-    student=student_user_45, faculty=faculty_1, department=dept_5, student_training_coordinator=coord_user_5, first_name=student_user_45.first_name, last_name=student_user_45.last_name, matrix_no=student_user_45.identification_num, email=student_user_45.email, phone_number=student_user_45.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_46 = TrainingStudent(
-    student=student_user_46, faculty=faculty_1, department=dept_5, student_training_coordinator=coord_user_5, first_name=student_user_46.first_name, last_name=student_user_46.last_name, matrix_no=student_user_46.identification_num, email=student_user_46.email, phone_number=student_user_46.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_47 = TrainingStudent(
-    student=student_user_47, faculty=faculty_1, department=dept_5, student_training_coordinator=coord_user_5, first_name=student_user_47.first_name, last_name=student_user_47.last_name, matrix_no=student_user_47.identification_num, email=student_user_47.email, phone_number=student_user_47.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_48 = TrainingStudent(
-    student=student_user_48, faculty=faculty_1, department=dept_5, student_training_coordinator=coord_user_5, first_name=student_user_48.first_name, last_name=student_user_48.last_name, matrix_no=student_user_48.identification_num, email=student_user_48.email, phone_number=student_user_48.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_49 = TrainingStudent(
-    student=student_user_49, faculty=faculty_1, department=dept_5, student_training_coordinator=coord_user_5, first_name=student_user_49.first_name, last_name=student_user_49.last_name, matrix_no=student_user_49.identification_num, email=student_user_49.email, phone_number=student_user_49.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_50 = TrainingStudent(
-    student=student_user_50, faculty=faculty_1, department=dept_5, student_training_coordinator=coord_user_5, first_name=student_user_50.first_name, last_name=student_user_50.last_name, matrix_no=student_user_50.identification_num, email=student_user_50.email, phone_number=student_user_50.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_41 = Student(
+    student=student_user_41, faculty=faculty_1, department=dept_5, student_coordinator=coord_user_5, first_name=student_user_41.first_name, last_name=student_user_41.last_name, matrix_no=student_user_41.identification_num, email=student_user_41.email, phone_number=student_user_41.phone_number, is_in_school=True)
+student_42 = Student(
+    student=student_user_42, faculty=faculty_1, department=dept_5, student_coordinator=coord_user_5, first_name=student_user_42.first_name, last_name=student_user_42.last_name, matrix_no=student_user_42.identification_num, email=student_user_42.email, phone_number=student_user_42.phone_number, is_in_school=True)
+student_43 = Student(
+    student=student_user_43, faculty=faculty_1, department=dept_5, student_coordinator=coord_user_5, first_name=student_user_43.first_name, last_name=student_user_43.last_name, matrix_no=student_user_43.identification_num, email=student_user_43.email, phone_number=student_user_43.phone_number, is_in_school=True)
+student_44 = Student(
+    student=student_user_44, faculty=faculty_1, department=dept_5, student_coordinator=coord_user_5, first_name=student_user_44.first_name, last_name=student_user_44.last_name, matrix_no=student_user_44.identification_num, email=student_user_44.email, phone_number=student_user_44.phone_number, is_in_school=True)
+student_45 = Student(
+    student=student_user_45, faculty=faculty_1, department=dept_5, student_coordinator=coord_user_5, first_name=student_user_45.first_name, last_name=student_user_45.last_name, matrix_no=student_user_45.identification_num, email=student_user_45.email, phone_number=student_user_45.phone_number, is_in_school=True)
+student_46 = Student(
+    student=student_user_46, faculty=faculty_1, department=dept_5, student_coordinator=coord_user_5, first_name=student_user_46.first_name, last_name=student_user_46.last_name, matrix_no=student_user_46.identification_num, email=student_user_46.email, phone_number=student_user_46.phone_number, is_in_school=True)
+student_47 = Student(
+    student=student_user_47, faculty=faculty_1, department=dept_5, student_coordinator=coord_user_5, first_name=student_user_47.first_name, last_name=student_user_47.last_name, matrix_no=student_user_47.identification_num, email=student_user_47.email, phone_number=student_user_47.phone_number, is_in_school=True)
+student_48 = Student(
+    student=student_user_48, faculty=faculty_1, department=dept_5, student_coordinator=coord_user_5, first_name=student_user_48.first_name, last_name=student_user_48.last_name, matrix_no=student_user_48.identification_num, email=student_user_48.email, phone_number=student_user_48.phone_number, is_in_school=True)
+student_49 = Student(
+    student=student_user_49, faculty=faculty_1, department=dept_5, student_coordinator=coord_user_5, first_name=student_user_49.first_name, last_name=student_user_49.last_name, matrix_no=student_user_49.identification_num, email=student_user_49.email, phone_number=student_user_49.phone_number, is_in_school=True)
+student_50 = Student(
+    student=student_user_50, faculty=faculty_1, department=dept_5, student_coordinator=coord_user_5, first_name=student_user_50.first_name, last_name=student_user_50.last_name, matrix_no=student_user_50.identification_num, email=student_user_50.email, phone_number=student_user_50.phone_number, is_in_school=True)
 
 # Geology students
-student_51 = TrainingStudent(
-    student=student_user_51, faculty=faculty_1, department=dept_6, student_training_coordinator=coord_user_6, first_name=student_user_51.first_name, last_name=student_user_51.last_name, matrix_no=student_user_51.identification_num, email=student_user_51.email, phone_number=student_user_51.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_52 = TrainingStudent(
-    student=student_user_52, faculty=faculty_1, department=dept_6, student_training_coordinator=coord_user_6, first_name=student_user_52.first_name, last_name=student_user_52.last_name, matrix_no=student_user_52.identification_num, email=student_user_52.email, phone_number=student_user_52.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_53 = TrainingStudent(
-    student=student_user_53, faculty=faculty_1, department=dept_6, student_training_coordinator=coord_user_6, first_name=student_user_53.first_name, last_name=student_user_53.last_name, matrix_no=student_user_53.identification_num, email=student_user_53.email, phone_number=student_user_53.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_54 = TrainingStudent(
-    student=student_user_54, faculty=faculty_1, department=dept_6, student_training_coordinator=coord_user_6, first_name=student_user_54.first_name, last_name=student_user_54.last_name, matrix_no=student_user_54.identification_num, email=student_user_54.email, phone_number=student_user_54.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_55 = TrainingStudent(
-    student=student_user_55, faculty=faculty_1, department=dept_6, student_training_coordinator=coord_user_6, first_name=student_user_55.first_name, last_name=student_user_55.last_name, matrix_no=student_user_55.identification_num, email=student_user_55.email, phone_number=student_user_55.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_56 = TrainingStudent(
-    student=student_user_56, faculty=faculty_1, department=dept_6, student_training_coordinator=coord_user_6, first_name=student_user_56.first_name, last_name=student_user_56.last_name, matrix_no=student_user_56.identification_num, email=student_user_56.email, phone_number=student_user_56.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_57 = TrainingStudent(
-    student=student_user_57, faculty=faculty_1, department=dept_6, student_training_coordinator=coord_user_6, first_name=student_user_57.first_name, last_name=student_user_57.last_name, matrix_no=student_user_57.identification_num, email=student_user_57.email, phone_number=student_user_57.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_58 = TrainingStudent(
-    student=student_user_58, faculty=faculty_1, department=dept_6, student_training_coordinator=coord_user_6, first_name=student_user_58.first_name, last_name=student_user_58.last_name, matrix_no=student_user_58.identification_num, email=student_user_58.email, phone_number=student_user_58.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_59 = TrainingStudent(
-    student=student_user_59, faculty=faculty_1, department=dept_6, student_training_coordinator=coord_user_6, first_name=student_user_59.first_name, last_name=student_user_59.last_name, matrix_no=student_user_59.identification_num, email=student_user_59.email, phone_number=student_user_59.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_60 = TrainingStudent(
-    student=student_user_60, faculty=faculty_1, department=dept_6, student_training_coordinator=coord_user_6, first_name=student_user_60.first_name, last_name=student_user_60.last_name, matrix_no=student_user_60.identification_num, email=student_user_60.email, phone_number=student_user_60.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_51 = Student(
+    student=student_user_51, faculty=faculty_1, department=dept_6, student_coordinator=coord_user_6, first_name=student_user_51.first_name, last_name=student_user_51.last_name, matrix_no=student_user_51.identification_num, email=student_user_51.email, phone_number=student_user_51.phone_number, is_in_school=True)
+student_52 = Student(
+    student=student_user_52, faculty=faculty_1, department=dept_6, student_coordinator=coord_user_6, first_name=student_user_52.first_name, last_name=student_user_52.last_name, matrix_no=student_user_52.identification_num, email=student_user_52.email, phone_number=student_user_52.phone_number, is_in_school=True)
+student_53 = Student(
+    student=student_user_53, faculty=faculty_1, department=dept_6, student_coordinator=coord_user_6, first_name=student_user_53.first_name, last_name=student_user_53.last_name, matrix_no=student_user_53.identification_num, email=student_user_53.email, phone_number=student_user_53.phone_number, is_in_school=True)
+student_54 = Student(
+    student=student_user_54, faculty=faculty_1, department=dept_6, student_coordinator=coord_user_6, first_name=student_user_54.first_name, last_name=student_user_54.last_name, matrix_no=student_user_54.identification_num, email=student_user_54.email, phone_number=student_user_54.phone_number, is_in_school=True)
+student_55 = Student(
+    student=student_user_55, faculty=faculty_1, department=dept_6, student_coordinator=coord_user_6, first_name=student_user_55.first_name, last_name=student_user_55.last_name, matrix_no=student_user_55.identification_num, email=student_user_55.email, phone_number=student_user_55.phone_number, is_in_school=True)
+student_56 = Student(
+    student=student_user_56, faculty=faculty_1, department=dept_6, student_coordinator=coord_user_6, first_name=student_user_56.first_name, last_name=student_user_56.last_name, matrix_no=student_user_56.identification_num, email=student_user_56.email, phone_number=student_user_56.phone_number, is_in_school=True)
+student_57 = Student(
+    student=student_user_57, faculty=faculty_1, department=dept_6, student_coordinator=coord_user_6, first_name=student_user_57.first_name, last_name=student_user_57.last_name, matrix_no=student_user_57.identification_num, email=student_user_57.email, phone_number=student_user_57.phone_number, is_in_school=True)
+student_58 = Student(
+    student=student_user_58, faculty=faculty_1, department=dept_6, student_coordinator=coord_user_6, first_name=student_user_58.first_name, last_name=student_user_58.last_name, matrix_no=student_user_58.identification_num, email=student_user_58.email, phone_number=student_user_58.phone_number, is_in_school=True)
+student_59 = Student(
+    student=student_user_59, faculty=faculty_1, department=dept_6, student_coordinator=coord_user_6, first_name=student_user_59.first_name, last_name=student_user_59.last_name, matrix_no=student_user_59.identification_num, email=student_user_59.email, phone_number=student_user_59.phone_number, is_in_school=True)
+student_60 = Student(
+    student=student_user_60, faculty=faculty_1, department=dept_6, student_coordinator=coord_user_6, first_name=student_user_60.first_name, last_name=student_user_60.last_name, matrix_no=student_user_60.identification_num, email=student_user_60.email, phone_number=student_user_60.phone_number, is_in_school=True)
 
 # Microbiology students
-student_61 = TrainingStudent(
-    student=student_user_61, faculty=faculty_1, department=dept_7, student_training_coordinator=coord_user_7, first_name=student_user_61.first_name, last_name=student_user_61.last_name, matrix_no=student_user_61.identification_num, email=student_user_61.email, phone_number=student_user_61.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_62 = TrainingStudent(
-    student=student_user_62, faculty=faculty_1, department=dept_7, student_training_coordinator=coord_user_7, first_name=student_user_62.first_name, last_name=student_user_62.last_name, matrix_no=student_user_62.identification_num, email=student_user_62.email, phone_number=student_user_62.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_63 = TrainingStudent(
-    student=student_user_63, faculty=faculty_1, department=dept_7, student_training_coordinator=coord_user_7, first_name=student_user_63.first_name, last_name=student_user_63.last_name, matrix_no=student_user_63.identification_num, email=student_user_63.email, phone_number=student_user_63.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_64 = TrainingStudent(
-    student=student_user_64, faculty=faculty_1, department=dept_7, student_training_coordinator=coord_user_7, first_name=student_user_64.first_name, last_name=student_user_64.last_name, matrix_no=student_user_64.identification_num, email=student_user_64.email, phone_number=student_user_64.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_65 = TrainingStudent(
-    student=student_user_65, faculty=faculty_1, department=dept_7, student_training_coordinator=coord_user_7, first_name=student_user_65.first_name, last_name=student_user_65.last_name, matrix_no=student_user_65.identification_num, email=student_user_65.email, phone_number=student_user_65.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_66 = TrainingStudent(
-    student=student_user_66, faculty=faculty_1, department=dept_7, student_training_coordinator=coord_user_7, first_name=student_user_66.first_name, last_name=student_user_66.last_name, matrix_no=student_user_66.identification_num, email=student_user_66.email, phone_number=student_user_66.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_67 = TrainingStudent(
-    student=student_user_67, faculty=faculty_1, department=dept_7, student_training_coordinator=coord_user_7, first_name=student_user_67.first_name, last_name=student_user_67.last_name, matrix_no=student_user_67.identification_num, email=student_user_67.email, phone_number=student_user_67.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_68 = TrainingStudent(
-    student=student_user_68, faculty=faculty_1, department=dept_7, student_training_coordinator=coord_user_7, first_name=student_user_68.first_name, last_name=student_user_68.last_name, matrix_no=student_user_68.identification_num, email=student_user_68.email, phone_number=student_user_68.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_69 = TrainingStudent(
-    student=student_user_69, faculty=faculty_1, department=dept_7, student_training_coordinator=coord_user_29, first_name=student_user_69.first_name, last_name=student_user_69.last_name, matrix_no=student_user_69.identification_num, email=student_user_69.email, phone_number=student_user_69.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_70 = TrainingStudent(
-    student=student_user_70, faculty=faculty_1, department=dept_7, student_training_coordinator=coord_user_7, first_name=student_user_70.first_name, last_name=student_user_70.last_name, matrix_no=student_user_70.identification_num, email=student_user_70.email, phone_number=student_user_70.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_61 = Student(
+    student=student_user_61, faculty=faculty_1, department=dept_7, student_coordinator=coord_user_7, first_name=student_user_61.first_name, last_name=student_user_61.last_name, matrix_no=student_user_61.identification_num, email=student_user_61.email, phone_number=student_user_61.phone_number, is_in_school=True)
+student_62 = Student(
+    student=student_user_62, faculty=faculty_1, department=dept_7, student_coordinator=coord_user_7, first_name=student_user_62.first_name, last_name=student_user_62.last_name, matrix_no=student_user_62.identification_num, email=student_user_62.email, phone_number=student_user_62.phone_number, is_in_school=True)
+student_63 = Student(
+    student=student_user_63, faculty=faculty_1, department=dept_7, student_coordinator=coord_user_7, first_name=student_user_63.first_name, last_name=student_user_63.last_name, matrix_no=student_user_63.identification_num, email=student_user_63.email, phone_number=student_user_63.phone_number, is_in_school=True)
+student_64 = Student(
+    student=student_user_64, faculty=faculty_1, department=dept_7, student_coordinator=coord_user_7, first_name=student_user_64.first_name, last_name=student_user_64.last_name, matrix_no=student_user_64.identification_num, email=student_user_64.email, phone_number=student_user_64.phone_number, is_in_school=True)
+student_65 = Student(
+    student=student_user_65, faculty=faculty_1, department=dept_7, student_coordinator=coord_user_7, first_name=student_user_65.first_name, last_name=student_user_65.last_name, matrix_no=student_user_65.identification_num, email=student_user_65.email, phone_number=student_user_65.phone_number, is_in_school=True)
+student_66 = Student(
+    student=student_user_66, faculty=faculty_1, department=dept_7, student_coordinator=coord_user_7, first_name=student_user_66.first_name, last_name=student_user_66.last_name, matrix_no=student_user_66.identification_num, email=student_user_66.email, phone_number=student_user_66.phone_number, is_in_school=True)
+student_67 = Student(
+    student=student_user_67, faculty=faculty_1, department=dept_7, student_coordinator=coord_user_7, first_name=student_user_67.first_name, last_name=student_user_67.last_name, matrix_no=student_user_67.identification_num, email=student_user_67.email, phone_number=student_user_67.phone_number, is_in_school=True)
+student_68 = Student(
+    student=student_user_68, faculty=faculty_1, department=dept_7, student_coordinator=coord_user_7, first_name=student_user_68.first_name, last_name=student_user_68.last_name, matrix_no=student_user_68.identification_num, email=student_user_68.email, phone_number=student_user_68.phone_number, is_in_school=True)
+student_69 = Student(
+    student=student_user_69, faculty=faculty_1, department=dept_7, student_coordinator=coord_user_29, first_name=student_user_69.first_name, last_name=student_user_69.last_name, matrix_no=student_user_69.identification_num, email=student_user_69.email, phone_number=student_user_69.phone_number, is_in_school=True)
+student_70 = Student(
+    student=student_user_70, faculty=faculty_1, department=dept_7, student_coordinator=coord_user_7, first_name=student_user_70.first_name, last_name=student_user_70.last_name, matrix_no=student_user_70.identification_num, email=student_user_70.email, phone_number=student_user_70.phone_number, is_in_school=True)
 
 # Plant science & biotechnology students
-student_71 = TrainingStudent(
-    student=student_user_71, faculty=faculty_1, department=dept_8, student_training_coordinator=coord_user_8, first_name=student_user_71.first_name, last_name=student_user_71.last_name, matrix_no=student_user_71.identification_num, email=student_user_71.email, phone_number=student_user_71.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_72 = TrainingStudent(
-    student=student_user_72, faculty=faculty_1, department=dept_8, student_training_coordinator=coord_user_8, first_name=student_user_72.first_name, last_name=student_user_72.last_name, matrix_no=student_user_72.identification_num, email=student_user_72.email, phone_number=student_user_72.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_73 = TrainingStudent(
-    student=student_user_73, faculty=faculty_1, department=dept_8, student_training_coordinator=coord_user_8, first_name=student_user_73.first_name, last_name=student_user_73.last_name, matrix_no=student_user_73.identification_num, email=student_user_73.email, phone_number=student_user_73.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_74 = TrainingStudent(
-    student=student_user_74, faculty=faculty_1, department=dept_8, student_training_coordinator=coord_user_8, first_name=student_user_74.first_name, last_name=student_user_74.last_name, matrix_no=student_user_74.identification_num, email=student_user_74.email, phone_number=student_user_74.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_75 = TrainingStudent(
-    student=student_user_75, faculty=faculty_1, department=dept_8, student_training_coordinator=coord_user_8, first_name=student_user_75.first_name, last_name=student_user_75.last_name, matrix_no=student_user_75.identification_num, email=student_user_75.email, phone_number=student_user_75.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_76 = TrainingStudent(
-    student=student_user_76, faculty=faculty_1, department=dept_8, student_training_coordinator=coord_user_8, first_name=student_user_76.first_name, last_name=student_user_76.last_name, matrix_no=student_user_76.identification_num, email=student_user_76.email, phone_number=student_user_76.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_77 = TrainingStudent(
-    student=student_user_77, faculty=faculty_1, department=dept_8, student_training_coordinator=coord_user_8, first_name=student_user_77.first_name, last_name=student_user_77.last_name, matrix_no=student_user_77.identification_num, email=student_user_77.email, phone_number=student_user_77.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_78 = TrainingStudent(
-    student=student_user_78, faculty=faculty_1, department=dept_8, student_training_coordinator=coord_user_8, first_name=student_user_78.first_name, last_name=student_user_78.last_name, matrix_no=student_user_78.identification_num, email=student_user_78.email, phone_number=student_user_78.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_79 = TrainingStudent(
-    student=student_user_79, faculty=faculty_1, department=dept_8, student_training_coordinator=coord_user_8, first_name=student_user_79.first_name, last_name=student_user_79.last_name, matrix_no=student_user_79.identification_num, email=student_user_79.email, phone_number=student_user_79.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_80 = TrainingStudent(
-    student=student_user_80, faculty=faculty_1, department=dept_8, student_training_coordinator=coord_user_8, first_name=student_user_80.first_name, last_name=student_user_80.last_name, matrix_no=student_user_80.identification_num, email=student_user_80.email, phone_number=student_user_80.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_71 = Student(
+    student=student_user_71, faculty=faculty_1, department=dept_8, student_coordinator=coord_user_8, first_name=student_user_71.first_name, last_name=student_user_71.last_name, matrix_no=student_user_71.identification_num, email=student_user_71.email, phone_number=student_user_71.phone_number, is_in_school=True)
+student_72 = Student(
+    student=student_user_72, faculty=faculty_1, department=dept_8, student_coordinator=coord_user_8, first_name=student_user_72.first_name, last_name=student_user_72.last_name, matrix_no=student_user_72.identification_num, email=student_user_72.email, phone_number=student_user_72.phone_number, is_in_school=True)
+student_73 = Student(
+    student=student_user_73, faculty=faculty_1, department=dept_8, student_coordinator=coord_user_8, first_name=student_user_73.first_name, last_name=student_user_73.last_name, matrix_no=student_user_73.identification_num, email=student_user_73.email, phone_number=student_user_73.phone_number, is_in_school=True)
+student_74 = Student(
+    student=student_user_74, faculty=faculty_1, department=dept_8, student_coordinator=coord_user_8, first_name=student_user_74.first_name, last_name=student_user_74.last_name, matrix_no=student_user_74.identification_num, email=student_user_74.email, phone_number=student_user_74.phone_number, is_in_school=True)
+student_75 = Student(
+    student=student_user_75, faculty=faculty_1, department=dept_8, student_coordinator=coord_user_8, first_name=student_user_75.first_name, last_name=student_user_75.last_name, matrix_no=student_user_75.identification_num, email=student_user_75.email, phone_number=student_user_75.phone_number, is_in_school=True)
+student_76 = Student(
+    student=student_user_76, faculty=faculty_1, department=dept_8, student_coordinator=coord_user_8, first_name=student_user_76.first_name, last_name=student_user_76.last_name, matrix_no=student_user_76.identification_num, email=student_user_76.email, phone_number=student_user_76.phone_number, is_in_school=True)
+student_77 = Student(
+    student=student_user_77, faculty=faculty_1, department=dept_8, student_coordinator=coord_user_8, first_name=student_user_77.first_name, last_name=student_user_77.last_name, matrix_no=student_user_77.identification_num, email=student_user_77.email, phone_number=student_user_77.phone_number, is_in_school=True)
+student_78 = Student(
+    student=student_user_78, faculty=faculty_1, department=dept_8, student_coordinator=coord_user_8, first_name=student_user_78.first_name, last_name=student_user_78.last_name, matrix_no=student_user_78.identification_num, email=student_user_78.email, phone_number=student_user_78.phone_number, is_in_school=True)
+student_79 = Student(
+    student=student_user_79, faculty=faculty_1, department=dept_8, student_coordinator=coord_user_8, first_name=student_user_79.first_name, last_name=student_user_79.last_name, matrix_no=student_user_79.identification_num, email=student_user_79.email, phone_number=student_user_79.phone_number, is_in_school=True)
+student_80 = Student(
+    student=student_user_80, faculty=faculty_1, department=dept_8, student_coordinator=coord_user_8, first_name=student_user_80.first_name, last_name=student_user_80.last_name, matrix_no=student_user_80.identification_num, email=student_user_80.email, phone_number=student_user_80.phone_number, is_in_school=True)
 
 # Zoology students
-student_81 = TrainingStudent(
-    student=student_user_81, faculty=faculty_1, department=dept_9, student_training_coordinator=coord_user_9, first_name=student_user_81.first_name, last_name=student_user_81.last_name, matrix_no=student_user_81.identification_num, email=student_user_81.email, phone_number=student_user_81.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_82 = TrainingStudent(
-    student=student_user_82, faculty=faculty_1, department=dept_9, student_training_coordinator=coord_user_9, first_name=student_user_82.first_name, last_name=student_user_82.last_name, matrix_no=student_user_82.identification_num, email=student_user_82.email, phone_number=student_user_82.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_83 = TrainingStudent(
-    student=student_user_83, faculty=faculty_1, department=dept_9, student_training_coordinator=coord_user_9, first_name=student_user_83.first_name, last_name=student_user_83.last_name, matrix_no=student_user_83.identification_num, email=student_user_83.email, phone_number=student_user_83.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_84 = TrainingStudent(
-    student=student_user_84, faculty=faculty_1, department=dept_9, student_training_coordinator=coord_user_9, first_name=student_user_84.first_name, last_name=student_user_84.last_name, matrix_no=student_user_84.identification_num, email=student_user_84.email, phone_number=student_user_84.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_85 = TrainingStudent(
-    student=student_user_85, faculty=faculty_1, department=dept_9, student_training_coordinator=coord_user_9, first_name=student_user_85.first_name, last_name=student_user_85.last_name, matrix_no=student_user_85.identification_num, email=student_user_85.email, phone_number=student_user_85.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_86 = TrainingStudent(
-    student=student_user_86, faculty=faculty_1, department=dept_9, student_training_coordinator=coord_user_18, first_name=student_user_86.first_name, last_name=student_user_86.last_name, matrix_no=student_user_86.identification_num, email=student_user_86.email, phone_number=student_user_86.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_87 = TrainingStudent(
-    student=student_user_87, faculty=faculty_1, department=dept_9, student_training_coordinator=coord_user_9, first_name=student_user_87.first_name, last_name=student_user_87.last_name, matrix_no=student_user_87.identification_num, email=student_user_87.email, phone_number=student_user_87.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_88 = TrainingStudent(
-    student=student_user_88, faculty=faculty_1, department=dept_9, student_training_coordinator=coord_user_9, first_name=student_user_88.first_name, last_name=student_user_88.last_name, matrix_no=student_user_88.identification_num, email=student_user_88.email, phone_number=student_user_88.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_89 = TrainingStudent(
-    student=student_user_89, faculty=faculty_1, department=dept_9, student_training_coordinator=coord_user_9, first_name=student_user_89.first_name, last_name=student_user_89.last_name, matrix_no=student_user_89.identification_num, email=student_user_89.email, phone_number=student_user_89.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_90 = TrainingStudent(
-    student=student_user_90, faculty=faculty_1, department=dept_9, student_training_coordinator=coord_user_9, first_name=student_user_90.first_name, last_name=student_user_90.last_name, matrix_no=student_user_90.identification_num, email=student_user_90.email, phone_number=student_user_90.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_81 = Student(
+    student=student_user_81, faculty=faculty_1, department=dept_9, student_coordinator=coord_user_9, first_name=student_user_81.first_name, last_name=student_user_81.last_name, matrix_no=student_user_81.identification_num, email=student_user_81.email, phone_number=student_user_81.phone_number, is_in_school=True)
+student_82 = Student(
+    student=student_user_82, faculty=faculty_1, department=dept_9, student_coordinator=coord_user_9, first_name=student_user_82.first_name, last_name=student_user_82.last_name, matrix_no=student_user_82.identification_num, email=student_user_82.email, phone_number=student_user_82.phone_number, is_in_school=True)
+student_83 = Student(
+    student=student_user_83, faculty=faculty_1, department=dept_9, student_coordinator=coord_user_9, first_name=student_user_83.first_name, last_name=student_user_83.last_name, matrix_no=student_user_83.identification_num, email=student_user_83.email, phone_number=student_user_83.phone_number, is_in_school=True)
+student_84 = Student(
+    student=student_user_84, faculty=faculty_1, department=dept_9, student_coordinator=coord_user_9, first_name=student_user_84.first_name, last_name=student_user_84.last_name, matrix_no=student_user_84.identification_num, email=student_user_84.email, phone_number=student_user_84.phone_number, is_in_school=True)
+student_85 = Student(
+    student=student_user_85, faculty=faculty_1, department=dept_9, student_coordinator=coord_user_9, first_name=student_user_85.first_name, last_name=student_user_85.last_name, matrix_no=student_user_85.identification_num, email=student_user_85.email, phone_number=student_user_85.phone_number, is_in_school=True)
+student_86 = Student(
+    student=student_user_86, faculty=faculty_1, department=dept_9, student_coordinator=coord_user_18, first_name=student_user_86.first_name, last_name=student_user_86.last_name, matrix_no=student_user_86.identification_num, email=student_user_86.email, phone_number=student_user_86.phone_number, is_in_school=True)
+student_87 = Student(
+    student=student_user_87, faculty=faculty_1, department=dept_9, student_coordinator=coord_user_9, first_name=student_user_87.first_name, last_name=student_user_87.last_name, matrix_no=student_user_87.identification_num, email=student_user_87.email, phone_number=student_user_87.phone_number, is_in_school=True)
+student_88 = Student(
+    student=student_user_88, faculty=faculty_1, department=dept_9, student_coordinator=coord_user_9, first_name=student_user_88.first_name, last_name=student_user_88.last_name, matrix_no=student_user_88.identification_num, email=student_user_88.email, phone_number=student_user_88.phone_number, is_in_school=True)
+student_89 = Student(
+    student=student_user_89, faculty=faculty_1, department=dept_9, student_coordinator=coord_user_9, first_name=student_user_89.first_name, last_name=student_user_89.last_name, matrix_no=student_user_89.identification_num, email=student_user_89.email, phone_number=student_user_89.phone_number, is_in_school=True)
+student_90 = Student(
+    student=student_user_90, faculty=faculty_1, department=dept_9, student_coordinator=coord_user_9, first_name=student_user_90.first_name, last_name=student_user_90.last_name, matrix_no=student_user_90.identification_num, email=student_user_90.email, phone_number=student_user_90.phone_number, is_in_school=True)
 
 # Biology students
-student_91 = TrainingStudent(
-    student=student_user_91, faculty=faculty_1, department=dept_10, student_training_coordinator=coord_user_10, first_name=student_user_91.first_name, last_name=student_user_91.last_name, matrix_no=student_user_91.identification_num, email=student_user_91.email, phone_number=student_user_91.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_92 = TrainingStudent(
-    student=student_user_92, faculty=faculty_1, department=dept_10, student_training_coordinator=coord_user_10, first_name=student_user_92.first_name, last_name=student_user_92.last_name, matrix_no=student_user_92.identification_num, email=student_user_92.email, phone_number=student_user_92.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_93 = TrainingStudent(
-    student=student_user_93, faculty=faculty_1, department=dept_10, student_training_coordinator=coord_user_10, first_name=student_user_93.first_name, last_name=student_user_93.last_name, matrix_no=student_user_93.identification_num, email=student_user_93.email, phone_number=student_user_93.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_94 = TrainingStudent(
-    student=student_user_94, faculty=faculty_1, department=dept_10, student_training_coordinator=coord_user_10, first_name=student_user_94.first_name, last_name=student_user_94.last_name, matrix_no=student_user_94.identification_num, email=student_user_94.email, phone_number=student_user_94.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_95 = TrainingStudent(
-    student=student_user_95, faculty=faculty_1, department=dept_10, student_training_coordinator=coord_user_10, first_name=student_user_95.first_name, last_name=student_user_95.last_name, matrix_no=student_user_95.identification_num, email=student_user_95.email, phone_number=student_user_95.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_96 = TrainingStudent(
-    student=student_user_96, faculty=faculty_1, department=dept_10, student_training_coordinator=coord_user_10, first_name=student_user_96.first_name, last_name=student_user_96.last_name, matrix_no=student_user_96.identification_num, email=student_user_96.email, phone_number=student_user_96.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_97 = TrainingStudent(
-    student=student_user_97, faculty=faculty_1, department=dept_10, student_training_coordinator=coord_user_10, first_name=student_user_97.first_name, last_name=student_user_97.last_name, matrix_no=student_user_97.identification_num, email=student_user_97.email, phone_number=student_user_97.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_98 = TrainingStudent(
-    student=student_user_98, faculty=faculty_1, department=dept_10, student_training_coordinator=coord_user_10, first_name=student_user_98.first_name, last_name=student_user_98.last_name, matrix_no=student_user_98.identification_num, email=student_user_98.email, phone_number=student_user_98.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_99 = TrainingStudent(
-    student=student_user_99, faculty=faculty_1, department=dept_10, student_training_coordinator=coord_user_10, first_name=student_user_99.first_name, last_name=student_user_99.last_name, matrix_no=student_user_99.identification_num, email=student_user_99.email, phone_number=student_user_99.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_100 = TrainingStudent(
-    student=student_user_100, faculty=faculty_1, department=dept_10, student_training_coordinator=coord_user_10, first_name=student_user_100.first_name, last_name=student_user_100.last_name, matrix_no=student_user_100.identification_num, email=student_user_100.email, phone_number=student_user_100.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_91 = Student(
+    student=student_user_91, faculty=faculty_1, department=dept_10, student_coordinator=coord_user_10, first_name=student_user_91.first_name, last_name=student_user_91.last_name, matrix_no=student_user_91.identification_num, email=student_user_91.email, phone_number=student_user_91.phone_number, is_in_school=True)
+student_92 = Student(
+    student=student_user_92, faculty=faculty_1, department=dept_10, student_coordinator=coord_user_10, first_name=student_user_92.first_name, last_name=student_user_92.last_name, matrix_no=student_user_92.identification_num, email=student_user_92.email, phone_number=student_user_92.phone_number, is_in_school=True)
+student_93 = Student(
+    student=student_user_93, faculty=faculty_1, department=dept_10, student_coordinator=coord_user_10, first_name=student_user_93.first_name, last_name=student_user_93.last_name, matrix_no=student_user_93.identification_num, email=student_user_93.email, phone_number=student_user_93.phone_number, is_in_school=True)
+student_94 = Student(
+    student=student_user_94, faculty=faculty_1, department=dept_10, student_coordinator=coord_user_10, first_name=student_user_94.first_name, last_name=student_user_94.last_name, matrix_no=student_user_94.identification_num, email=student_user_94.email, phone_number=student_user_94.phone_number, is_in_school=True)
+student_95 = Student(
+    student=student_user_95, faculty=faculty_1, department=dept_10, student_coordinator=coord_user_10, first_name=student_user_95.first_name, last_name=student_user_95.last_name, matrix_no=student_user_95.identification_num, email=student_user_95.email, phone_number=student_user_95.phone_number, is_in_school=True)
+student_96 = Student(
+    student=student_user_96, faculty=faculty_1, department=dept_10, student_coordinator=coord_user_10, first_name=student_user_96.first_name, last_name=student_user_96.last_name, matrix_no=student_user_96.identification_num, email=student_user_96.email, phone_number=student_user_96.phone_number, is_in_school=True)
+student_97 = Student(
+    student=student_user_97, faculty=faculty_1, department=dept_10, student_coordinator=coord_user_10, first_name=student_user_97.first_name, last_name=student_user_97.last_name, matrix_no=student_user_97.identification_num, email=student_user_97.email, phone_number=student_user_97.phone_number, is_in_school=True)
+student_98 = Student(
+    student=student_user_98, faculty=faculty_1, department=dept_10, student_coordinator=coord_user_10, first_name=student_user_98.first_name, last_name=student_user_98.last_name, matrix_no=student_user_98.identification_num, email=student_user_98.email, phone_number=student_user_98.phone_number, is_in_school=True)
+student_99 = Student(
+    student=student_user_99, faculty=faculty_1, department=dept_10, student_coordinator=coord_user_10, first_name=student_user_99.first_name, last_name=student_user_99.last_name, matrix_no=student_user_99.identification_num, email=student_user_99.email, phone_number=student_user_99.phone_number, is_in_school=True)
+student_100 = Student(
+    student=student_user_100, faculty=faculty_1, department=dept_10, student_coordinator=coord_user_10, first_name=student_user_100.first_name, last_name=student_user_100.last_name, matrix_no=student_user_100.identification_num, email=student_user_100.email, phone_number=student_user_100.phone_number, is_in_school=True)
 
 # Arabic Language students
-student_101 = TrainingStudent(
-    student=student_user_101, faculty=faculty_2, department=dept_11, student_training_coordinator=coord_user_11, first_name=student_user_101.first_name, last_name=student_user_101.last_name, matrix_no=student_user_101.identification_num, email=student_user_101.email, phone_number=student_user_101.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_102 = TrainingStudent(
-    student=student_user_102, faculty=faculty_2, department=dept_11, student_training_coordinator=coord_user_11, first_name=student_user_102.first_name, last_name=student_user_102.last_name, matrix_no=student_user_102.identification_num, email=student_user_102.email, phone_number=student_user_102.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_103 = TrainingStudent(
-    student=student_user_103, faculty=faculty_2, department=dept_11, student_training_coordinator=coord_user_11, first_name=student_user_103.first_name, last_name=student_user_103.last_name, matrix_no=student_user_103.identification_num, email=student_user_103.email, phone_number=student_user_103.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_104 = TrainingStudent(
-    student=student_user_104, faculty=faculty_2, department=dept_11, student_training_coordinator=coord_user_11, first_name=student_user_104.first_name, last_name=student_user_104.last_name, matrix_no=student_user_104.identification_num, email=student_user_104.email, phone_number=student_user_104.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_105 = TrainingStudent(
-    student=student_user_105, faculty=faculty_2, department=dept_11, student_training_coordinator=coord_user_11, first_name=student_user_105.first_name, last_name=student_user_105.last_name, matrix_no=student_user_105.identification_num, email=student_user_105.email, phone_number=student_user_105.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_106 = TrainingStudent(
-    student=student_user_106, faculty=faculty_2, department=dept_11, student_training_coordinator=coord_user_11, first_name=student_user_106.first_name, last_name=student_user_106.last_name, matrix_no=student_user_106.identification_num, email=student_user_106.email, phone_number=student_user_106.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_107 = TrainingStudent(
-    student=student_user_107, faculty=faculty_2, department=dept_11, student_training_coordinator=coord_user_11, first_name=student_user_107.first_name, last_name=student_user_107.last_name, matrix_no=student_user_107.identification_num, email=student_user_107.email, phone_number=student_user_107.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_108 = TrainingStudent(
-    student=student_user_108, faculty=faculty_2, department=dept_11, student_training_coordinator=coord_user_11, first_name=student_user_108.first_name, last_name=student_user_108.last_name, matrix_no=student_user_108.identification_num, email=student_user_108.email, phone_number=student_user_108.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_109 = TrainingStudent(
-    student=student_user_109, faculty=faculty_2, department=dept_11, student_training_coordinator=coord_user_11, first_name=student_user_109.first_name, last_name=student_user_109.last_name, matrix_no=student_user_109.identification_num, email=student_user_109.email, phone_number=student_user_109.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_110 = TrainingStudent(
-    student=student_user_110, faculty=faculty_2, department=dept_11, student_training_coordinator=coord_user_11, first_name=student_user_110.first_name, last_name=student_user_110.last_name, matrix_no=student_user_110.identification_num, email=student_user_110.email, phone_number=student_user_110.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_101 = Student(
+    student=student_user_101, faculty=faculty_2, department=dept_11, student_coordinator=coord_user_11, first_name=student_user_101.first_name, last_name=student_user_101.last_name, matrix_no=student_user_101.identification_num, email=student_user_101.email, phone_number=student_user_101.phone_number, is_in_school=True)
+student_102 = Student(
+    student=student_user_102, faculty=faculty_2, department=dept_11, student_coordinator=coord_user_11, first_name=student_user_102.first_name, last_name=student_user_102.last_name, matrix_no=student_user_102.identification_num, email=student_user_102.email, phone_number=student_user_102.phone_number, is_in_school=True)
+student_103 = Student(
+    student=student_user_103, faculty=faculty_2, department=dept_11, student_coordinator=coord_user_11, first_name=student_user_103.first_name, last_name=student_user_103.last_name, matrix_no=student_user_103.identification_num, email=student_user_103.email, phone_number=student_user_103.phone_number, is_in_school=True)
+student_104 = Student(
+    student=student_user_104, faculty=faculty_2, department=dept_11, student_coordinator=coord_user_11, first_name=student_user_104.first_name, last_name=student_user_104.last_name, matrix_no=student_user_104.identification_num, email=student_user_104.email, phone_number=student_user_104.phone_number, is_in_school=True)
+student_105 = Student(
+    student=student_user_105, faculty=faculty_2, department=dept_11, student_coordinator=coord_user_11, first_name=student_user_105.first_name, last_name=student_user_105.last_name, matrix_no=student_user_105.identification_num, email=student_user_105.email, phone_number=student_user_105.phone_number, is_in_school=True)
+student_106 = Student(
+    student=student_user_106, faculty=faculty_2, department=dept_11, student_coordinator=coord_user_11, first_name=student_user_106.first_name, last_name=student_user_106.last_name, matrix_no=student_user_106.identification_num, email=student_user_106.email, phone_number=student_user_106.phone_number, is_in_school=True)
+student_107 = Student(
+    student=student_user_107, faculty=faculty_2, department=dept_11, student_coordinator=coord_user_11, first_name=student_user_107.first_name, last_name=student_user_107.last_name, matrix_no=student_user_107.identification_num, email=student_user_107.email, phone_number=student_user_107.phone_number, is_in_school=True)
+student_108 = Student(
+    student=student_user_108, faculty=faculty_2, department=dept_11, student_coordinator=coord_user_11, first_name=student_user_108.first_name, last_name=student_user_108.last_name, matrix_no=student_user_108.identification_num, email=student_user_108.email, phone_number=student_user_108.phone_number, is_in_school=True)
+student_109 = Student(
+    student=student_user_109, faculty=faculty_2, department=dept_11, student_coordinator=coord_user_11, first_name=student_user_109.first_name, last_name=student_user_109.last_name, matrix_no=student_user_109.identification_num, email=student_user_109.email, phone_number=student_user_109.phone_number, is_in_school=True)
+student_110 = Student(
+    student=student_user_110, faculty=faculty_2, department=dept_11, student_coordinator=coord_user_11, first_name=student_user_110.first_name, last_name=student_user_110.last_name, matrix_no=student_user_110.identification_num, email=student_user_110.email, phone_number=student_user_110.phone_number, is_in_school=True)
 
 # English Language students
-student_111 = TrainingStudent(
-    student=student_user_111, faculty=faculty_2, department=dept_12, student_training_coordinator=coord_user_12, first_name=student_user_111.first_name, last_name=student_user_111.last_name, matrix_no=student_user_111.identification_num, email=student_user_111.email, phone_number=student_user_111.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_112 = TrainingStudent(
-    student=student_user_112, faculty=faculty_2, department=dept_12, student_training_coordinator=coord_user_12, first_name=student_user_112.first_name, last_name=student_user_112.last_name, matrix_no=student_user_112.identification_num, email=student_user_112.email, phone_number=student_user_112.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_113 = TrainingStudent(
-    student=student_user_113, faculty=faculty_2, department=dept_12, student_training_coordinator=coord_user_12, first_name=student_user_113.first_name, last_name=student_user_113.last_name, matrix_no=student_user_113.identification_num, email=student_user_113.email, phone_number=student_user_113.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_114 = TrainingStudent(
-    student=student_user_114, faculty=faculty_2, department=dept_12, student_training_coordinator=coord_user_12, first_name=student_user_114.first_name, last_name=student_user_114.last_name, matrix_no=student_user_114.identification_num, email=student_user_114.email, phone_number=student_user_114.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_115 = TrainingStudent(
-    student=student_user_115, faculty=faculty_2, department=dept_12, student_training_coordinator=coord_user_12, first_name=student_user_115.first_name, last_name=student_user_115.last_name, matrix_no=student_user_115.identification_num, email=student_user_115.email, phone_number=student_user_115.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_116 = TrainingStudent(
-    student=student_user_116, faculty=faculty_2, department=dept_12, student_training_coordinator=coord_user_12, first_name=student_user_116.first_name, last_name=student_user_116.last_name, matrix_no=student_user_116.identification_num, email=student_user_116.email, phone_number=student_user_116.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_117 = TrainingStudent(
-    student=student_user_117, faculty=faculty_2, department=dept_12, student_training_coordinator=coord_user_12, first_name=student_user_117.first_name, last_name=student_user_117.last_name, matrix_no=student_user_117.identification_num, email=student_user_117.email, phone_number=student_user_117.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_118 = TrainingStudent(
-    student=student_user_118, faculty=faculty_2, department=dept_12, student_training_coordinator=coord_user_12, first_name=student_user_118.first_name, last_name=student_user_118.last_name, matrix_no=student_user_118.identification_num, email=student_user_118.email, phone_number=student_user_118.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_119 = TrainingStudent(
-    student=student_user_119, faculty=faculty_2, department=dept_12, student_training_coordinator=coord_user_12, first_name=student_user_119.first_name, last_name=student_user_119.last_name, matrix_no=student_user_119.identification_num, email=student_user_119.email, phone_number=student_user_119.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_120 = TrainingStudent(
-    student=student_user_120, faculty=faculty_2, department=dept_12, student_training_coordinator=coord_user_12, first_name=student_user_120.first_name, last_name=student_user_120.last_name, matrix_no=student_user_120.identification_num, email=student_user_120.email, phone_number=student_user_120.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_111 = Student(
+    student=student_user_111, faculty=faculty_2, department=dept_12, student_coordinator=coord_user_12, first_name=student_user_111.first_name, last_name=student_user_111.last_name, matrix_no=student_user_111.identification_num, email=student_user_111.email, phone_number=student_user_111.phone_number, is_in_school=True)
+student_112 = Student(
+    student=student_user_112, faculty=faculty_2, department=dept_12, student_coordinator=coord_user_12, first_name=student_user_112.first_name, last_name=student_user_112.last_name, matrix_no=student_user_112.identification_num, email=student_user_112.email, phone_number=student_user_112.phone_number, is_in_school=True)
+student_113 = Student(
+    student=student_user_113, faculty=faculty_2, department=dept_12, student_coordinator=coord_user_12, first_name=student_user_113.first_name, last_name=student_user_113.last_name, matrix_no=student_user_113.identification_num, email=student_user_113.email, phone_number=student_user_113.phone_number, is_in_school=True)
+student_114 = Student(
+    student=student_user_114, faculty=faculty_2, department=dept_12, student_coordinator=coord_user_12, first_name=student_user_114.first_name, last_name=student_user_114.last_name, matrix_no=student_user_114.identification_num, email=student_user_114.email, phone_number=student_user_114.phone_number, is_in_school=True)
+student_115 = Student(
+    student=student_user_115, faculty=faculty_2, department=dept_12, student_coordinator=coord_user_12, first_name=student_user_115.first_name, last_name=student_user_115.last_name, matrix_no=student_user_115.identification_num, email=student_user_115.email, phone_number=student_user_115.phone_number, is_in_school=True)
+student_116 = Student(
+    student=student_user_116, faculty=faculty_2, department=dept_12, student_coordinator=coord_user_12, first_name=student_user_116.first_name, last_name=student_user_116.last_name, matrix_no=student_user_116.identification_num, email=student_user_116.email, phone_number=student_user_116.phone_number, is_in_school=True)
+student_117 = Student(
+    student=student_user_117, faculty=faculty_2, department=dept_12, student_coordinator=coord_user_12, first_name=student_user_117.first_name, last_name=student_user_117.last_name, matrix_no=student_user_117.identification_num, email=student_user_117.email, phone_number=student_user_117.phone_number, is_in_school=True)
+student_118 = Student(
+    student=student_user_118, faculty=faculty_2, department=dept_12, student_coordinator=coord_user_12, first_name=student_user_118.first_name, last_name=student_user_118.last_name, matrix_no=student_user_118.identification_num, email=student_user_118.email, phone_number=student_user_118.phone_number, is_in_school=True)
+student_119 = Student(
+    student=student_user_119, faculty=faculty_2, department=dept_12, student_coordinator=coord_user_12, first_name=student_user_119.first_name, last_name=student_user_119.last_name, matrix_no=student_user_119.identification_num, email=student_user_119.email, phone_number=student_user_119.phone_number, is_in_school=True)
+student_120 = Student(
+    student=student_user_120, faculty=faculty_2, department=dept_12, student_coordinator=coord_user_12, first_name=student_user_120.first_name, last_name=student_user_120.last_name, matrix_no=student_user_120.identification_num, email=student_user_120.email, phone_number=student_user_120.phone_number, is_in_school=True)
 
 # French students
-student_121 = TrainingStudent(
-    student=student_user_121, faculty=faculty_2, department=dept_13, student_training_coordinator=coord_user_13, first_name=student_user_121.first_name, last_name=student_user_121.last_name, matrix_no=student_user_121.identification_num, email=student_user_121.email, phone_number=student_user_121.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_122 = TrainingStudent(
-    student=student_user_122, faculty=faculty_2, department=dept_13, student_training_coordinator=coord_user_13, first_name=student_user_122.first_name, last_name=student_user_122.last_name, matrix_no=student_user_122.identification_num, email=student_user_122.email, phone_number=student_user_122.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_123 = TrainingStudent(
-    student=student_user_123, faculty=faculty_2, department=dept_13, student_training_coordinator=coord_user_13, first_name=student_user_123.first_name, last_name=student_user_123.last_name, matrix_no=student_user_123.identification_num, email=student_user_123.email, phone_number=student_user_123.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_124 = TrainingStudent(
-    student=student_user_124, faculty=faculty_2, department=dept_13, student_training_coordinator=coord_user_13, first_name=student_user_124.first_name, last_name=student_user_124.last_name, matrix_no=student_user_124.identification_num, email=student_user_124.email, phone_number=student_user_124.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_125 = TrainingStudent(
-    student=student_user_125, faculty=faculty_2, department=dept_13, student_training_coordinator=coord_user_13, first_name=student_user_125.first_name, last_name=student_user_125.last_name, matrix_no=student_user_125.identification_num, email=student_user_125.email, phone_number=student_user_125.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_126 = TrainingStudent(
-    student=student_user_126, faculty=faculty_2, department=dept_13, student_training_coordinator=coord_user_13, first_name=student_user_126.first_name, last_name=student_user_126.last_name, matrix_no=student_user_126.identification_num, email=student_user_126.email, phone_number=student_user_126.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_127 = TrainingStudent(
-    student=student_user_127, faculty=faculty_2, department=dept_13, student_training_coordinator=coord_user_13, first_name=student_user_127.first_name, last_name=student_user_127.last_name, matrix_no=student_user_127.identification_num, email=student_user_127.email, phone_number=student_user_127.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_128 = TrainingStudent(
-    student=student_user_128, faculty=faculty_2, department=dept_13, student_training_coordinator=coord_user_13, first_name=student_user_128.first_name, last_name=student_user_128.last_name, matrix_no=student_user_128.identification_num, email=student_user_128.email, phone_number=student_user_128.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_129 = TrainingStudent(
-    student=student_user_129, faculty=faculty_2, department=dept_13, student_training_coordinator=coord_user_13, first_name=student_user_129.first_name, last_name=student_user_129.last_name, matrix_no=student_user_129.identification_num, email=student_user_129.email, phone_number=student_user_129.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_130 = TrainingStudent(
-    student=student_user_130, faculty=faculty_2, department=dept_13, student_training_coordinator=coord_user_13, first_name=student_user_130.first_name, last_name=student_user_130.last_name, matrix_no=student_user_130.identification_num, email=student_user_130.email, phone_number=student_user_130.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_121 = Student(
+    student=student_user_121, faculty=faculty_2, department=dept_13, student_coordinator=coord_user_13, first_name=student_user_121.first_name, last_name=student_user_121.last_name, matrix_no=student_user_121.identification_num, email=student_user_121.email, phone_number=student_user_121.phone_number, is_in_school=True)
+student_122 = Student(
+    student=student_user_122, faculty=faculty_2, department=dept_13, student_coordinator=coord_user_13, first_name=student_user_122.first_name, last_name=student_user_122.last_name, matrix_no=student_user_122.identification_num, email=student_user_122.email, phone_number=student_user_122.phone_number, is_in_school=True)
+student_123 = Student(
+    student=student_user_123, faculty=faculty_2, department=dept_13, student_coordinator=coord_user_13, first_name=student_user_123.first_name, last_name=student_user_123.last_name, matrix_no=student_user_123.identification_num, email=student_user_123.email, phone_number=student_user_123.phone_number, is_in_school=True)
+student_124 = Student(
+    student=student_user_124, faculty=faculty_2, department=dept_13, student_coordinator=coord_user_13, first_name=student_user_124.first_name, last_name=student_user_124.last_name, matrix_no=student_user_124.identification_num, email=student_user_124.email, phone_number=student_user_124.phone_number, is_in_school=True)
+student_125 = Student(
+    student=student_user_125, faculty=faculty_2, department=dept_13, student_coordinator=coord_user_13, first_name=student_user_125.first_name, last_name=student_user_125.last_name, matrix_no=student_user_125.identification_num, email=student_user_125.email, phone_number=student_user_125.phone_number, is_in_school=True)
+student_126 = Student(
+    student=student_user_126, faculty=faculty_2, department=dept_13, student_coordinator=coord_user_13, first_name=student_user_126.first_name, last_name=student_user_126.last_name, matrix_no=student_user_126.identification_num, email=student_user_126.email, phone_number=student_user_126.phone_number, is_in_school=True)
+student_127 = Student(
+    student=student_user_127, faculty=faculty_2, department=dept_13, student_coordinator=coord_user_13, first_name=student_user_127.first_name, last_name=student_user_127.last_name, matrix_no=student_user_127.identification_num, email=student_user_127.email, phone_number=student_user_127.phone_number, is_in_school=True)
+student_128 = Student(
+    student=student_user_128, faculty=faculty_2, department=dept_13, student_coordinator=coord_user_13, first_name=student_user_128.first_name, last_name=student_user_128.last_name, matrix_no=student_user_128.identification_num, email=student_user_128.email, phone_number=student_user_128.phone_number, is_in_school=True)
+student_129 = Student(
+    student=student_user_129, faculty=faculty_2, department=dept_13, student_coordinator=coord_user_13, first_name=student_user_129.first_name, last_name=student_user_129.last_name, matrix_no=student_user_129.identification_num, email=student_user_129.email, phone_number=student_user_129.phone_number, is_in_school=True)
+student_130 = Student(
+    student=student_user_130, faculty=faculty_2, department=dept_13, student_coordinator=coord_user_13, first_name=student_user_130.first_name, last_name=student_user_130.last_name, matrix_no=student_user_130.identification_num, email=student_user_130.email, phone_number=student_user_130.phone_number, is_in_school=True)
 
 # Hausa students
-student_131 = TrainingStudent(
-    student=student_user_131, faculty=faculty_2, department=dept_14, student_training_coordinator=coord_user_14, first_name=student_user_131.first_name, last_name=student_user_131.last_name, matrix_no=student_user_131.identification_num, email=student_user_131.email, phone_number=student_user_131.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_132 = TrainingStudent(
-    student=student_user_132, faculty=faculty_2, department=dept_14, student_training_coordinator=coord_user_14, first_name=student_user_132.first_name, last_name=student_user_132.last_name, matrix_no=student_user_132.identification_num, email=student_user_132.email, phone_number=student_user_132.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_133 = TrainingStudent(
-    student=student_user_133, faculty=faculty_2, department=dept_14, student_training_coordinator=coord_user_14, first_name=student_user_133.first_name, last_name=student_user_133.last_name, matrix_no=student_user_133.identification_num, email=student_user_133.email, phone_number=student_user_133.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_134 = TrainingStudent(
-    student=student_user_134, faculty=faculty_2, department=dept_14, student_training_coordinator=coord_user_14, first_name=student_user_134.first_name, last_name=student_user_134.last_name, matrix_no=student_user_134.identification_num, email=student_user_134.email, phone_number=student_user_134.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_135 = TrainingStudent(
-    student=student_user_135, faculty=faculty_2, department=dept_14, student_training_coordinator=coord_user_14, first_name=student_user_135.first_name, last_name=student_user_135.last_name, matrix_no=student_user_135.identification_num, email=student_user_135.email, phone_number=student_user_135.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_136 = TrainingStudent(
-    student=student_user_136, faculty=faculty_2, department=dept_14, student_training_coordinator=coord_user_14, first_name=student_user_136.first_name, last_name=student_user_136.last_name, matrix_no=student_user_136.identification_num, email=student_user_136.email, phone_number=student_user_136.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_137 = TrainingStudent(
-    student=student_user_137, faculty=faculty_2, department=dept_14, student_training_coordinator=coord_user_14, first_name=student_user_137.first_name, last_name=student_user_137.last_name, matrix_no=student_user_137.identification_num, email=student_user_137.email, phone_number=student_user_137.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_138 = TrainingStudent(
-    student=student_user_138, faculty=faculty_2, department=dept_14, student_training_coordinator=coord_user_14, first_name=student_user_138.first_name, last_name=student_user_138.last_name, matrix_no=student_user_138.identification_num, email=student_user_138.email, phone_number=student_user_138.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_139 = TrainingStudent(
-    student=student_user_139, faculty=faculty_2, department=dept_14, student_training_coordinator=coord_user_14, first_name=student_user_139.first_name, last_name=student_user_139.last_name, matrix_no=student_user_139.identification_num, email=student_user_139.email, phone_number=student_user_139.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_140 = TrainingStudent(
-    student=student_user_140, faculty=faculty_2, department=dept_14, student_training_coordinator=coord_user_14, first_name=student_user_140.first_name, last_name=student_user_140.last_name, matrix_no=student_user_140.identification_num, email=student_user_140.email, phone_number=student_user_140.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_131 = Student(
+    student=student_user_131, faculty=faculty_2, department=dept_14, student_coordinator=coord_user_14, first_name=student_user_131.first_name, last_name=student_user_131.last_name, matrix_no=student_user_131.identification_num, email=student_user_131.email, phone_number=student_user_131.phone_number, is_in_school=True)
+student_132 = Student(
+    student=student_user_132, faculty=faculty_2, department=dept_14, student_coordinator=coord_user_14, first_name=student_user_132.first_name, last_name=student_user_132.last_name, matrix_no=student_user_132.identification_num, email=student_user_132.email, phone_number=student_user_132.phone_number, is_in_school=True)
+student_133 = Student(
+    student=student_user_133, faculty=faculty_2, department=dept_14, student_coordinator=coord_user_14, first_name=student_user_133.first_name, last_name=student_user_133.last_name, matrix_no=student_user_133.identification_num, email=student_user_133.email, phone_number=student_user_133.phone_number, is_in_school=True)
+student_134 = Student(
+    student=student_user_134, faculty=faculty_2, department=dept_14, student_coordinator=coord_user_14, first_name=student_user_134.first_name, last_name=student_user_134.last_name, matrix_no=student_user_134.identification_num, email=student_user_134.email, phone_number=student_user_134.phone_number, is_in_school=True)
+student_135 = Student(
+    student=student_user_135, faculty=faculty_2, department=dept_14, student_coordinator=coord_user_14, first_name=student_user_135.first_name, last_name=student_user_135.last_name, matrix_no=student_user_135.identification_num, email=student_user_135.email, phone_number=student_user_135.phone_number, is_in_school=True)
+student_136 = Student(
+    student=student_user_136, faculty=faculty_2, department=dept_14, student_coordinator=coord_user_14, first_name=student_user_136.first_name, last_name=student_user_136.last_name, matrix_no=student_user_136.identification_num, email=student_user_136.email, phone_number=student_user_136.phone_number, is_in_school=True)
+student_137 = Student(
+    student=student_user_137, faculty=faculty_2, department=dept_14, student_coordinator=coord_user_14, first_name=student_user_137.first_name, last_name=student_user_137.last_name, matrix_no=student_user_137.identification_num, email=student_user_137.email, phone_number=student_user_137.phone_number, is_in_school=True)
+student_138 = Student(
+    student=student_user_138, faculty=faculty_2, department=dept_14, student_coordinator=coord_user_14, first_name=student_user_138.first_name, last_name=student_user_138.last_name, matrix_no=student_user_138.identification_num, email=student_user_138.email, phone_number=student_user_138.phone_number, is_in_school=True)
+student_139 = Student(
+    student=student_user_139, faculty=faculty_2, department=dept_14, student_coordinator=coord_user_14, first_name=student_user_139.first_name, last_name=student_user_139.last_name, matrix_no=student_user_139.identification_num, email=student_user_139.email, phone_number=student_user_139.phone_number, is_in_school=True)
+student_140 = Student(
+    student=student_user_140, faculty=faculty_2, department=dept_14, student_coordinator=coord_user_14, first_name=student_user_140.first_name, last_name=student_user_140.last_name, matrix_no=student_user_140.identification_num, email=student_user_140.email, phone_number=student_user_140.phone_number, is_in_school=True)
 
 # History students
-student_141 = TrainingStudent(
-    student=student_user_141, faculty=faculty_2, department=dept_15, student_training_coordinator=coord_user_15, first_name=student_user_141.first_name, last_name=student_user_141.last_name, matrix_no=student_user_141.identification_num, email=student_user_141.email, phone_number=student_user_141.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_142 = TrainingStudent(
-    student=student_user_142, faculty=faculty_2, department=dept_15, student_training_coordinator=coord_user_15, first_name=student_user_142.first_name, last_name=student_user_142.last_name, matrix_no=student_user_142.identification_num, email=student_user_142.email, phone_number=student_user_142.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_143 = TrainingStudent(
-    student=student_user_143, faculty=faculty_2, department=dept_15, student_training_coordinator=coord_user_15, first_name=student_user_143.first_name, last_name=student_user_143.last_name, matrix_no=student_user_143.identification_num, email=student_user_143.email, phone_number=student_user_143.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_144 = TrainingStudent(
-    student=student_user_144, faculty=faculty_2, department=dept_15, student_training_coordinator=coord_user_15, first_name=student_user_144.first_name, last_name=student_user_144.last_name, matrix_no=student_user_144.identification_num, email=student_user_144.email, phone_number=student_user_144.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_145 = TrainingStudent(
-    student=student_user_145, faculty=faculty_2, department=dept_15, student_training_coordinator=coord_user_15, first_name=student_user_145.first_name, last_name=student_user_145.last_name, matrix_no=student_user_145.identification_num, email=student_user_145.email, phone_number=student_user_145.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_146 = TrainingStudent(
-    student=student_user_146, faculty=faculty_2, department=dept_15, student_training_coordinator=coord_user_15, first_name=student_user_146.first_name, last_name=student_user_146.last_name, matrix_no=student_user_146.identification_num, email=student_user_146.email, phone_number=student_user_146.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_147 = TrainingStudent(
-    student=student_user_147, faculty=faculty_2, department=dept_15, student_training_coordinator=coord_user_15, first_name=student_user_147.first_name, last_name=student_user_147.last_name, matrix_no=student_user_147.identification_num, email=student_user_147.email, phone_number=student_user_147.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_148 = TrainingStudent(
-    student=student_user_148, faculty=faculty_2, department=dept_15, student_training_coordinator=coord_user_15, first_name=student_user_148.first_name, last_name=student_user_148.last_name, matrix_no=student_user_148.identification_num, email=student_user_148.email, phone_number=student_user_148.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_149 = TrainingStudent(
-    student=student_user_149, faculty=faculty_2, department=dept_15, student_training_coordinator=coord_user_15, first_name=student_user_149.first_name, last_name=student_user_149.last_name, matrix_no=student_user_149.identification_num, email=student_user_149.email, phone_number=student_user_149.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_150 = TrainingStudent(
-    student=student_user_150, faculty=faculty_2, department=dept_15, student_training_coordinator=coord_user_15, first_name=student_user_150.first_name, last_name=student_user_150.last_name, matrix_no=student_user_150.identification_num, email=student_user_150.email, phone_number=student_user_150.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_141 = Student(
+    student=student_user_141, faculty=faculty_2, department=dept_15, student_coordinator=coord_user_15, first_name=student_user_141.first_name, last_name=student_user_141.last_name, matrix_no=student_user_141.identification_num, email=student_user_141.email, phone_number=student_user_141.phone_number, is_in_school=True)
+student_142 = Student(
+    student=student_user_142, faculty=faculty_2, department=dept_15, student_coordinator=coord_user_15, first_name=student_user_142.first_name, last_name=student_user_142.last_name, matrix_no=student_user_142.identification_num, email=student_user_142.email, phone_number=student_user_142.phone_number, is_in_school=True)
+student_143 = Student(
+    student=student_user_143, faculty=faculty_2, department=dept_15, student_coordinator=coord_user_15, first_name=student_user_143.first_name, last_name=student_user_143.last_name, matrix_no=student_user_143.identification_num, email=student_user_143.email, phone_number=student_user_143.phone_number, is_in_school=True)
+student_144 = Student(
+    student=student_user_144, faculty=faculty_2, department=dept_15, student_coordinator=coord_user_15, first_name=student_user_144.first_name, last_name=student_user_144.last_name, matrix_no=student_user_144.identification_num, email=student_user_144.email, phone_number=student_user_144.phone_number, is_in_school=True)
+student_145 = Student(
+    student=student_user_145, faculty=faculty_2, department=dept_15, student_coordinator=coord_user_15, first_name=student_user_145.first_name, last_name=student_user_145.last_name, matrix_no=student_user_145.identification_num, email=student_user_145.email, phone_number=student_user_145.phone_number, is_in_school=True)
+student_146 = Student(
+    student=student_user_146, faculty=faculty_2, department=dept_15, student_coordinator=coord_user_15, first_name=student_user_146.first_name, last_name=student_user_146.last_name, matrix_no=student_user_146.identification_num, email=student_user_146.email, phone_number=student_user_146.phone_number, is_in_school=True)
+student_147 = Student(
+    student=student_user_147, faculty=faculty_2, department=dept_15, student_coordinator=coord_user_15, first_name=student_user_147.first_name, last_name=student_user_147.last_name, matrix_no=student_user_147.identification_num, email=student_user_147.email, phone_number=student_user_147.phone_number, is_in_school=True)
+student_148 = Student(
+    student=student_user_148, faculty=faculty_2, department=dept_15, student_coordinator=coord_user_15, first_name=student_user_148.first_name, last_name=student_user_148.last_name, matrix_no=student_user_148.identification_num, email=student_user_148.email, phone_number=student_user_148.phone_number, is_in_school=True)
+student_149 = Student(
+    student=student_user_149, faculty=faculty_2, department=dept_15, student_coordinator=coord_user_15, first_name=student_user_149.first_name, last_name=student_user_149.last_name, matrix_no=student_user_149.identification_num, email=student_user_149.email, phone_number=student_user_149.phone_number, is_in_school=True)
+student_150 = Student(
+    student=student_user_150, faculty=faculty_2, department=dept_15, student_coordinator=coord_user_15, first_name=student_user_150.first_name, last_name=student_user_150.last_name, matrix_no=student_user_150.identification_num, email=student_user_150.email, phone_number=student_user_150.phone_number, is_in_school=True)
 
 # Islamic Studies students
-student_151 = TrainingStudent(
-    student=student_user_151, faculty=faculty_2, department=dept_16, student_training_coordinator=coord_user_16, first_name=student_user_151.first_name, last_name=student_user_151.last_name, matrix_no=student_user_151.identification_num, email=student_user_151.email, phone_number=student_user_151.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_152 = TrainingStudent(
-    student=student_user_152, faculty=faculty_2, department=dept_16, student_training_coordinator=coord_user_16, first_name=student_user_152.first_name, last_name=student_user_152.last_name, matrix_no=student_user_152.identification_num, email=student_user_152.email, phone_number=student_user_152.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_153 = TrainingStudent(
-    student=student_user_153, faculty=faculty_2, department=dept_16, student_training_coordinator=coord_user_16, first_name=student_user_153.first_name, last_name=student_user_153.last_name, matrix_no=student_user_153.identification_num, email=student_user_153.email, phone_number=student_user_153.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_154 = TrainingStudent(
-    student=student_user_154, faculty=faculty_2, department=dept_16, student_training_coordinator=coord_user_16, first_name=student_user_154.first_name, last_name=student_user_154.last_name, matrix_no=student_user_154.identification_num, email=student_user_154.email, phone_number=student_user_154.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_155 = TrainingStudent(
-    student=student_user_155, faculty=faculty_2, department=dept_16, student_training_coordinator=coord_user_16, first_name=student_user_155.first_name, last_name=student_user_155.last_name, matrix_no=student_user_155.identification_num, email=student_user_155.email, phone_number=student_user_155.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_156 = TrainingStudent(
-    student=student_user_156, faculty=faculty_2, department=dept_16, student_training_coordinator=coord_user_16, first_name=student_user_156.first_name, last_name=student_user_156.last_name, matrix_no=student_user_156.identification_num, email=student_user_156.email, phone_number=student_user_156.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_157 = TrainingStudent(
-    student=student_user_157, faculty=faculty_2, department=dept_16, student_training_coordinator=coord_user_16, first_name=student_user_157.first_name, last_name=student_user_157.last_name, matrix_no=student_user_157.identification_num, email=student_user_157.email, phone_number=student_user_157.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_158 = TrainingStudent(
-    student=student_user_158, faculty=faculty_2, department=dept_16, student_training_coordinator=coord_user_16, first_name=student_user_158.first_name, last_name=student_user_158.last_name, matrix_no=student_user_158.identification_num, email=student_user_158.email, phone_number=student_user_158.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_159 = TrainingStudent(
-    student=student_user_159, faculty=faculty_2, department=dept_16, student_training_coordinator=coord_user_16, first_name=student_user_159.first_name, last_name=student_user_159.last_name, matrix_no=student_user_159.identification_num, email=student_user_159.email, phone_number=student_user_159.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_160 = TrainingStudent(
-    student=student_user_160, faculty=faculty_2, department=dept_16, student_training_coordinator=coord_user_16, first_name=student_user_160.first_name, last_name=student_user_160.last_name, matrix_no=student_user_160.identification_num, email=student_user_160.email, phone_number=student_user_160.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_151 = Student(
+    student=student_user_151, faculty=faculty_2, department=dept_16, student_coordinator=coord_user_16, first_name=student_user_151.first_name, last_name=student_user_151.last_name, matrix_no=student_user_151.identification_num, email=student_user_151.email, phone_number=student_user_151.phone_number, is_in_school=True)
+student_152 = Student(
+    student=student_user_152, faculty=faculty_2, department=dept_16, student_coordinator=coord_user_16, first_name=student_user_152.first_name, last_name=student_user_152.last_name, matrix_no=student_user_152.identification_num, email=student_user_152.email, phone_number=student_user_152.phone_number, is_in_school=True)
+student_153 = Student(
+    student=student_user_153, faculty=faculty_2, department=dept_16, student_coordinator=coord_user_16, first_name=student_user_153.first_name, last_name=student_user_153.last_name, matrix_no=student_user_153.identification_num, email=student_user_153.email, phone_number=student_user_153.phone_number, is_in_school=True)
+student_154 = Student(
+    student=student_user_154, faculty=faculty_2, department=dept_16, student_coordinator=coord_user_16, first_name=student_user_154.first_name, last_name=student_user_154.last_name, matrix_no=student_user_154.identification_num, email=student_user_154.email, phone_number=student_user_154.phone_number, is_in_school=True)
+student_155 = Student(
+    student=student_user_155, faculty=faculty_2, department=dept_16, student_coordinator=coord_user_16, first_name=student_user_155.first_name, last_name=student_user_155.last_name, matrix_no=student_user_155.identification_num, email=student_user_155.email, phone_number=student_user_155.phone_number, is_in_school=True)
+student_156 = Student(
+    student=student_user_156, faculty=faculty_2, department=dept_16, student_coordinator=coord_user_16, first_name=student_user_156.first_name, last_name=student_user_156.last_name, matrix_no=student_user_156.identification_num, email=student_user_156.email, phone_number=student_user_156.phone_number, is_in_school=True)
+student_157 = Student(
+    student=student_user_157, faculty=faculty_2, department=dept_16, student_coordinator=coord_user_16, first_name=student_user_157.first_name, last_name=student_user_157.last_name, matrix_no=student_user_157.identification_num, email=student_user_157.email, phone_number=student_user_157.phone_number, is_in_school=True)
+student_158 = Student(
+    student=student_user_158, faculty=faculty_2, department=dept_16, student_coordinator=coord_user_16, first_name=student_user_158.first_name, last_name=student_user_158.last_name, matrix_no=student_user_158.identification_num, email=student_user_158.email, phone_number=student_user_158.phone_number, is_in_school=True)
+student_159 = Student(
+    student=student_user_159, faculty=faculty_2, department=dept_16, student_coordinator=coord_user_16, first_name=student_user_159.first_name, last_name=student_user_159.last_name, matrix_no=student_user_159.identification_num, email=student_user_159.email, phone_number=student_user_159.phone_number, is_in_school=True)
+student_160 = Student(
+    student=student_user_160, faculty=faculty_2, department=dept_16, student_coordinator=coord_user_16, first_name=student_user_160.first_name, last_name=student_user_160.last_name, matrix_no=student_user_160.identification_num, email=student_user_160.email, phone_number=student_user_160.phone_number, is_in_school=True)
 
 # Education Arabic students
-student_161 = TrainingStudent(
-    student=student_user_161, faculty=faculty_3, department=dept_17, student_training_coordinator=coord_user_17, first_name=student_user_161.first_name, last_name=student_user_161.last_name, matrix_no=student_user_161.identification_num, email=student_user_161.email, phone_number=student_user_161.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_162 = TrainingStudent(
-    student=student_user_162, faculty=faculty_3, department=dept_17, student_training_coordinator=coord_user_17, first_name=student_user_162.first_name, last_name=student_user_162.last_name, matrix_no=student_user_162.identification_num, email=student_user_162.email, phone_number=student_user_162.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_163 = TrainingStudent(
-    student=student_user_163, faculty=faculty_3, department=dept_17, student_training_coordinator=coord_user_17, first_name=student_user_163.first_name, last_name=student_user_163.last_name, matrix_no=student_user_163.identification_num, email=student_user_163.email, phone_number=student_user_163.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_164 = TrainingStudent(
-    student=student_user_164, faculty=faculty_3, department=dept_17, student_training_coordinator=coord_user_17, first_name=student_user_164.first_name, last_name=student_user_164.last_name, matrix_no=student_user_164.identification_num, email=student_user_164.email, phone_number=student_user_164.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_165 = TrainingStudent(
-    student=student_user_165, faculty=faculty_3, department=dept_17, student_training_coordinator=coord_user_17, first_name=student_user_165.first_name, last_name=student_user_165.last_name, matrix_no=student_user_165.identification_num, email=student_user_165.email, phone_number=student_user_165.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_166 = TrainingStudent(
-    student=student_user_166, faculty=faculty_3, department=dept_17, student_training_coordinator=coord_user_17, first_name=student_user_166.first_name, last_name=student_user_166.last_name, matrix_no=student_user_166.identification_num, email=student_user_166.email, phone_number=student_user_166.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_167 = TrainingStudent(
-    student=student_user_167, faculty=faculty_3, department=dept_17, student_training_coordinator=coord_user_17, first_name=student_user_167.first_name, last_name=student_user_167.last_name, matrix_no=student_user_167.identification_num, email=student_user_167.email, phone_number=student_user_167.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_168 = TrainingStudent(
-    student=student_user_168, faculty=faculty_3, department=dept_17, student_training_coordinator=coord_user_17, first_name=student_user_168.first_name, last_name=student_user_168.last_name, matrix_no=student_user_168.identification_num, email=student_user_168.email, phone_number=student_user_168.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_169 = TrainingStudent(
-    student=student_user_169, faculty=faculty_3, department=dept_17, student_training_coordinator=coord_user_17, first_name=student_user_169.first_name, last_name=student_user_169.last_name, matrix_no=student_user_169.identification_num, email=student_user_169.email, phone_number=student_user_169.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_170 = TrainingStudent(
-    student=student_user_170, faculty=faculty_3, department=dept_17, student_training_coordinator=coord_user_17, first_name=student_user_170.first_name, last_name=student_user_170.last_name, matrix_no=student_user_170.identification_num, email=student_user_170.email, phone_number=student_user_170.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_161 = Student(
+    student=student_user_161, faculty=faculty_3, department=dept_17, student_coordinator=coord_user_17, first_name=student_user_161.first_name, last_name=student_user_161.last_name, matrix_no=student_user_161.identification_num, email=student_user_161.email, phone_number=student_user_161.phone_number, is_in_school=True)
+student_162 = Student(
+    student=student_user_162, faculty=faculty_3, department=dept_17, student_coordinator=coord_user_17, first_name=student_user_162.first_name, last_name=student_user_162.last_name, matrix_no=student_user_162.identification_num, email=student_user_162.email, phone_number=student_user_162.phone_number, is_in_school=True)
+student_163 = Student(
+    student=student_user_163, faculty=faculty_3, department=dept_17, student_coordinator=coord_user_17, first_name=student_user_163.first_name, last_name=student_user_163.last_name, matrix_no=student_user_163.identification_num, email=student_user_163.email, phone_number=student_user_163.phone_number, is_in_school=True)
+student_164 = Student(
+    student=student_user_164, faculty=faculty_3, department=dept_17, student_coordinator=coord_user_17, first_name=student_user_164.first_name, last_name=student_user_164.last_name, matrix_no=student_user_164.identification_num, email=student_user_164.email, phone_number=student_user_164.phone_number, is_in_school=True)
+student_165 = Student(
+    student=student_user_165, faculty=faculty_3, department=dept_17, student_coordinator=coord_user_17, first_name=student_user_165.first_name, last_name=student_user_165.last_name, matrix_no=student_user_165.identification_num, email=student_user_165.email, phone_number=student_user_165.phone_number, is_in_school=True)
+student_166 = Student(
+    student=student_user_166, faculty=faculty_3, department=dept_17, student_coordinator=coord_user_17, first_name=student_user_166.first_name, last_name=student_user_166.last_name, matrix_no=student_user_166.identification_num, email=student_user_166.email, phone_number=student_user_166.phone_number, is_in_school=True)
+student_167 = Student(
+    student=student_user_167, faculty=faculty_3, department=dept_17, student_coordinator=coord_user_17, first_name=student_user_167.first_name, last_name=student_user_167.last_name, matrix_no=student_user_167.identification_num, email=student_user_167.email, phone_number=student_user_167.phone_number, is_in_school=True)
+student_168 = Student(
+    student=student_user_168, faculty=faculty_3, department=dept_17, student_coordinator=coord_user_17, first_name=student_user_168.first_name, last_name=student_user_168.last_name, matrix_no=student_user_168.identification_num, email=student_user_168.email, phone_number=student_user_168.phone_number, is_in_school=True)
+student_169 = Student(
+    student=student_user_169, faculty=faculty_3, department=dept_17, student_coordinator=coord_user_17, first_name=student_user_169.first_name, last_name=student_user_169.last_name, matrix_no=student_user_169.identification_num, email=student_user_169.email, phone_number=student_user_169.phone_number, is_in_school=True)
+student_170 = Student(
+    student=student_user_170, faculty=faculty_3, department=dept_17, student_coordinator=coord_user_17, first_name=student_user_170.first_name, last_name=student_user_170.last_name, matrix_no=student_user_170.identification_num, email=student_user_170.email, phone_number=student_user_170.phone_number, is_in_school=True)
 
 # Education Biology students
-student_171 = TrainingStudent(
-    student=student_user_171, faculty=faculty_3, department=dept_18, student_training_coordinator=coord_user_18, first_name=student_user_171.first_name, last_name=student_user_171.last_name, matrix_no=student_user_171.identification_num, email=student_user_171.email, phone_number=student_user_171.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_172 = TrainingStudent(
-    student=student_user_172, faculty=faculty_3, department=dept_18, student_training_coordinator=coord_user_18, first_name=student_user_172.first_name, last_name=student_user_172.last_name, matrix_no=student_user_172.identification_num, email=student_user_172.email, phone_number=student_user_172.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_173 = TrainingStudent(
-    student=student_user_173, faculty=faculty_3, department=dept_18, student_training_coordinator=coord_user_18, first_name=student_user_173.first_name, last_name=student_user_173.last_name, matrix_no=student_user_173.identification_num, email=student_user_173.email, phone_number=student_user_173.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_174 = TrainingStudent(
-    student=student_user_174, faculty=faculty_3, department=dept_18, student_training_coordinator=coord_user_18, first_name=student_user_174.first_name, last_name=student_user_174.last_name, matrix_no=student_user_174.identification_num, email=student_user_174.email, phone_number=student_user_174.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_175 = TrainingStudent(
-    student=student_user_175, faculty=faculty_3, department=dept_18, student_training_coordinator=coord_user_18, first_name=student_user_175.first_name, last_name=student_user_175.last_name, matrix_no=student_user_175.identification_num, email=student_user_175.email, phone_number=student_user_175.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_176 = TrainingStudent(
-    student=student_user_176, faculty=faculty_3, department=dept_18, student_training_coordinator=coord_user_18, first_name=student_user_176.first_name, last_name=student_user_176.last_name, matrix_no=student_user_176.identification_num, email=student_user_176.email, phone_number=student_user_176.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_177 = TrainingStudent(
-    student=student_user_177, faculty=faculty_3, department=dept_18, student_training_coordinator=coord_user_18, first_name=student_user_177.first_name, last_name=student_user_177.last_name, matrix_no=student_user_177.identification_num, email=student_user_177.email, phone_number=student_user_177.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_178 = TrainingStudent(
-    student=student_user_178, faculty=faculty_3, department=dept_18, student_training_coordinator=coord_user_18, first_name=student_user_178.first_name, last_name=student_user_178.last_name, matrix_no=student_user_178.identification_num, email=student_user_178.email, phone_number=student_user_178.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_179 = TrainingStudent(
-    student=student_user_179, faculty=faculty_3, department=dept_18, student_training_coordinator=coord_user_18, first_name=student_user_179.first_name, last_name=student_user_179.last_name, matrix_no=student_user_179.identification_num, email=student_user_179.email, phone_number=student_user_179.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_180 = TrainingStudent(
-    student=student_user_180, faculty=faculty_3, department=dept_18, student_training_coordinator=coord_user_18, first_name=student_user_180.first_name, last_name=student_user_180.last_name, matrix_no=student_user_180.identification_num, email=student_user_180.email, phone_number=student_user_180.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_171 = Student(
+    student=student_user_171, faculty=faculty_3, department=dept_18, student_coordinator=coord_user_18, first_name=student_user_171.first_name, last_name=student_user_171.last_name, matrix_no=student_user_171.identification_num, email=student_user_171.email, phone_number=student_user_171.phone_number, is_in_school=True)
+student_172 = Student(
+    student=student_user_172, faculty=faculty_3, department=dept_18, student_coordinator=coord_user_18, first_name=student_user_172.first_name, last_name=student_user_172.last_name, matrix_no=student_user_172.identification_num, email=student_user_172.email, phone_number=student_user_172.phone_number, is_in_school=True)
+student_173 = Student(
+    student=student_user_173, faculty=faculty_3, department=dept_18, student_coordinator=coord_user_18, first_name=student_user_173.first_name, last_name=student_user_173.last_name, matrix_no=student_user_173.identification_num, email=student_user_173.email, phone_number=student_user_173.phone_number, is_in_school=True)
+student_174 = Student(
+    student=student_user_174, faculty=faculty_3, department=dept_18, student_coordinator=coord_user_18, first_name=student_user_174.first_name, last_name=student_user_174.last_name, matrix_no=student_user_174.identification_num, email=student_user_174.email, phone_number=student_user_174.phone_number, is_in_school=True)
+student_175 = Student(
+    student=student_user_175, faculty=faculty_3, department=dept_18, student_coordinator=coord_user_18, first_name=student_user_175.first_name, last_name=student_user_175.last_name, matrix_no=student_user_175.identification_num, email=student_user_175.email, phone_number=student_user_175.phone_number, is_in_school=True)
+student_176 = Student(
+    student=student_user_176, faculty=faculty_3, department=dept_18, student_coordinator=coord_user_18, first_name=student_user_176.first_name, last_name=student_user_176.last_name, matrix_no=student_user_176.identification_num, email=student_user_176.email, phone_number=student_user_176.phone_number, is_in_school=True)
+student_177 = Student(
+    student=student_user_177, faculty=faculty_3, department=dept_18, student_coordinator=coord_user_18, first_name=student_user_177.first_name, last_name=student_user_177.last_name, matrix_no=student_user_177.identification_num, email=student_user_177.email, phone_number=student_user_177.phone_number, is_in_school=True)
+student_178 = Student(
+    student=student_user_178, faculty=faculty_3, department=dept_18, student_coordinator=coord_user_18, first_name=student_user_178.first_name, last_name=student_user_178.last_name, matrix_no=student_user_178.identification_num, email=student_user_178.email, phone_number=student_user_178.phone_number, is_in_school=True)
+student_179 = Student(
+    student=student_user_179, faculty=faculty_3, department=dept_18, student_coordinator=coord_user_18, first_name=student_user_179.first_name, last_name=student_user_179.last_name, matrix_no=student_user_179.identification_num, email=student_user_179.email, phone_number=student_user_179.phone_number, is_in_school=True)
+student_180 = Student(
+    student=student_user_180, faculty=faculty_3, department=dept_18, student_coordinator=coord_user_18, first_name=student_user_180.first_name, last_name=student_user_180.last_name, matrix_no=student_user_180.identification_num, email=student_user_180.email, phone_number=student_user_180.phone_number, is_in_school=True)
 
 # Education Chemistry students
-student_181 = TrainingStudent(
-    student=student_user_181, faculty=faculty_3, department=dept_19, student_training_coordinator=coord_user_19, first_name=student_user_181.first_name, last_name=student_user_181.last_name, matrix_no=student_user_181.identification_num, email=student_user_181.email, phone_number=student_user_181.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_182 = TrainingStudent(
-    student=student_user_182, faculty=faculty_3, department=dept_19, student_training_coordinator=coord_user_19, first_name=student_user_182.first_name, last_name=student_user_182.last_name, matrix_no=student_user_182.identification_num, email=student_user_182.email, phone_number=student_user_182.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_183 = TrainingStudent(
-    student=student_user_183, faculty=faculty_3, department=dept_19, student_training_coordinator=coord_user_19, first_name=student_user_183.first_name, last_name=student_user_183.last_name, matrix_no=student_user_183.identification_num, email=student_user_183.email, phone_number=student_user_183.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_184 = TrainingStudent(
-    student=student_user_184, faculty=faculty_3, department=dept_19, student_training_coordinator=coord_user_19, first_name=student_user_184.first_name, last_name=student_user_184.last_name, matrix_no=student_user_184.identification_num, email=student_user_184.email, phone_number=student_user_184.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_185 = TrainingStudent(
-    student=student_user_185, faculty=faculty_3, department=dept_19, student_training_coordinator=coord_user_19, first_name=student_user_185.first_name, last_name=student_user_185.last_name, matrix_no=student_user_185.identification_num, email=student_user_185.email, phone_number=student_user_185.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_186 = TrainingStudent(
-    student=student_user_186, faculty=faculty_3, department=dept_19, student_training_coordinator=coord_user_19, first_name=student_user_186.first_name, last_name=student_user_186.last_name, matrix_no=student_user_186.identification_num, email=student_user_186.email, phone_number=student_user_186.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_187 = TrainingStudent(
-    student=student_user_187, faculty=faculty_3, department=dept_19, student_training_coordinator=coord_user_19, first_name=student_user_187.first_name, last_name=student_user_187.last_name, matrix_no=student_user_187.identification_num, email=student_user_187.email, phone_number=student_user_187.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_188 = TrainingStudent(
-    student=student_user_188, faculty=faculty_3, department=dept_19, student_training_coordinator=coord_user_19, first_name=student_user_188.first_name, last_name=student_user_188.last_name, matrix_no=student_user_188.identification_num, email=student_user_188.email, phone_number=student_user_188.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_189 = TrainingStudent(
-    student=student_user_189, faculty=faculty_3, department=dept_19, student_training_coordinator=coord_user_19, first_name=student_user_189.first_name, last_name=student_user_189.last_name, matrix_no=student_user_189.identification_num, email=student_user_189.email, phone_number=student_user_189.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_190 = TrainingStudent(
-    student=student_user_190, faculty=faculty_3, department=dept_19, student_training_coordinator=coord_user_19, first_name=student_user_190.first_name, last_name=student_user_190.last_name, matrix_no=student_user_190.identification_num, email=student_user_190.email, phone_number=student_user_190.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_181 = Student(
+    student=student_user_181, faculty=faculty_3, department=dept_19, student_coordinator=coord_user_19, first_name=student_user_181.first_name, last_name=student_user_181.last_name, matrix_no=student_user_181.identification_num, email=student_user_181.email, phone_number=student_user_181.phone_number, is_in_school=True)
+student_182 = Student(
+    student=student_user_182, faculty=faculty_3, department=dept_19, student_coordinator=coord_user_19, first_name=student_user_182.first_name, last_name=student_user_182.last_name, matrix_no=student_user_182.identification_num, email=student_user_182.email, phone_number=student_user_182.phone_number, is_in_school=True)
+student_183 = Student(
+    student=student_user_183, faculty=faculty_3, department=dept_19, student_coordinator=coord_user_19, first_name=student_user_183.first_name, last_name=student_user_183.last_name, matrix_no=student_user_183.identification_num, email=student_user_183.email, phone_number=student_user_183.phone_number, is_in_school=True)
+student_184 = Student(
+    student=student_user_184, faculty=faculty_3, department=dept_19, student_coordinator=coord_user_19, first_name=student_user_184.first_name, last_name=student_user_184.last_name, matrix_no=student_user_184.identification_num, email=student_user_184.email, phone_number=student_user_184.phone_number, is_in_school=True)
+student_185 = Student(
+    student=student_user_185, faculty=faculty_3, department=dept_19, student_coordinator=coord_user_19, first_name=student_user_185.first_name, last_name=student_user_185.last_name, matrix_no=student_user_185.identification_num, email=student_user_185.email, phone_number=student_user_185.phone_number, is_in_school=True)
+student_186 = Student(
+    student=student_user_186, faculty=faculty_3, department=dept_19, student_coordinator=coord_user_19, first_name=student_user_186.first_name, last_name=student_user_186.last_name, matrix_no=student_user_186.identification_num, email=student_user_186.email, phone_number=student_user_186.phone_number, is_in_school=True)
+student_187 = Student(
+    student=student_user_187, faculty=faculty_3, department=dept_19, student_coordinator=coord_user_19, first_name=student_user_187.first_name, last_name=student_user_187.last_name, matrix_no=student_user_187.identification_num, email=student_user_187.email, phone_number=student_user_187.phone_number, is_in_school=True)
+student_188 = Student(
+    student=student_user_188, faculty=faculty_3, department=dept_19, student_coordinator=coord_user_19, first_name=student_user_188.first_name, last_name=student_user_188.last_name, matrix_no=student_user_188.identification_num, email=student_user_188.email, phone_number=student_user_188.phone_number, is_in_school=True)
+student_189 = Student(
+    student=student_user_189, faculty=faculty_3, department=dept_19, student_coordinator=coord_user_19, first_name=student_user_189.first_name, last_name=student_user_189.last_name, matrix_no=student_user_189.identification_num, email=student_user_189.email, phone_number=student_user_189.phone_number, is_in_school=True)
+student_190 = Student(
+    student=student_user_190, faculty=faculty_3, department=dept_19, student_coordinator=coord_user_19, first_name=student_user_190.first_name, last_name=student_user_190.last_name, matrix_no=student_user_190.identification_num, email=student_user_190.email, phone_number=student_user_190.phone_number, is_in_school=True)
 
 # Education Economics students
-student_191 = TrainingStudent(
-    student=student_user_191, faculty=faculty_3, department=dept_20, student_training_coordinator=coord_user_20, first_name=student_user_191.first_name, last_name=student_user_191.last_name, matrix_no=student_user_191.identification_num, email=student_user_191.email, phone_number=student_user_191.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_192 = TrainingStudent(
-    student=student_user_192, faculty=faculty_3, department=dept_20, student_training_coordinator=coord_user_20, first_name=student_user_192.first_name, last_name=student_user_192.last_name, matrix_no=student_user_192.identification_num, email=student_user_192.email, phone_number=student_user_192.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_193 = TrainingStudent(
-    student=student_user_193, faculty=faculty_3, department=dept_20, student_training_coordinator=coord_user_20, first_name=student_user_193.first_name, last_name=student_user_193.last_name, matrix_no=student_user_193.identification_num, email=student_user_193.email, phone_number=student_user_193.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_194 = TrainingStudent(
-    student=student_user_194, faculty=faculty_3, department=dept_20, student_training_coordinator=coord_user_20, first_name=student_user_194.first_name, last_name=student_user_194.last_name, matrix_no=student_user_194.identification_num, email=student_user_194.email, phone_number=student_user_194.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_195 = TrainingStudent(
-    student=student_user_195, faculty=faculty_3, department=dept_20, student_training_coordinator=coord_user_20, first_name=student_user_195.first_name, last_name=student_user_195.last_name, matrix_no=student_user_195.identification_num, email=student_user_195.email, phone_number=student_user_195.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_196 = TrainingStudent(
-    student=student_user_196, faculty=faculty_3, department=dept_20, student_training_coordinator=coord_user_20, first_name=student_user_196.first_name, last_name=student_user_196.last_name, matrix_no=student_user_196.identification_num, email=student_user_196.email, phone_number=student_user_196.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_197 = TrainingStudent(
-    student=student_user_197, faculty=faculty_3, department=dept_20, student_training_coordinator=coord_user_20, first_name=student_user_197.first_name, last_name=student_user_197.last_name, matrix_no=student_user_197.identification_num, email=student_user_197.email, phone_number=student_user_197.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_198 = TrainingStudent(
-    student=student_user_198, faculty=faculty_3, department=dept_20, student_training_coordinator=coord_user_20, first_name=student_user_198.first_name, last_name=student_user_198.last_name, matrix_no=student_user_198.identification_num, email=student_user_198.email, phone_number=student_user_198.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_199 = TrainingStudent(
-    student=student_user_199, faculty=faculty_3, department=dept_20, student_training_coordinator=coord_user_20, first_name=student_user_199.first_name, last_name=student_user_199.last_name, matrix_no=student_user_199.identification_num, email=student_user_199.email, phone_number=student_user_199.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_200 = TrainingStudent(
-    student=student_user_200, faculty=faculty_3, department=dept_20, student_training_coordinator=coord_user_20, first_name=student_user_200.first_name, last_name=student_user_200.last_name, matrix_no=student_user_200.identification_num, email=student_user_200.email, phone_number=student_user_200.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_191 = Student(
+    student=student_user_191, faculty=faculty_3, department=dept_20, student_coordinator=coord_user_20, first_name=student_user_191.first_name, last_name=student_user_191.last_name, matrix_no=student_user_191.identification_num, email=student_user_191.email, phone_number=student_user_191.phone_number, is_in_school=True)
+student_192 = Student(
+    student=student_user_192, faculty=faculty_3, department=dept_20, student_coordinator=coord_user_20, first_name=student_user_192.first_name, last_name=student_user_192.last_name, matrix_no=student_user_192.identification_num, email=student_user_192.email, phone_number=student_user_192.phone_number, is_in_school=True)
+student_193 = Student(
+    student=student_user_193, faculty=faculty_3, department=dept_20, student_coordinator=coord_user_20, first_name=student_user_193.first_name, last_name=student_user_193.last_name, matrix_no=student_user_193.identification_num, email=student_user_193.email, phone_number=student_user_193.phone_number, is_in_school=True)
+student_194 = Student(
+    student=student_user_194, faculty=faculty_3, department=dept_20, student_coordinator=coord_user_20, first_name=student_user_194.first_name, last_name=student_user_194.last_name, matrix_no=student_user_194.identification_num, email=student_user_194.email, phone_number=student_user_194.phone_number, is_in_school=True)
+student_195 = Student(
+    student=student_user_195, faculty=faculty_3, department=dept_20, student_coordinator=coord_user_20, first_name=student_user_195.first_name, last_name=student_user_195.last_name, matrix_no=student_user_195.identification_num, email=student_user_195.email, phone_number=student_user_195.phone_number, is_in_school=True)
+student_196 = Student(
+    student=student_user_196, faculty=faculty_3, department=dept_20, student_coordinator=coord_user_20, first_name=student_user_196.first_name, last_name=student_user_196.last_name, matrix_no=student_user_196.identification_num, email=student_user_196.email, phone_number=student_user_196.phone_number, is_in_school=True)
+student_197 = Student(
+    student=student_user_197, faculty=faculty_3, department=dept_20, student_coordinator=coord_user_20, first_name=student_user_197.first_name, last_name=student_user_197.last_name, matrix_no=student_user_197.identification_num, email=student_user_197.email, phone_number=student_user_197.phone_number, is_in_school=True)
+student_198 = Student(
+    student=student_user_198, faculty=faculty_3, department=dept_20, student_coordinator=coord_user_20, first_name=student_user_198.first_name, last_name=student_user_198.last_name, matrix_no=student_user_198.identification_num, email=student_user_198.email, phone_number=student_user_198.phone_number, is_in_school=True)
+student_199 = Student(
+    student=student_user_199, faculty=faculty_3, department=dept_20, student_coordinator=coord_user_20, first_name=student_user_199.first_name, last_name=student_user_199.last_name, matrix_no=student_user_199.identification_num, email=student_user_199.email, phone_number=student_user_199.phone_number, is_in_school=True)
+student_200 = Student(
+    student=student_user_200, faculty=faculty_3, department=dept_20, student_coordinator=coord_user_20, first_name=student_user_200.first_name, last_name=student_user_200.last_name, matrix_no=student_user_200.identification_num, email=student_user_200.email, phone_number=student_user_200.phone_number, is_in_school=True)
 
 # Education English students
-student_201 = TrainingStudent(
-    student=student_user_201, faculty=faculty_3, department=dept_21, student_training_coordinator=coord_user_21, first_name=student_user_201.first_name, last_name=student_user_201.last_name, matrix_no=student_user_201.identification_num, email=student_user_201.email, phone_number=student_user_201.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_202 = TrainingStudent(
-    student=student_user_202, faculty=faculty_3, department=dept_21, student_training_coordinator=coord_user_31, first_name=student_user_202.first_name, last_name=student_user_202.last_name, matrix_no=student_user_202.identification_num, email=student_user_202.email, phone_number=student_user_202.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_203 = TrainingStudent(
-    student=student_user_203, faculty=faculty_3, department=dept_21, student_training_coordinator=coord_user_21, first_name=student_user_203.first_name, last_name=student_user_203.last_name, matrix_no=student_user_203.identification_num, email=student_user_203.email, phone_number=student_user_203.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_204 = TrainingStudent(
-    student=student_user_204, faculty=faculty_3, department=dept_21, student_training_coordinator=coord_user_21, first_name=student_user_204.first_name, last_name=student_user_204.last_name, matrix_no=student_user_204.identification_num, email=student_user_204.email, phone_number=student_user_204.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_205 = TrainingStudent(
-    student=student_user_205, faculty=faculty_3, department=dept_21, student_training_coordinator=coord_user_21, first_name=student_user_205.first_name, last_name=student_user_205.last_name, matrix_no=student_user_205.identification_num, email=student_user_205.email, phone_number=student_user_205.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_206 = TrainingStudent(
-    student=student_user_206, faculty=faculty_3, department=dept_21, student_training_coordinator=coord_user_21, first_name=student_user_206.first_name, last_name=student_user_206.last_name, matrix_no=student_user_206.identification_num, email=student_user_206.email, phone_number=student_user_206.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_207 = TrainingStudent(
-    student=student_user_207, faculty=faculty_3, department=dept_21, student_training_coordinator=coord_user_21, first_name=student_user_207.first_name, last_name=student_user_207.last_name, matrix_no=student_user_207.identification_num, email=student_user_207.email, phone_number=student_user_207.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_208 = TrainingStudent(
-    student=student_user_208, faculty=faculty_3, department=dept_21, student_training_coordinator=coord_user_21, first_name=student_user_208.first_name, last_name=student_user_208.last_name, matrix_no=student_user_208.identification_num, email=student_user_208.email, phone_number=student_user_208.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_209 = TrainingStudent(
-    student=student_user_209, faculty=faculty_3, department=dept_21, student_training_coordinator=coord_user_21, first_name=student_user_209.first_name, last_name=student_user_209.last_name, matrix_no=student_user_209.identification_num, email=student_user_209.email, phone_number=student_user_209.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_210 = TrainingStudent(
-    student=student_user_210, faculty=faculty_3, department=dept_21, student_training_coordinator=coord_user_21, first_name=student_user_210.first_name, last_name=student_user_210.last_name, matrix_no=student_user_210.identification_num, email=student_user_210.email, phone_number=student_user_210.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_201 = Student(
+    student=student_user_201, faculty=faculty_3, department=dept_21, student_coordinator=coord_user_21, first_name=student_user_201.first_name, last_name=student_user_201.last_name, matrix_no=student_user_201.identification_num, email=student_user_201.email, phone_number=student_user_201.phone_number, is_in_school=True)
+student_202 = Student(
+    student=student_user_202, faculty=faculty_3, department=dept_21, student_coordinator=coord_user_31, first_name=student_user_202.first_name, last_name=student_user_202.last_name, matrix_no=student_user_202.identification_num, email=student_user_202.email, phone_number=student_user_202.phone_number, is_in_school=True)
+student_203 = Student(
+    student=student_user_203, faculty=faculty_3, department=dept_21, student_coordinator=coord_user_21, first_name=student_user_203.first_name, last_name=student_user_203.last_name, matrix_no=student_user_203.identification_num, email=student_user_203.email, phone_number=student_user_203.phone_number, is_in_school=True)
+student_204 = Student(
+    student=student_user_204, faculty=faculty_3, department=dept_21, student_coordinator=coord_user_21, first_name=student_user_204.first_name, last_name=student_user_204.last_name, matrix_no=student_user_204.identification_num, email=student_user_204.email, phone_number=student_user_204.phone_number, is_in_school=True)
+student_205 = Student(
+    student=student_user_205, faculty=faculty_3, department=dept_21, student_coordinator=coord_user_21, first_name=student_user_205.first_name, last_name=student_user_205.last_name, matrix_no=student_user_205.identification_num, email=student_user_205.email, phone_number=student_user_205.phone_number, is_in_school=True)
+student_206 = Student(
+    student=student_user_206, faculty=faculty_3, department=dept_21, student_coordinator=coord_user_21, first_name=student_user_206.first_name, last_name=student_user_206.last_name, matrix_no=student_user_206.identification_num, email=student_user_206.email, phone_number=student_user_206.phone_number, is_in_school=True)
+student_207 = Student(
+    student=student_user_207, faculty=faculty_3, department=dept_21, student_coordinator=coord_user_21, first_name=student_user_207.first_name, last_name=student_user_207.last_name, matrix_no=student_user_207.identification_num, email=student_user_207.email, phone_number=student_user_207.phone_number, is_in_school=True)
+student_208 = Student(
+    student=student_user_208, faculty=faculty_3, department=dept_21, student_coordinator=coord_user_21, first_name=student_user_208.first_name, last_name=student_user_208.last_name, matrix_no=student_user_208.identification_num, email=student_user_208.email, phone_number=student_user_208.phone_number, is_in_school=True)
+student_209 = Student(
+    student=student_user_209, faculty=faculty_3, department=dept_21, student_coordinator=coord_user_21, first_name=student_user_209.first_name, last_name=student_user_209.last_name, matrix_no=student_user_209.identification_num, email=student_user_209.email, phone_number=student_user_209.phone_number, is_in_school=True)
+student_210 = Student(
+    student=student_user_210, faculty=faculty_3, department=dept_21, student_coordinator=coord_user_21, first_name=student_user_210.first_name, last_name=student_user_210.last_name, matrix_no=student_user_210.identification_num, email=student_user_210.email, phone_number=student_user_210.phone_number, is_in_school=True)
 
 # Education Hausa students
-student_211 = TrainingStudent(
-    student=student_user_211, faculty=faculty_3, department=dept_22, student_training_coordinator=coord_user_22, first_name=student_user_211.first_name, last_name=student_user_211.last_name, matrix_no=student_user_211.identification_num, email=student_user_211.email, phone_number=student_user_211.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_212 = TrainingStudent(
-    student=student_user_212, faculty=faculty_3, department=dept_22, student_training_coordinator=coord_user_22, first_name=student_user_212.first_name, last_name=student_user_212.last_name, matrix_no=student_user_212.identification_num, email=student_user_212.email, phone_number=student_user_212.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_213 = TrainingStudent(
-    student=student_user_213, faculty=faculty_3, department=dept_22, student_training_coordinator=coord_user_22, first_name=student_user_213.first_name, last_name=student_user_213.last_name, matrix_no=student_user_213.identification_num, email=student_user_213.email, phone_number=student_user_213.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_214 = TrainingStudent(
-    student=student_user_214, faculty=faculty_3, department=dept_22, student_training_coordinator=coord_user_22, first_name=student_user_214.first_name, last_name=student_user_214.last_name, matrix_no=student_user_214.identification_num, email=student_user_214.email, phone_number=student_user_214.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_215 = TrainingStudent(
-    student=student_user_215, faculty=faculty_3, department=dept_22, student_training_coordinator=coord_user_22, first_name=student_user_215.first_name, last_name=student_user_215.last_name, matrix_no=student_user_215.identification_num, email=student_user_215.email, phone_number=student_user_215.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_216 = TrainingStudent(
-    student=student_user_216, faculty=faculty_3, department=dept_22, student_training_coordinator=coord_user_22, first_name=student_user_216.first_name, last_name=student_user_216.last_name, matrix_no=student_user_216.identification_num, email=student_user_216.email, phone_number=student_user_216.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_217 = TrainingStudent(
-    student=student_user_217, faculty=faculty_3, department=dept_22, student_training_coordinator=coord_user_22, first_name=student_user_217.first_name, last_name=student_user_217.last_name, matrix_no=student_user_217.identification_num, email=student_user_217.email, phone_number=student_user_217.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_218 = TrainingStudent(
-    student=student_user_218, faculty=faculty_3, department=dept_22, student_training_coordinator=coord_user_22, first_name=student_user_218.first_name, last_name=student_user_218.last_name, matrix_no=student_user_218.identification_num, email=student_user_218.email, phone_number=student_user_218.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_219 = TrainingStudent(
-    student=student_user_219, faculty=faculty_3, department=dept_22, student_training_coordinator=coord_user_22, first_name=student_user_219.first_name, last_name=student_user_219.last_name, matrix_no=student_user_219.identification_num, email=student_user_219.email, phone_number=student_user_219.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_220 = TrainingStudent(
-    student=student_user_220, faculty=faculty_3, department=dept_22, student_training_coordinator=coord_user_22, first_name=student_user_220.first_name, last_name=student_user_220.last_name, matrix_no=student_user_220.identification_num, email=student_user_220.email, phone_number=student_user_220.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_211 = Student(
+    student=student_user_211, faculty=faculty_3, department=dept_22, student_coordinator=coord_user_22, first_name=student_user_211.first_name, last_name=student_user_211.last_name, matrix_no=student_user_211.identification_num, email=student_user_211.email, phone_number=student_user_211.phone_number, is_in_school=True)
+student_212 = Student(
+    student=student_user_212, faculty=faculty_3, department=dept_22, student_coordinator=coord_user_22, first_name=student_user_212.first_name, last_name=student_user_212.last_name, matrix_no=student_user_212.identification_num, email=student_user_212.email, phone_number=student_user_212.phone_number, is_in_school=True)
+student_213 = Student(
+    student=student_user_213, faculty=faculty_3, department=dept_22, student_coordinator=coord_user_22, first_name=student_user_213.first_name, last_name=student_user_213.last_name, matrix_no=student_user_213.identification_num, email=student_user_213.email, phone_number=student_user_213.phone_number, is_in_school=True)
+student_214 = Student(
+    student=student_user_214, faculty=faculty_3, department=dept_22, student_coordinator=coord_user_22, first_name=student_user_214.first_name, last_name=student_user_214.last_name, matrix_no=student_user_214.identification_num, email=student_user_214.email, phone_number=student_user_214.phone_number, is_in_school=True)
+student_215 = Student(
+    student=student_user_215, faculty=faculty_3, department=dept_22, student_coordinator=coord_user_22, first_name=student_user_215.first_name, last_name=student_user_215.last_name, matrix_no=student_user_215.identification_num, email=student_user_215.email, phone_number=student_user_215.phone_number, is_in_school=True)
+student_216 = Student(
+    student=student_user_216, faculty=faculty_3, department=dept_22, student_coordinator=coord_user_22, first_name=student_user_216.first_name, last_name=student_user_216.last_name, matrix_no=student_user_216.identification_num, email=student_user_216.email, phone_number=student_user_216.phone_number, is_in_school=True)
+student_217 = Student(
+    student=student_user_217, faculty=faculty_3, department=dept_22, student_coordinator=coord_user_22, first_name=student_user_217.first_name, last_name=student_user_217.last_name, matrix_no=student_user_217.identification_num, email=student_user_217.email, phone_number=student_user_217.phone_number, is_in_school=True)
+student_218 = Student(
+    student=student_user_218, faculty=faculty_3, department=dept_22, student_coordinator=coord_user_22, first_name=student_user_218.first_name, last_name=student_user_218.last_name, matrix_no=student_user_218.identification_num, email=student_user_218.email, phone_number=student_user_218.phone_number, is_in_school=True)
+student_219 = Student(
+    student=student_user_219, faculty=faculty_3, department=dept_22, student_coordinator=coord_user_22, first_name=student_user_219.first_name, last_name=student_user_219.last_name, matrix_no=student_user_219.identification_num, email=student_user_219.email, phone_number=student_user_219.phone_number, is_in_school=True)
+student_220 = Student(
+    student=student_user_220, faculty=faculty_3, department=dept_22, student_coordinator=coord_user_22, first_name=student_user_220.first_name, last_name=student_user_220.last_name, matrix_no=student_user_220.identification_num, email=student_user_220.email, phone_number=student_user_220.phone_number, is_in_school=True)
 
 # Education History students
-student_221 = TrainingStudent(
-    student=student_user_221, faculty=faculty_3, department=dept_23, student_training_coordinator=coord_user_23, first_name=student_user_221.first_name, last_name=student_user_221.last_name, matrix_no=student_user_221.identification_num, email=student_user_221.email, phone_number=student_user_221.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_222 = TrainingStudent(
-    student=student_user_222, faculty=faculty_3, department=dept_23, student_training_coordinator=coord_user_23, first_name=student_user_222.first_name, last_name=student_user_222.last_name, matrix_no=student_user_222.identification_num, email=student_user_222.email, phone_number=student_user_222.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_223 = TrainingStudent(
-    student=student_user_223, faculty=faculty_3, department=dept_23, student_training_coordinator=coord_user_23, first_name=student_user_223.first_name, last_name=student_user_223.last_name, matrix_no=student_user_223.identification_num, email=student_user_223.email, phone_number=student_user_223.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_224 = TrainingStudent(
-    student=student_user_224, faculty=faculty_3, department=dept_23, student_training_coordinator=coord_user_23, first_name=student_user_224.first_name, last_name=student_user_224.last_name, matrix_no=student_user_224.identification_num, email=student_user_224.email, phone_number=student_user_224.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_225 = TrainingStudent(
-    student=student_user_225, faculty=faculty_3, department=dept_23, student_training_coordinator=coord_user_23, first_name=student_user_225.first_name, last_name=student_user_225.last_name, matrix_no=student_user_225.identification_num, email=student_user_225.email, phone_number=student_user_225.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_226 = TrainingStudent(
-    student=student_user_226, faculty=faculty_3, department=dept_23, student_training_coordinator=coord_user_23, first_name=student_user_226.first_name, last_name=student_user_226.last_name, matrix_no=student_user_226.identification_num, email=student_user_226.email, phone_number=student_user_226.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_227 = TrainingStudent(
-    student=student_user_227, faculty=faculty_3, department=dept_23, student_training_coordinator=coord_user_23, first_name=student_user_227.first_name, last_name=student_user_227.last_name, matrix_no=student_user_227.identification_num, email=student_user_227.email, phone_number=student_user_227.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_228 = TrainingStudent(
-    student=student_user_228, faculty=faculty_3, department=dept_23, student_training_coordinator=coord_user_23, first_name=student_user_228.first_name, last_name=student_user_228.last_name, matrix_no=student_user_228.identification_num, email=student_user_228.email, phone_number=student_user_228.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_229 = TrainingStudent(
-    student=student_user_229, faculty=faculty_3, department=dept_23, student_training_coordinator=coord_user_23, first_name=student_user_229.first_name, last_name=student_user_229.last_name, matrix_no=student_user_229.identification_num, email=student_user_229.email, phone_number=student_user_229.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_230 = TrainingStudent(
-    student=student_user_230, faculty=faculty_3, department=dept_23, student_training_coordinator=coord_user_23, first_name=student_user_230.first_name, last_name=student_user_230.last_name, matrix_no=student_user_230.identification_num, email=student_user_230.email, phone_number=student_user_230.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_221 = Student(
+    student=student_user_221, faculty=faculty_3, department=dept_23, student_coordinator=coord_user_23, first_name=student_user_221.first_name, last_name=student_user_221.last_name, matrix_no=student_user_221.identification_num, email=student_user_221.email, phone_number=student_user_221.phone_number, is_in_school=True)
+student_222 = Student(
+    student=student_user_222, faculty=faculty_3, department=dept_23, student_coordinator=coord_user_23, first_name=student_user_222.first_name, last_name=student_user_222.last_name, matrix_no=student_user_222.identification_num, email=student_user_222.email, phone_number=student_user_222.phone_number, is_in_school=True)
+student_223 = Student(
+    student=student_user_223, faculty=faculty_3, department=dept_23, student_coordinator=coord_user_23, first_name=student_user_223.first_name, last_name=student_user_223.last_name, matrix_no=student_user_223.identification_num, email=student_user_223.email, phone_number=student_user_223.phone_number, is_in_school=True)
+student_224 = Student(
+    student=student_user_224, faculty=faculty_3, department=dept_23, student_coordinator=coord_user_23, first_name=student_user_224.first_name, last_name=student_user_224.last_name, matrix_no=student_user_224.identification_num, email=student_user_224.email, phone_number=student_user_224.phone_number, is_in_school=True)
+student_225 = Student(
+    student=student_user_225, faculty=faculty_3, department=dept_23, student_coordinator=coord_user_23, first_name=student_user_225.first_name, last_name=student_user_225.last_name, matrix_no=student_user_225.identification_num, email=student_user_225.email, phone_number=student_user_225.phone_number, is_in_school=True)
+student_226 = Student(
+    student=student_user_226, faculty=faculty_3, department=dept_23, student_coordinator=coord_user_23, first_name=student_user_226.first_name, last_name=student_user_226.last_name, matrix_no=student_user_226.identification_num, email=student_user_226.email, phone_number=student_user_226.phone_number, is_in_school=True)
+student_227 = Student(
+    student=student_user_227, faculty=faculty_3, department=dept_23, student_coordinator=coord_user_23, first_name=student_user_227.first_name, last_name=student_user_227.last_name, matrix_no=student_user_227.identification_num, email=student_user_227.email, phone_number=student_user_227.phone_number, is_in_school=True)
+student_228 = Student(
+    student=student_user_228, faculty=faculty_3, department=dept_23, student_coordinator=coord_user_23, first_name=student_user_228.first_name, last_name=student_user_228.last_name, matrix_no=student_user_228.identification_num, email=student_user_228.email, phone_number=student_user_228.phone_number, is_in_school=True)
+student_229 = Student(
+    student=student_user_229, faculty=faculty_3, department=dept_23, student_coordinator=coord_user_23, first_name=student_user_229.first_name, last_name=student_user_229.last_name, matrix_no=student_user_229.identification_num, email=student_user_229.email, phone_number=student_user_229.phone_number, is_in_school=True)
+student_230 = Student(
+    student=student_user_230, faculty=faculty_3, department=dept_23, student_coordinator=coord_user_23, first_name=student_user_230.first_name, last_name=student_user_230.last_name, matrix_no=student_user_230.identification_num, email=student_user_230.email, phone_number=student_user_230.phone_number, is_in_school=True)
 
 # Education Islamic Studies students
-student_231 = TrainingStudent(
-    student=student_user_231, faculty=faculty_3, department=dept_24, student_training_coordinator=coord_user_24, first_name=student_user_231.first_name, last_name=student_user_231.last_name, matrix_no=student_user_231.identification_num, email=student_user_231.email, phone_number=student_user_231.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_232 = TrainingStudent(
-    student=student_user_232, faculty=faculty_3, department=dept_24, student_training_coordinator=coord_user_24, first_name=student_user_232.first_name, last_name=student_user_232.last_name, matrix_no=student_user_232.identification_num, email=student_user_232.email, phone_number=student_user_232.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_233 = TrainingStudent(
-    student=student_user_233, faculty=faculty_3, department=dept_24, student_training_coordinator=coord_user_24, first_name=student_user_233.first_name, last_name=student_user_233.last_name, matrix_no=student_user_233.identification_num, email=student_user_233.email, phone_number=student_user_233.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_234 = TrainingStudent(
-    student=student_user_234, faculty=faculty_3, department=dept_24, student_training_coordinator=coord_user_24, first_name=student_user_234.first_name, last_name=student_user_234.last_name, matrix_no=student_user_234.identification_num, email=student_user_234.email, phone_number=student_user_234.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_235 = TrainingStudent(
-    student=student_user_235, faculty=faculty_3, department=dept_24, student_training_coordinator=coord_user_24, first_name=student_user_235.first_name, last_name=student_user_235.last_name, matrix_no=student_user_235.identification_num, email=student_user_235.email, phone_number=student_user_235.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_236 = TrainingStudent(
-    student=student_user_236, faculty=faculty_3, department=dept_24, student_training_coordinator=coord_user_24, first_name=student_user_236.first_name, last_name=student_user_236.last_name, matrix_no=student_user_236.identification_num, email=student_user_236.email, phone_number=student_user_236.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_237 = TrainingStudent(
-    student=student_user_237, faculty=faculty_3, department=dept_24, student_training_coordinator=coord_user_24, first_name=student_user_237.first_name, last_name=student_user_237.last_name, matrix_no=student_user_237.identification_num, email=student_user_237.email, phone_number=student_user_237.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_238 = TrainingStudent(
-    student=student_user_238, faculty=faculty_3, department=dept_24, student_training_coordinator=coord_user_24, first_name=student_user_238.first_name, last_name=student_user_238.last_name, matrix_no=student_user_238.identification_num, email=student_user_238.email, phone_number=student_user_238.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_239 = TrainingStudent(
-    student=student_user_239, faculty=faculty_3, department=dept_24, student_training_coordinator=coord_user_24, first_name=student_user_239.first_name, last_name=student_user_239.last_name, matrix_no=student_user_239.identification_num, email=student_user_239.email, phone_number=student_user_239.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_240 = TrainingStudent(
-    student=student_user_240, faculty=faculty_3, department=dept_24, student_training_coordinator=coord_user_24, first_name=student_user_240.first_name, last_name=student_user_240.last_name, matrix_no=student_user_240.identification_num, email=student_user_240.email, phone_number=student_user_240.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_231 = Student(
+    student=student_user_231, faculty=faculty_3, department=dept_24, student_coordinator=coord_user_24, first_name=student_user_231.first_name, last_name=student_user_231.last_name, matrix_no=student_user_231.identification_num, email=student_user_231.email, phone_number=student_user_231.phone_number, is_in_school=True)
+student_232 = Student(
+    student=student_user_232, faculty=faculty_3, department=dept_24, student_coordinator=coord_user_24, first_name=student_user_232.first_name, last_name=student_user_232.last_name, matrix_no=student_user_232.identification_num, email=student_user_232.email, phone_number=student_user_232.phone_number, is_in_school=True)
+student_233 = Student(
+    student=student_user_233, faculty=faculty_3, department=dept_24, student_coordinator=coord_user_24, first_name=student_user_233.first_name, last_name=student_user_233.last_name, matrix_no=student_user_233.identification_num, email=student_user_233.email, phone_number=student_user_233.phone_number, is_in_school=True)
+student_234 = Student(
+    student=student_user_234, faculty=faculty_3, department=dept_24, student_coordinator=coord_user_24, first_name=student_user_234.first_name, last_name=student_user_234.last_name, matrix_no=student_user_234.identification_num, email=student_user_234.email, phone_number=student_user_234.phone_number, is_in_school=True)
+student_235 = Student(
+    student=student_user_235, faculty=faculty_3, department=dept_24, student_coordinator=coord_user_24, first_name=student_user_235.first_name, last_name=student_user_235.last_name, matrix_no=student_user_235.identification_num, email=student_user_235.email, phone_number=student_user_235.phone_number, is_in_school=True)
+student_236 = Student(
+    student=student_user_236, faculty=faculty_3, department=dept_24, student_coordinator=coord_user_24, first_name=student_user_236.first_name, last_name=student_user_236.last_name, matrix_no=student_user_236.identification_num, email=student_user_236.email, phone_number=student_user_236.phone_number, is_in_school=True)
+student_237 = Student(
+    student=student_user_237, faculty=faculty_3, department=dept_24, student_coordinator=coord_user_24, first_name=student_user_237.first_name, last_name=student_user_237.last_name, matrix_no=student_user_237.identification_num, email=student_user_237.email, phone_number=student_user_237.phone_number, is_in_school=True)
+student_238 = Student(
+    student=student_user_238, faculty=faculty_3, department=dept_24, student_coordinator=coord_user_24, first_name=student_user_238.first_name, last_name=student_user_238.last_name, matrix_no=student_user_238.identification_num, email=student_user_238.email, phone_number=student_user_238.phone_number, is_in_school=True)
+student_239 = Student(
+    student=student_user_239, faculty=faculty_3, department=dept_24, student_coordinator=coord_user_24, first_name=student_user_239.first_name, last_name=student_user_239.last_name, matrix_no=student_user_239.identification_num, email=student_user_239.email, phone_number=student_user_239.phone_number, is_in_school=True)
+student_240 = Student(
+    student=student_user_240, faculty=faculty_3, department=dept_24, student_coordinator=coord_user_24, first_name=student_user_240.first_name, last_name=student_user_240.last_name, matrix_no=student_user_240.identification_num, email=student_user_240.email, phone_number=student_user_240.phone_number, is_in_school=True)
 
 # Education Mathematics students
-student_241 = TrainingStudent(
-    student=student_user_241, faculty=faculty_3, department=dept_25, student_training_coordinator=coord_user_25, first_name=student_user_241.first_name, last_name=student_user_241.last_name, matrix_no=student_user_241.identification_num, email=student_user_241.email, phone_number=student_user_241.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_242 = TrainingStudent(
-    student=student_user_242, faculty=faculty_3, department=dept_25, student_training_coordinator=coord_user_25, first_name=student_user_242.first_name, last_name=student_user_242.last_name, matrix_no=student_user_242.identification_num, email=student_user_242.email, phone_number=student_user_242.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_243 = TrainingStudent(
-    student=student_user_243, faculty=faculty_3, department=dept_25, student_training_coordinator=coord_user_25, first_name=student_user_243.first_name, last_name=student_user_243.last_name, matrix_no=student_user_243.identification_num, email=student_user_243.email, phone_number=student_user_243.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_244 = TrainingStudent(
-    student=student_user_244, faculty=faculty_3, department=dept_25, student_training_coordinator=coord_user_25, first_name=student_user_244.first_name, last_name=student_user_244.last_name, matrix_no=student_user_244.identification_num, email=student_user_244.email, phone_number=student_user_244.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_245 = TrainingStudent(
-    student=student_user_245, faculty=faculty_3, department=dept_25, student_training_coordinator=coord_user_25, first_name=student_user_245.first_name, last_name=student_user_245.last_name, matrix_no=student_user_245.identification_num, email=student_user_245.email, phone_number=student_user_245.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_246 = TrainingStudent(
-    student=student_user_246, faculty=faculty_3, department=dept_25, student_training_coordinator=coord_user_25, first_name=student_user_246.first_name, last_name=student_user_246.last_name, matrix_no=student_user_246.identification_num, email=student_user_246.email, phone_number=student_user_246.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_247 = TrainingStudent(
-    student=student_user_247, faculty=faculty_3, department=dept_25, student_training_coordinator=coord_user_25, first_name=student_user_247.first_name, last_name=student_user_247.last_name, matrix_no=student_user_247.identification_num, email=student_user_247.email, phone_number=student_user_247.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_248 = TrainingStudent(
-    student=student_user_248, faculty=faculty_3, department=dept_25, student_training_coordinator=coord_user_25, first_name=student_user_248.first_name, last_name=student_user_248.last_name, matrix_no=student_user_248.identification_num, email=student_user_248.email, phone_number=student_user_248.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_249 = TrainingStudent(
-    student=student_user_249, faculty=faculty_3, department=dept_25, student_training_coordinator=coord_user_25, first_name=student_user_249.first_name, last_name=student_user_249.last_name, matrix_no=student_user_249.identification_num, email=student_user_249.email, phone_number=student_user_249.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_250 = TrainingStudent(
-    student=student_user_250, faculty=faculty_3, department=dept_25, student_training_coordinator=coord_user_25, first_name=student_user_250.first_name, last_name=student_user_250.last_name, matrix_no=student_user_250.identification_num, email=student_user_250.email, phone_number=student_user_250.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_241 = Student(
+    student=student_user_241, faculty=faculty_3, department=dept_25, student_coordinator=coord_user_25, first_name=student_user_241.first_name, last_name=student_user_241.last_name, matrix_no=student_user_241.identification_num, email=student_user_241.email, phone_number=student_user_241.phone_number, is_in_school=True)
+student_242 = Student(
+    student=student_user_242, faculty=faculty_3, department=dept_25, student_coordinator=coord_user_25, first_name=student_user_242.first_name, last_name=student_user_242.last_name, matrix_no=student_user_242.identification_num, email=student_user_242.email, phone_number=student_user_242.phone_number, is_in_school=True)
+student_243 = Student(
+    student=student_user_243, faculty=faculty_3, department=dept_25, student_coordinator=coord_user_25, first_name=student_user_243.first_name, last_name=student_user_243.last_name, matrix_no=student_user_243.identification_num, email=student_user_243.email, phone_number=student_user_243.phone_number, is_in_school=True)
+student_244 = Student(
+    student=student_user_244, faculty=faculty_3, department=dept_25, student_coordinator=coord_user_25, first_name=student_user_244.first_name, last_name=student_user_244.last_name, matrix_no=student_user_244.identification_num, email=student_user_244.email, phone_number=student_user_244.phone_number, is_in_school=True)
+student_245 = Student(
+    student=student_user_245, faculty=faculty_3, department=dept_25, student_coordinator=coord_user_25, first_name=student_user_245.first_name, last_name=student_user_245.last_name, matrix_no=student_user_245.identification_num, email=student_user_245.email, phone_number=student_user_245.phone_number, is_in_school=True)
+student_246 = Student(
+    student=student_user_246, faculty=faculty_3, department=dept_25, student_coordinator=coord_user_25, first_name=student_user_246.first_name, last_name=student_user_246.last_name, matrix_no=student_user_246.identification_num, email=student_user_246.email, phone_number=student_user_246.phone_number, is_in_school=True)
+student_247 = Student(
+    student=student_user_247, faculty=faculty_3, department=dept_25, student_coordinator=coord_user_25, first_name=student_user_247.first_name, last_name=student_user_247.last_name, matrix_no=student_user_247.identification_num, email=student_user_247.email, phone_number=student_user_247.phone_number, is_in_school=True)
+student_248 = Student(
+    student=student_user_248, faculty=faculty_3, department=dept_25, student_coordinator=coord_user_25, first_name=student_user_248.first_name, last_name=student_user_248.last_name, matrix_no=student_user_248.identification_num, email=student_user_248.email, phone_number=student_user_248.phone_number, is_in_school=True)
+student_249 = Student(
+    student=student_user_249, faculty=faculty_3, department=dept_25, student_coordinator=coord_user_25, first_name=student_user_249.first_name, last_name=student_user_249.last_name, matrix_no=student_user_249.identification_num, email=student_user_249.email, phone_number=student_user_249.phone_number, is_in_school=True)
+student_250 = Student(
+    student=student_user_250, faculty=faculty_3, department=dept_25, student_coordinator=coord_user_25, first_name=student_user_250.first_name, last_name=student_user_250.last_name, matrix_no=student_user_250.identification_num, email=student_user_250.email, phone_number=student_user_250.phone_number, is_in_school=True)
 
 # Education Physics students
-student_251 = TrainingStudent(
-    student=student_user_251, faculty=faculty_3, department=dept_26, student_training_coordinator=coord_user_26, first_name=student_user_251.first_name, last_name=student_user_251.last_name, matrix_no=student_user_251.identification_num, email=student_user_251.email, phone_number=student_user_251.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_252 = TrainingStudent(
-    student=student_user_252, faculty=faculty_3, department=dept_26, student_training_coordinator=coord_user_26, first_name=student_user_252.first_name, last_name=student_user_252.last_name, matrix_no=student_user_252.identification_num, email=student_user_252.email, phone_number=student_user_252.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_253 = TrainingStudent(
-    student=student_user_253, faculty=faculty_3, department=dept_26, student_training_coordinator=coord_user_26, first_name=student_user_253.first_name, last_name=student_user_253.last_name, matrix_no=student_user_253.identification_num, email=student_user_253.email, phone_number=student_user_253.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_254 = TrainingStudent(
-    student=student_user_254, faculty=faculty_3, department=dept_26, student_training_coordinator=coord_user_26, first_name=student_user_254.first_name, last_name=student_user_254.last_name, matrix_no=student_user_254.identification_num, email=student_user_254.email, phone_number=student_user_254.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_255 = TrainingStudent(
-    student=student_user_255, faculty=faculty_3, department=dept_26, student_training_coordinator=coord_user_26, first_name=student_user_255.first_name, last_name=student_user_255.last_name, matrix_no=student_user_255.identification_num, email=student_user_255.email, phone_number=student_user_255.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_256 = TrainingStudent(
-    student=student_user_256, faculty=faculty_3, department=dept_26, student_training_coordinator=coord_user_26, first_name=student_user_256.first_name, last_name=student_user_256.last_name, matrix_no=student_user_256.identification_num, email=student_user_256.email, phone_number=student_user_256.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_257 = TrainingStudent(
-    student=student_user_257, faculty=faculty_3, department=dept_26, student_training_coordinator=coord_user_26, first_name=student_user_257.first_name, last_name=student_user_257.last_name, matrix_no=student_user_257.identification_num, email=student_user_257.email, phone_number=student_user_257.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_258 = TrainingStudent(
-    student=student_user_258, faculty=faculty_3, department=dept_26, student_training_coordinator=coord_user_26, first_name=student_user_258.first_name, last_name=student_user_258.last_name, matrix_no=student_user_258.identification_num, email=student_user_258.email, phone_number=student_user_258.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_259 = TrainingStudent(
-    student=student_user_259, faculty=faculty_3, department=dept_26, student_training_coordinator=coord_user_26, first_name=student_user_259.first_name, last_name=student_user_259.last_name, matrix_no=student_user_259.identification_num, email=student_user_259.email, phone_number=student_user_259.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_260 = TrainingStudent(
-    student=student_user_260, faculty=faculty_3, department=dept_26, student_training_coordinator=coord_user_26, first_name=student_user_260.first_name, last_name=student_user_260.last_name, matrix_no=student_user_260.identification_num, email=student_user_260.email, phone_number=student_user_260.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_251 = Student(
+    student=student_user_251, faculty=faculty_3, department=dept_26, student_coordinator=coord_user_26, first_name=student_user_251.first_name, last_name=student_user_251.last_name, matrix_no=student_user_251.identification_num, email=student_user_251.email, phone_number=student_user_251.phone_number, is_in_school=True)
+student_252 = Student(
+    student=student_user_252, faculty=faculty_3, department=dept_26, student_coordinator=coord_user_26, first_name=student_user_252.first_name, last_name=student_user_252.last_name, matrix_no=student_user_252.identification_num, email=student_user_252.email, phone_number=student_user_252.phone_number, is_in_school=True)
+student_253 = Student(
+    student=student_user_253, faculty=faculty_3, department=dept_26, student_coordinator=coord_user_26, first_name=student_user_253.first_name, last_name=student_user_253.last_name, matrix_no=student_user_253.identification_num, email=student_user_253.email, phone_number=student_user_253.phone_number, is_in_school=True)
+student_254 = Student(
+    student=student_user_254, faculty=faculty_3, department=dept_26, student_coordinator=coord_user_26, first_name=student_user_254.first_name, last_name=student_user_254.last_name, matrix_no=student_user_254.identification_num, email=student_user_254.email, phone_number=student_user_254.phone_number, is_in_school=True)
+student_255 = Student(
+    student=student_user_255, faculty=faculty_3, department=dept_26, student_coordinator=coord_user_26, first_name=student_user_255.first_name, last_name=student_user_255.last_name, matrix_no=student_user_255.identification_num, email=student_user_255.email, phone_number=student_user_255.phone_number, is_in_school=True)
+student_256 = Student(
+    student=student_user_256, faculty=faculty_3, department=dept_26, student_coordinator=coord_user_26, first_name=student_user_256.first_name, last_name=student_user_256.last_name, matrix_no=student_user_256.identification_num, email=student_user_256.email, phone_number=student_user_256.phone_number, is_in_school=True)
+student_257 = Student(
+    student=student_user_257, faculty=faculty_3, department=dept_26, student_coordinator=coord_user_26, first_name=student_user_257.first_name, last_name=student_user_257.last_name, matrix_no=student_user_257.identification_num, email=student_user_257.email, phone_number=student_user_257.phone_number, is_in_school=True)
+student_258 = Student(
+    student=student_user_258, faculty=faculty_3, department=dept_26, student_coordinator=coord_user_26, first_name=student_user_258.first_name, last_name=student_user_258.last_name, matrix_no=student_user_258.identification_num, email=student_user_258.email, phone_number=student_user_258.phone_number, is_in_school=True)
+student_259 = Student(
+    student=student_user_259, faculty=faculty_3, department=dept_26, student_coordinator=coord_user_26, first_name=student_user_259.first_name, last_name=student_user_259.last_name, matrix_no=student_user_259.identification_num, email=student_user_259.email, phone_number=student_user_259.phone_number, is_in_school=True)
+student_260 = Student(
+    student=student_user_260, faculty=faculty_3, department=dept_26, student_coordinator=coord_user_26, first_name=student_user_260.first_name, last_name=student_user_260.last_name, matrix_no=student_user_260.identification_num, email=student_user_260.email, phone_number=student_user_260.phone_number, is_in_school=True)
 
 # Accounting students
-student_261 = TrainingStudent(
-    student=student_user_261, faculty=faculty_4, department=dept_27, student_training_coordinator=coord_user_27, first_name=student_user_261.first_name, last_name=student_user_261.last_name, matrix_no=student_user_261.identification_num, email=student_user_261.email, phone_number=student_user_261.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_262 = TrainingStudent(
-    student=student_user_262, faculty=faculty_4, department=dept_27, student_training_coordinator=coord_user_27, first_name=student_user_262.first_name, last_name=student_user_262.last_name, matrix_no=student_user_262.identification_num, email=student_user_262.email, phone_number=student_user_262.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_263 = TrainingStudent(
-    student=student_user_263, faculty=faculty_4, department=dept_27, student_training_coordinator=coord_user_27, first_name=student_user_263.first_name, last_name=student_user_263.last_name, matrix_no=student_user_263.identification_num, email=student_user_263.email, phone_number=student_user_263.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_264 = TrainingStudent(
-    student=student_user_264, faculty=faculty_4, department=dept_27, student_training_coordinator=coord_user_27, first_name=student_user_264.first_name, last_name=student_user_264.last_name, matrix_no=student_user_264.identification_num, email=student_user_264.email, phone_number=student_user_264.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_265 = TrainingStudent(
-    student=student_user_265, faculty=faculty_4, department=dept_27, student_training_coordinator=coord_user_27, first_name=student_user_265.first_name, last_name=student_user_265.last_name, matrix_no=student_user_265.identification_num, email=student_user_265.email, phone_number=student_user_265.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_266 = TrainingStudent(
-    student=student_user_266, faculty=faculty_4, department=dept_27, student_training_coordinator=coord_user_27, first_name=student_user_266.first_name, last_name=student_user_266.last_name, matrix_no=student_user_266.identification_num, email=student_user_266.email, phone_number=student_user_266.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_267 = TrainingStudent(
-    student=student_user_267, faculty=faculty_4, department=dept_27, student_training_coordinator=coord_user_27, first_name=student_user_267.first_name, last_name=student_user_267.last_name, matrix_no=student_user_267.identification_num, email=student_user_267.email, phone_number=student_user_267.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_268 = TrainingStudent(
-    student=student_user_268, faculty=faculty_4, department=dept_27, student_training_coordinator=coord_user_27, first_name=student_user_268.first_name, last_name=student_user_268.last_name, matrix_no=student_user_268.identification_num, email=student_user_268.email, phone_number=student_user_268.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_269 = TrainingStudent(
-    student=student_user_269, faculty=faculty_4, department=dept_27, student_training_coordinator=coord_user_27, first_name=student_user_269.first_name, last_name=student_user_269.last_name, matrix_no=student_user_269.identification_num, email=student_user_269.email, phone_number=student_user_269.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_270 = TrainingStudent(
-    student=student_user_270, faculty=faculty_4, department=dept_27, student_training_coordinator=coord_user_27, first_name=student_user_270.first_name, last_name=student_user_270.last_name, matrix_no=student_user_270.identification_num, email=student_user_270.email, phone_number=student_user_270.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_261 = Student(
+    student=student_user_261, faculty=faculty_4, department=dept_27, student_coordinator=coord_user_27, first_name=student_user_261.first_name, last_name=student_user_261.last_name, matrix_no=student_user_261.identification_num, email=student_user_261.email, phone_number=student_user_261.phone_number, is_in_school=True)
+student_262 = Student(
+    student=student_user_262, faculty=faculty_4, department=dept_27, student_coordinator=coord_user_27, first_name=student_user_262.first_name, last_name=student_user_262.last_name, matrix_no=student_user_262.identification_num, email=student_user_262.email, phone_number=student_user_262.phone_number, is_in_school=True)
+student_263 = Student(
+    student=student_user_263, faculty=faculty_4, department=dept_27, student_coordinator=coord_user_27, first_name=student_user_263.first_name, last_name=student_user_263.last_name, matrix_no=student_user_263.identification_num, email=student_user_263.email, phone_number=student_user_263.phone_number, is_in_school=True)
+student_264 = Student(
+    student=student_user_264, faculty=faculty_4, department=dept_27, student_coordinator=coord_user_27, first_name=student_user_264.first_name, last_name=student_user_264.last_name, matrix_no=student_user_264.identification_num, email=student_user_264.email, phone_number=student_user_264.phone_number, is_in_school=True)
+student_265 = Student(
+    student=student_user_265, faculty=faculty_4, department=dept_27, student_coordinator=coord_user_27, first_name=student_user_265.first_name, last_name=student_user_265.last_name, matrix_no=student_user_265.identification_num, email=student_user_265.email, phone_number=student_user_265.phone_number, is_in_school=True)
+student_266 = Student(
+    student=student_user_266, faculty=faculty_4, department=dept_27, student_coordinator=coord_user_27, first_name=student_user_266.first_name, last_name=student_user_266.last_name, matrix_no=student_user_266.identification_num, email=student_user_266.email, phone_number=student_user_266.phone_number, is_in_school=True)
+student_267 = Student(
+    student=student_user_267, faculty=faculty_4, department=dept_27, student_coordinator=coord_user_27, first_name=student_user_267.first_name, last_name=student_user_267.last_name, matrix_no=student_user_267.identification_num, email=student_user_267.email, phone_number=student_user_267.phone_number, is_in_school=True)
+student_268 = Student(
+    student=student_user_268, faculty=faculty_4, department=dept_27, student_coordinator=coord_user_27, first_name=student_user_268.first_name, last_name=student_user_268.last_name, matrix_no=student_user_268.identification_num, email=student_user_268.email, phone_number=student_user_268.phone_number, is_in_school=True)
+student_269 = Student(
+    student=student_user_269, faculty=faculty_4, department=dept_27, student_coordinator=coord_user_27, first_name=student_user_269.first_name, last_name=student_user_269.last_name, matrix_no=student_user_269.identification_num, email=student_user_269.email, phone_number=student_user_269.phone_number, is_in_school=True)
+student_270 = Student(
+    student=student_user_270, faculty=faculty_4, department=dept_27, student_coordinator=coord_user_27, first_name=student_user_270.first_name, last_name=student_user_270.last_name, matrix_no=student_user_270.identification_num, email=student_user_270.email, phone_number=student_user_270.phone_number, is_in_school=True)
 
 # Business Administration students
-student_271 = TrainingStudent(
-    student=student_user_271, faculty=faculty_4, department=dept_28, student_training_coordinator=coord_user_28, first_name=student_user_271.first_name, last_name=student_user_271.last_name, matrix_no=student_user_271.identification_num, email=student_user_271.email, phone_number=student_user_271.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_272 = TrainingStudent(
-    student=student_user_272, faculty=faculty_4, department=dept_28, student_training_coordinator=coord_user_28, first_name=student_user_272.first_name, last_name=student_user_272.last_name, matrix_no=student_user_272.identification_num, email=student_user_272.email, phone_number=student_user_272.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_273 = TrainingStudent(
-    student=student_user_273, faculty=faculty_4, department=dept_28, student_training_coordinator=coord_user_28, first_name=student_user_273.first_name, last_name=student_user_273.last_name, matrix_no=student_user_273.identification_num, email=student_user_273.email, phone_number=student_user_273.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_274 = TrainingStudent(
-    student=student_user_274, faculty=faculty_4, department=dept_28, student_training_coordinator=coord_user_28, first_name=student_user_274.first_name, last_name=student_user_274.last_name, matrix_no=student_user_274.identification_num, email=student_user_274.email, phone_number=student_user_274.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_275 = TrainingStudent(
-    student=student_user_275, faculty=faculty_4, department=dept_28, student_training_coordinator=coord_user_28, first_name=student_user_275.first_name, last_name=student_user_275.last_name, matrix_no=student_user_275.identification_num, email=student_user_275.email, phone_number=student_user_275.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_276 = TrainingStudent(
-    student=student_user_276, faculty=faculty_4, department=dept_28, student_training_coordinator=coord_user_28, first_name=student_user_276.first_name, last_name=student_user_276.last_name, matrix_no=student_user_276.identification_num, email=student_user_276.email, phone_number=student_user_276.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_277 = TrainingStudent(
-    student=student_user_277, faculty=faculty_4, department=dept_28, student_training_coordinator=coord_user_28, first_name=student_user_277.first_name, last_name=student_user_277.last_name, matrix_no=student_user_277.identification_num, email=student_user_277.email, phone_number=student_user_277.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_278 = TrainingStudent(
-    student=student_user_278, faculty=faculty_4, department=dept_28, student_training_coordinator=coord_user_28, first_name=student_user_278.first_name, last_name=student_user_278.last_name, matrix_no=student_user_278.identification_num, email=student_user_278.email, phone_number=student_user_278.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_279 = TrainingStudent(
-    student=student_user_279, faculty=faculty_4, department=dept_28, student_training_coordinator=coord_user_28, first_name=student_user_279.first_name, last_name=student_user_279.last_name, matrix_no=student_user_279.identification_num, email=student_user_279.email, phone_number=student_user_279.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_280 = TrainingStudent(
-    student=student_user_280, faculty=faculty_4, department=dept_28, student_training_coordinator=coord_user_28, first_name=student_user_280.first_name, last_name=student_user_280.last_name, matrix_no=student_user_280.identification_num, email=student_user_280.email, phone_number=student_user_280.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_271 = Student(
+    student=student_user_271, faculty=faculty_4, department=dept_28, student_coordinator=coord_user_28, first_name=student_user_271.first_name, last_name=student_user_271.last_name, matrix_no=student_user_271.identification_num, email=student_user_271.email, phone_number=student_user_271.phone_number, is_in_school=True)
+student_272 = Student(
+    student=student_user_272, faculty=faculty_4, department=dept_28, student_coordinator=coord_user_28, first_name=student_user_272.first_name, last_name=student_user_272.last_name, matrix_no=student_user_272.identification_num, email=student_user_272.email, phone_number=student_user_272.phone_number, is_in_school=True)
+student_273 = Student(
+    student=student_user_273, faculty=faculty_4, department=dept_28, student_coordinator=coord_user_28, first_name=student_user_273.first_name, last_name=student_user_273.last_name, matrix_no=student_user_273.identification_num, email=student_user_273.email, phone_number=student_user_273.phone_number, is_in_school=True)
+student_274 = Student(
+    student=student_user_274, faculty=faculty_4, department=dept_28, student_coordinator=coord_user_28, first_name=student_user_274.first_name, last_name=student_user_274.last_name, matrix_no=student_user_274.identification_num, email=student_user_274.email, phone_number=student_user_274.phone_number, is_in_school=True)
+student_275 = Student(
+    student=student_user_275, faculty=faculty_4, department=dept_28, student_coordinator=coord_user_28, first_name=student_user_275.first_name, last_name=student_user_275.last_name, matrix_no=student_user_275.identification_num, email=student_user_275.email, phone_number=student_user_275.phone_number, is_in_school=True)
+student_276 = Student(
+    student=student_user_276, faculty=faculty_4, department=dept_28, student_coordinator=coord_user_28, first_name=student_user_276.first_name, last_name=student_user_276.last_name, matrix_no=student_user_276.identification_num, email=student_user_276.email, phone_number=student_user_276.phone_number, is_in_school=True)
+student_277 = Student(
+    student=student_user_277, faculty=faculty_4, department=dept_28, student_coordinator=coord_user_28, first_name=student_user_277.first_name, last_name=student_user_277.last_name, matrix_no=student_user_277.identification_num, email=student_user_277.email, phone_number=student_user_277.phone_number, is_in_school=True)
+student_278 = Student(
+    student=student_user_278, faculty=faculty_4, department=dept_28, student_coordinator=coord_user_28, first_name=student_user_278.first_name, last_name=student_user_278.last_name, matrix_no=student_user_278.identification_num, email=student_user_278.email, phone_number=student_user_278.phone_number, is_in_school=True)
+student_279 = Student(
+    student=student_user_279, faculty=faculty_4, department=dept_28, student_coordinator=coord_user_28, first_name=student_user_279.first_name, last_name=student_user_279.last_name, matrix_no=student_user_279.identification_num, email=student_user_279.email, phone_number=student_user_279.phone_number, is_in_school=True)
+student_280 = Student(
+    student=student_user_280, faculty=faculty_4, department=dept_28, student_coordinator=coord_user_28, first_name=student_user_280.first_name, last_name=student_user_280.last_name, matrix_no=student_user_280.identification_num, email=student_user_280.email, phone_number=student_user_280.phone_number, is_in_school=True)
 
 # Economics students
-student_281 = TrainingStudent(
-    student=student_user_281, faculty=faculty_4, department=dept_29, student_training_coordinator=coord_user_29, first_name=student_user_281.first_name, last_name=student_user_281.last_name, matrix_no=student_user_281.identification_num, email=student_user_281.email, phone_number=student_user_281.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_282 = TrainingStudent(
-    student=student_user_282, faculty=faculty_4, department=dept_29, student_training_coordinator=coord_user_29, first_name=student_user_282.first_name, last_name=student_user_282.last_name, matrix_no=student_user_282.identification_num, email=student_user_282.email, phone_number=student_user_282.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_283 = TrainingStudent(
-    student=student_user_283, faculty=faculty_4, department=dept_29, student_training_coordinator=coord_user_29, first_name=student_user_283.first_name, last_name=student_user_283.last_name, matrix_no=student_user_283.identification_num, email=student_user_283.email, phone_number=student_user_283.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_284 = TrainingStudent(
-    student=student_user_284, faculty=faculty_4, department=dept_29, student_training_coordinator=coord_user_29, first_name=student_user_284.first_name, last_name=student_user_284.last_name, matrix_no=student_user_284.identification_num, email=student_user_284.email, phone_number=student_user_284.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_285 = TrainingStudent(
-    student=student_user_285, faculty=faculty_4, department=dept_29, student_training_coordinator=coord_user_29, first_name=student_user_285.first_name, last_name=student_user_285.last_name, matrix_no=student_user_285.identification_num, email=student_user_285.email, phone_number=student_user_285.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_286 = TrainingStudent(
-    student=student_user_286, faculty=faculty_4, department=dept_29, student_training_coordinator=coord_user_29, first_name=student_user_286.first_name, last_name=student_user_286.last_name, matrix_no=student_user_286.identification_num, email=student_user_286.email, phone_number=student_user_286.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_287 = TrainingStudent(
-    student=student_user_287, faculty=faculty_4, department=dept_29, student_training_coordinator=coord_user_29, first_name=student_user_287.first_name, last_name=student_user_287.last_name, matrix_no=student_user_287.identification_num, email=student_user_287.email, phone_number=student_user_287.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_288 = TrainingStudent(
-    student=student_user_288, faculty=faculty_4, department=dept_29, student_training_coordinator=coord_user_29, first_name=student_user_288.first_name, last_name=student_user_288.last_name, matrix_no=student_user_288.identification_num, email=student_user_288.email, phone_number=student_user_288.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_289 = TrainingStudent(
-    student=student_user_289, faculty=faculty_4, department=dept_29, student_training_coordinator=coord_user_29, first_name=student_user_289.first_name, last_name=student_user_289.last_name, matrix_no=student_user_289.identification_num, email=student_user_289.email, phone_number=student_user_289.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_290 = TrainingStudent(
-    student=student_user_290, faculty=faculty_4, department=dept_29, student_training_coordinator=coord_user_29, first_name=student_user_290.first_name, last_name=student_user_290.last_name, matrix_no=student_user_290.identification_num, email=student_user_290.email, phone_number=student_user_290.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_281 = Student(
+    student=student_user_281, faculty=faculty_4, department=dept_29, student_coordinator=coord_user_29, first_name=student_user_281.first_name, last_name=student_user_281.last_name, matrix_no=student_user_281.identification_num, email=student_user_281.email, phone_number=student_user_281.phone_number, is_in_school=True)
+student_282 = Student(
+    student=student_user_282, faculty=faculty_4, department=dept_29, student_coordinator=coord_user_29, first_name=student_user_282.first_name, last_name=student_user_282.last_name, matrix_no=student_user_282.identification_num, email=student_user_282.email, phone_number=student_user_282.phone_number, is_in_school=True)
+student_283 = Student(
+    student=student_user_283, faculty=faculty_4, department=dept_29, student_coordinator=coord_user_29, first_name=student_user_283.first_name, last_name=student_user_283.last_name, matrix_no=student_user_283.identification_num, email=student_user_283.email, phone_number=student_user_283.phone_number, is_in_school=True)
+student_284 = Student(
+    student=student_user_284, faculty=faculty_4, department=dept_29, student_coordinator=coord_user_29, first_name=student_user_284.first_name, last_name=student_user_284.last_name, matrix_no=student_user_284.identification_num, email=student_user_284.email, phone_number=student_user_284.phone_number, is_in_school=True)
+student_285 = Student(
+    student=student_user_285, faculty=faculty_4, department=dept_29, student_coordinator=coord_user_29, first_name=student_user_285.first_name, last_name=student_user_285.last_name, matrix_no=student_user_285.identification_num, email=student_user_285.email, phone_number=student_user_285.phone_number, is_in_school=True)
+student_286 = Student(
+    student=student_user_286, faculty=faculty_4, department=dept_29, student_coordinator=coord_user_29, first_name=student_user_286.first_name, last_name=student_user_286.last_name, matrix_no=student_user_286.identification_num, email=student_user_286.email, phone_number=student_user_286.phone_number, is_in_school=True)
+student_287 = Student(
+    student=student_user_287, faculty=faculty_4, department=dept_29, student_coordinator=coord_user_29, first_name=student_user_287.first_name, last_name=student_user_287.last_name, matrix_no=student_user_287.identification_num, email=student_user_287.email, phone_number=student_user_287.phone_number, is_in_school=True)
+student_288 = Student(
+    student=student_user_288, faculty=faculty_4, department=dept_29, student_coordinator=coord_user_29, first_name=student_user_288.first_name, last_name=student_user_288.last_name, matrix_no=student_user_288.identification_num, email=student_user_288.email, phone_number=student_user_288.phone_number, is_in_school=True)
+student_289 = Student(
+    student=student_user_289, faculty=faculty_4, department=dept_29, student_coordinator=coord_user_29, first_name=student_user_289.first_name, last_name=student_user_289.last_name, matrix_no=student_user_289.identification_num, email=student_user_289.email, phone_number=student_user_289.phone_number, is_in_school=True)
+student_290 = Student(
+    student=student_user_290, faculty=faculty_4, department=dept_29, student_coordinator=coord_user_29, first_name=student_user_290.first_name, last_name=student_user_290.last_name, matrix_no=student_user_290.identification_num, email=student_user_290.email, phone_number=student_user_290.phone_number, is_in_school=True)
 
 # Political science students
-student_291 = TrainingStudent(
-    student=student_user_291, faculty=faculty_4, department=dept_30, student_training_coordinator=coord_user_30, first_name=student_user_291.first_name, last_name=student_user_291.last_name, matrix_no=student_user_291.identification_num, email=student_user_291.email, phone_number=student_user_291.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_292 = TrainingStudent(
-    student=student_user_292, faculty=faculty_4, department=dept_30, student_training_coordinator=coord_user_30, first_name=student_user_292.first_name, last_name=student_user_292.last_name, matrix_no=student_user_292.identification_num, email=student_user_292.email, phone_number=student_user_292.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_293 = TrainingStudent(
-    student=student_user_293, faculty=faculty_4, department=dept_30, student_training_coordinator=coord_user_30, first_name=student_user_293.first_name, last_name=student_user_293.last_name, matrix_no=student_user_293.identification_num, email=student_user_293.email, phone_number=student_user_293.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_294 = TrainingStudent(
-    student=student_user_294, faculty=faculty_4, department=dept_30, student_training_coordinator=coord_user_30, first_name=student_user_294.first_name, last_name=student_user_294.last_name, matrix_no=student_user_294.identification_num, email=student_user_294.email, phone_number=student_user_294.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_295 = TrainingStudent(
-    student=student_user_295, faculty=faculty_4, department=dept_30, student_training_coordinator=coord_user_30, first_name=student_user_295.first_name, last_name=student_user_295.last_name, matrix_no=student_user_295.identification_num, email=student_user_295.email, phone_number=student_user_295.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_296 = TrainingStudent(
-    student=student_user_296, faculty=faculty_4, department=dept_30, student_training_coordinator=coord_user_30, first_name=student_user_296.first_name, last_name=student_user_296.last_name, matrix_no=student_user_296.identification_num, email=student_user_296.email, phone_number=student_user_296.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_297 = TrainingStudent(
-    student=student_user_297, faculty=faculty_4, department=dept_30, student_training_coordinator=coord_user_30, first_name=student_user_297.first_name, last_name=student_user_297.last_name, matrix_no=student_user_297.identification_num, email=student_user_297.email, phone_number=student_user_297.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_298 = TrainingStudent(
-    student=student_user_298, faculty=faculty_4, department=dept_30, student_training_coordinator=coord_user_30, first_name=student_user_298.first_name, last_name=student_user_298.last_name, matrix_no=student_user_298.identification_num, email=student_user_298.email, phone_number=student_user_298.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_299 = TrainingStudent(
-    student=student_user_299, faculty=faculty_4, department=dept_30, student_training_coordinator=coord_user_30, first_name=student_user_299.first_name, last_name=student_user_299.last_name, matrix_no=student_user_299.identification_num, email=student_user_299.email, phone_number=student_user_299.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_300 = TrainingStudent(
-    student=student_user_300, faculty=faculty_4, department=dept_30, student_training_coordinator=coord_user_30, first_name=student_user_300.first_name, last_name=student_user_300.last_name, matrix_no=student_user_300.identification_num, email=student_user_300.email, phone_number=student_user_300.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_291 = Student(
+    student=student_user_291, faculty=faculty_4, department=dept_30, student_coordinator=coord_user_30, first_name=student_user_291.first_name, last_name=student_user_291.last_name, matrix_no=student_user_291.identification_num, email=student_user_291.email, phone_number=student_user_291.phone_number, is_in_school=True)
+student_292 = Student(
+    student=student_user_292, faculty=faculty_4, department=dept_30, student_coordinator=coord_user_30, first_name=student_user_292.first_name, last_name=student_user_292.last_name, matrix_no=student_user_292.identification_num, email=student_user_292.email, phone_number=student_user_292.phone_number, is_in_school=True)
+student_293 = Student(
+    student=student_user_293, faculty=faculty_4, department=dept_30, student_coordinator=coord_user_30, first_name=student_user_293.first_name, last_name=student_user_293.last_name, matrix_no=student_user_293.identification_num, email=student_user_293.email, phone_number=student_user_293.phone_number, is_in_school=True)
+student_294 = Student(
+    student=student_user_294, faculty=faculty_4, department=dept_30, student_coordinator=coord_user_30, first_name=student_user_294.first_name, last_name=student_user_294.last_name, matrix_no=student_user_294.identification_num, email=student_user_294.email, phone_number=student_user_294.phone_number, is_in_school=True)
+student_295 = Student(
+    student=student_user_295, faculty=faculty_4, department=dept_30, student_coordinator=coord_user_30, first_name=student_user_295.first_name, last_name=student_user_295.last_name, matrix_no=student_user_295.identification_num, email=student_user_295.email, phone_number=student_user_295.phone_number, is_in_school=True)
+student_296 = Student(
+    student=student_user_296, faculty=faculty_4, department=dept_30, student_coordinator=coord_user_30, first_name=student_user_296.first_name, last_name=student_user_296.last_name, matrix_no=student_user_296.identification_num, email=student_user_296.email, phone_number=student_user_296.phone_number, is_in_school=True)
+student_297 = Student(
+    student=student_user_297, faculty=faculty_4, department=dept_30, student_coordinator=coord_user_30, first_name=student_user_297.first_name, last_name=student_user_297.last_name, matrix_no=student_user_297.identification_num, email=student_user_297.email, phone_number=student_user_297.phone_number, is_in_school=True)
+student_298 = Student(
+    student=student_user_298, faculty=faculty_4, department=dept_30, student_coordinator=coord_user_30, first_name=student_user_298.first_name, last_name=student_user_298.last_name, matrix_no=student_user_298.identification_num, email=student_user_298.email, phone_number=student_user_298.phone_number, is_in_school=True)
+student_299 = Student(
+    student=student_user_299, faculty=faculty_4, department=dept_30, student_coordinator=coord_user_30, first_name=student_user_299.first_name, last_name=student_user_299.last_name, matrix_no=student_user_299.identification_num, email=student_user_299.email, phone_number=student_user_299.phone_number, is_in_school=True)
+student_300 = Student(
+    student=student_user_300, faculty=faculty_4, department=dept_30, student_coordinator=coord_user_30, first_name=student_user_300.first_name, last_name=student_user_300.last_name, matrix_no=student_user_300.identification_num, email=student_user_300.email, phone_number=student_user_300.phone_number, is_in_school=True)
 
 # Public Administration students
-student_301 = TrainingStudent(
-    student=student_user_301, faculty=faculty_4, department=dept_31, student_training_coordinator=coord_user_31, first_name=student_user_301.first_name, last_name=student_user_301.last_name, matrix_no=student_user_301.identification_num, email=student_user_301.email, phone_number=student_user_301.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_302 = TrainingStudent(
-    student=student_user_302, faculty=faculty_4, department=dept_31, student_training_coordinator=coord_user_31, first_name=student_user_302.first_name, last_name=student_user_302.last_name, matrix_no=student_user_302.identification_num, email=student_user_302.email, phone_number=student_user_302.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_303 = TrainingStudent(
-    student=student_user_303, faculty=faculty_4, department=dept_31, student_training_coordinator=coord_user_31, first_name=student_user_303.first_name, last_name=student_user_303.last_name, matrix_no=student_user_303.identification_num, email=student_user_303.email, phone_number=student_user_303.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_304 = TrainingStudent(
-    student=student_user_304, faculty=faculty_4, department=dept_31, student_training_coordinator=coord_user_31, first_name=student_user_304.first_name, last_name=student_user_304.last_name, matrix_no=student_user_304.identification_num, email=student_user_304.email, phone_number=student_user_304.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_305 = TrainingStudent(
-    student=student_user_305, faculty=faculty_4, department=dept_31, student_training_coordinator=coord_user_31, first_name=student_user_305.first_name, last_name=student_user_305.last_name, matrix_no=student_user_305.identification_num, email=student_user_305.email, phone_number=student_user_305.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_306 = TrainingStudent(
-    student=student_user_306, faculty=faculty_4, department=dept_31, student_training_coordinator=coord_user_31, first_name=student_user_306.first_name, last_name=student_user_306.last_name, matrix_no=student_user_306.identification_num, email=student_user_306.email, phone_number=student_user_306.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_307 = TrainingStudent(
-    student=student_user_307, faculty=faculty_4, department=dept_31, student_training_coordinator=coord_user_31, first_name=student_user_307.first_name, last_name=student_user_307.last_name, matrix_no=student_user_307.identification_num, email=student_user_307.email, phone_number=student_user_307.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_308 = TrainingStudent(
-    student=student_user_308, faculty=faculty_4, department=dept_31, student_training_coordinator=coord_user_31, first_name=student_user_308.first_name, last_name=student_user_308.last_name, matrix_no=student_user_308.identification_num, email=student_user_308.email, phone_number=student_user_308.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_309 = TrainingStudent(
-    student=student_user_309, faculty=faculty_4, department=dept_31, student_training_coordinator=coord_user_31, first_name=student_user_309.first_name, last_name=student_user_309.last_name, matrix_no=student_user_309.identification_num, email=student_user_309.email, phone_number=student_user_309.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_310 = TrainingStudent(
-    student=student_user_310, faculty=faculty_4, department=dept_31, student_training_coordinator=coord_user_31, first_name=student_user_310.first_name, last_name=student_user_310.last_name, matrix_no=student_user_310.identification_num, email=student_user_310.email, phone_number=student_user_310.phone_number, is_in_school=True, session=curr_sess.session, level=300)
+student_301 = Student(
+    student=student_user_301, faculty=faculty_4, department=dept_31, student_coordinator=coord_user_31, first_name=student_user_301.first_name, last_name=student_user_301.last_name, matrix_no=student_user_301.identification_num, email=student_user_301.email, phone_number=student_user_301.phone_number, is_in_school=True)
+student_302 = Student(
+    student=student_user_302, faculty=faculty_4, department=dept_31, student_coordinator=coord_user_31, first_name=student_user_302.first_name, last_name=student_user_302.last_name, matrix_no=student_user_302.identification_num, email=student_user_302.email, phone_number=student_user_302.phone_number, is_in_school=True)
+student_303 = Student(
+    student=student_user_303, faculty=faculty_4, department=dept_31, student_coordinator=coord_user_31, first_name=student_user_303.first_name, last_name=student_user_303.last_name, matrix_no=student_user_303.identification_num, email=student_user_303.email, phone_number=student_user_303.phone_number, is_in_school=True)
+student_304 = Student(
+    student=student_user_304, faculty=faculty_4, department=dept_31, student_coordinator=coord_user_31, first_name=student_user_304.first_name, last_name=student_user_304.last_name, matrix_no=student_user_304.identification_num, email=student_user_304.email, phone_number=student_user_304.phone_number, is_in_school=True)
+student_305 = Student(
+    student=student_user_305, faculty=faculty_4, department=dept_31, student_coordinator=coord_user_31, first_name=student_user_305.first_name, last_name=student_user_305.last_name, matrix_no=student_user_305.identification_num, email=student_user_305.email, phone_number=student_user_305.phone_number, is_in_school=True)
+student_306 = Student(
+    student=student_user_306, faculty=faculty_4, department=dept_31, student_coordinator=coord_user_31, first_name=student_user_306.first_name, last_name=student_user_306.last_name, matrix_no=student_user_306.identification_num, email=student_user_306.email, phone_number=student_user_306.phone_number, is_in_school=True)
+student_307 = Student(
+    student=student_user_307, faculty=faculty_4, department=dept_31, student_coordinator=coord_user_31, first_name=student_user_307.first_name, last_name=student_user_307.last_name, matrix_no=student_user_307.identification_num, email=student_user_307.email, phone_number=student_user_307.phone_number, is_in_school=True)
+student_308 = Student(
+    student=student_user_308, faculty=faculty_4, department=dept_31, student_coordinator=coord_user_31, first_name=student_user_308.first_name, last_name=student_user_308.last_name, matrix_no=student_user_308.identification_num, email=student_user_308.email, phone_number=student_user_308.phone_number, is_in_school=True)
+student_309 = Student(
+    student=student_user_309, faculty=faculty_4, department=dept_31, student_coordinator=coord_user_31, first_name=student_user_309.first_name, last_name=student_user_309.last_name, matrix_no=student_user_309.identification_num, email=student_user_309.email, phone_number=student_user_309.phone_number, is_in_school=True)
+student_310 = Student(
+    student=student_user_310, faculty=faculty_4, department=dept_31, student_coordinator=coord_user_31, first_name=student_user_310.first_name, last_name=student_user_310.last_name, matrix_no=student_user_310.identification_num, email=student_user_310.email, phone_number=student_user_310.phone_number, is_in_school=True)
 
 # Sociology students
-student_311 = TrainingStudent(
-    student=student_user_311, faculty=faculty_4, department=dept_32, student_training_coordinator=coord_user_32, first_name=student_user_311.first_name, last_name=student_user_311.last_name, matrix_no=student_user_311.identification_num, email=student_user_311.email, phone_number=student_user_311.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_312 = TrainingStudent(
-    student=student_user_312, faculty=faculty_4, department=dept_32, student_training_coordinator=coord_user_32, first_name=student_user_312.first_name, last_name=student_user_312.last_name, matrix_no=student_user_312.identification_num, email=student_user_312.email, phone_number=student_user_312.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_313 = TrainingStudent(
-    student=student_user_313, faculty=faculty_4, department=dept_32, student_training_coordinator=coord_user_32, first_name=student_user_313.first_name, last_name=student_user_313.last_name, matrix_no=student_user_313.identification_num, email=student_user_313.email, phone_number=student_user_313.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_314 = TrainingStudent(
-    student=student_user_314, faculty=faculty_4, department=dept_32, student_training_coordinator=coord_user_32, first_name=student_user_314.first_name, last_name=student_user_314.last_name, matrix_no=student_user_314.identification_num, email=student_user_314.email, phone_number=student_user_314.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_315 = TrainingStudent(
-    student=student_user_315, faculty=faculty_4, department=dept_32, student_training_coordinator=coord_user_32, first_name=student_user_315.first_name, last_name=student_user_315.last_name, matrix_no=student_user_315.identification_num, email=student_user_315.email, phone_number=student_user_315.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_316 = TrainingStudent(
-    student=student_user_316, faculty=faculty_4, department=dept_32, student_training_coordinator=coord_user_32, first_name=student_user_316.first_name, last_name=student_user_316.last_name, matrix_no=student_user_316.identification_num, email=student_user_316.email, phone_number=student_user_316.phone_number, is_in_school=True, session=curr_sess.session, level=300)
-student_317 = TrainingStudent(
-    student=student_user_317, faculty=faculty_4, department=dept_32, student_training_coordinator=coord_user_32, first_name=student_user_317.first_name, last_name=student_user_317.last_name, matrix_no=student_user_317.identification_num, email=student_user_317.email, phone_number=student_user_317.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_318 = TrainingStudent(
-    student=student_user_318, faculty=faculty_4, department=dept_32, student_training_coordinator=coord_user_32, first_name=student_user_318.first_name, last_name=student_user_318.last_name, matrix_no=student_user_318.identification_num, email=student_user_318.email, phone_number=student_user_318.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_319 = TrainingStudent(
-    student=student_user_319, faculty=faculty_4, department=dept_32, student_training_coordinator=coord_user_32, first_name=student_user_319.first_name, last_name=student_user_319.last_name, matrix_no=student_user_319.identification_num, email=student_user_319.email, phone_number=student_user_319.phone_number, is_in_school=True, session=curr_sess.session, level=200)
-student_320 = TrainingStudent(
-    student=student_user_320, faculty=faculty_4, department=dept_32, student_training_coordinator=coord_user_32, first_name=student_user_320.first_name, last_name=student_user_320.last_name, matrix_no=student_user_320.identification_num, email=student_user_320.email, phone_number=student_user_320.phone_number, is_in_school=True, session=curr_sess.session, level=200)
+student_311 = Student(
+    student=student_user_311, faculty=faculty_4, department=dept_32, student_coordinator=coord_user_32, first_name=student_user_311.first_name, last_name=student_user_311.last_name, matrix_no=student_user_311.identification_num, email=student_user_311.email, phone_number=student_user_311.phone_number, is_in_school=True)
+student_312 = Student(
+    student=student_user_312, faculty=faculty_4, department=dept_32, student_coordinator=coord_user_32, first_name=student_user_312.first_name, last_name=student_user_312.last_name, matrix_no=student_user_312.identification_num, email=student_user_312.email, phone_number=student_user_312.phone_number, is_in_school=True)
+student_313 = Student(
+    student=student_user_313, faculty=faculty_4, department=dept_32, student_coordinator=coord_user_32, first_name=student_user_313.first_name, last_name=student_user_313.last_name, matrix_no=student_user_313.identification_num, email=student_user_313.email, phone_number=student_user_313.phone_number, is_in_school=True)
+student_314 = Student(
+    student=student_user_314, faculty=faculty_4, department=dept_32, student_coordinator=coord_user_32, first_name=student_user_314.first_name, last_name=student_user_314.last_name, matrix_no=student_user_314.identification_num, email=student_user_314.email, phone_number=student_user_314.phone_number, is_in_school=True)
+student_315 = Student(
+    student=student_user_315, faculty=faculty_4, department=dept_32, student_coordinator=coord_user_32, first_name=student_user_315.first_name, last_name=student_user_315.last_name, matrix_no=student_user_315.identification_num, email=student_user_315.email, phone_number=student_user_315.phone_number, is_in_school=True)
+student_316 = Student(
+    student=student_user_316, faculty=faculty_4, department=dept_32, student_coordinator=coord_user_32, first_name=student_user_316.first_name, last_name=student_user_316.last_name, matrix_no=student_user_316.identification_num, email=student_user_316.email, phone_number=student_user_316.phone_number, is_in_school=True)
+student_317 = Student(
+    student=student_user_317, faculty=faculty_4, department=dept_32, student_coordinator=coord_user_32, first_name=student_user_317.first_name, last_name=student_user_317.last_name, matrix_no=student_user_317.identification_num, email=student_user_317.email, phone_number=student_user_317.phone_number, is_in_school=True)
+student_318 = Student(
+    student=student_user_318, faculty=faculty_4, department=dept_32, student_coordinator=coord_user_32, first_name=student_user_318.first_name, last_name=student_user_318.last_name, matrix_no=student_user_318.identification_num, email=student_user_318.email, phone_number=student_user_318.phone_number, is_in_school=True)
+student_319 = Student(
+    student=student_user_319, faculty=faculty_4, department=dept_32, student_coordinator=coord_user_32, first_name=student_user_319.first_name, last_name=student_user_319.last_name, matrix_no=student_user_319.identification_num, email=student_user_319.email, phone_number=student_user_319.phone_number, is_in_school=True)
+student_320 = Student(
+    student=student_user_320, faculty=faculty_4, department=dept_32, student_coordinator=coord_user_32, first_name=student_user_320.first_name, last_name=student_user_320.last_name, matrix_no=student_user_320.identification_num, email=student_user_320.email, phone_number=student_user_320.phone_number, is_in_school=True)
 
 student_1.save()
 student_2.save()
@@ -3367,371 +3346,371 @@ student_320.save()
 #     num = 0
 #     for i in range(1, 33):
 #         for j in range(1, 11):
-#             print(f'coord_{i}.training_students.add(student_{num+1})')
-#             print(f'coord_{i}.training_students.add(student_{num+2})')
-#             print(f'coord_{i}.training_students.add(student_{num+3})')
-#             print(f'coord_{i}.training_students.add(student_{num+4})')
-#             print(f'coord_{i}.training_students.add(student_{num+5})')
-#             print(f'coord_{i}.training_students.add(student_{num+6})')
-#             print(f'coord_{i}.training_students.add(student_{num+7})')
-#             print(f'coord_{i}.training_students.add(student_{num+8})')
-#             print(f'coord_{i}.training_students.add(student_{num+9})')
-#             print(f'coord_{i}.training_students.add(student_{num+10})')
+#             print(f'coord_{i}.students.add(student_{num+1})')
+#             print(f'coord_{i}.students.add(student_{num+2})')
+#             print(f'coord_{i}.students.add(student_{num+3})')
+#             print(f'coord_{i}.students.add(student_{num+4})')
+#             print(f'coord_{i}.students.add(student_{num+5})')
+#             print(f'coord_{i}.students.add(student_{num+6})')
+#             print(f'coord_{i}.students.add(student_{num+7})')
+#             print(f'coord_{i}.students.add(student_{num+8})')
+#             print(f'coord_{i}.students.add(student_{num+9})')
+#             print(f'coord_{i}.students.add(student_{num+10})')
 #             print()
 #             num+=10
 #             break
 # me()
-coord_1.training_students.add(student_1)
-coord_1.training_students.add(student_2)
-coord_1.training_students.add(student_3)
-coord_1.training_students.add(student_4)
-coord_1.training_students.add(student_5)
-coord_1.training_students.add(student_6)
-coord_1.training_students.add(student_7)
-coord_1.training_students.add(student_8)
-coord_1.training_students.add(student_9)
-coord_1.training_students.add(student_10)
+coord_1.students.add(student_1)
+coord_1.students.add(student_2)
+coord_1.students.add(student_3)
+coord_1.students.add(student_4)
+coord_1.students.add(student_5)
+coord_1.students.add(student_6)
+coord_1.students.add(student_7)
+coord_1.students.add(student_8)
+coord_1.students.add(student_9)
+coord_1.students.add(student_10)
 
-coord_2.training_students.add(student_11)
-coord_2.training_students.add(student_12)
-coord_2.training_students.add(student_13)
-coord_2.training_students.add(student_14)
-coord_2.training_students.add(student_15)
-coord_2.training_students.add(student_16)
-coord_2.training_students.add(student_17)
-coord_2.training_students.add(student_18)
-coord_2.training_students.add(student_19)
-coord_2.training_students.add(student_20)
+coord_2.students.add(student_11)
+coord_2.students.add(student_12)
+coord_2.students.add(student_13)
+coord_2.students.add(student_14)
+coord_2.students.add(student_15)
+coord_2.students.add(student_16)
+coord_2.students.add(student_17)
+coord_2.students.add(student_18)
+coord_2.students.add(student_19)
+coord_2.students.add(student_20)
 
-coord_3.training_students.add(student_21)
-coord_3.training_students.add(student_22)
-coord_3.training_students.add(student_23)
-coord_3.training_students.add(student_24)
-coord_3.training_students.add(student_25)
-coord_3.training_students.add(student_26)
-coord_3.training_students.add(student_27)
-coord_3.training_students.add(student_28)
-coord_3.training_students.add(student_29)
-coord_3.training_students.add(student_30)
+coord_3.students.add(student_21)
+coord_3.students.add(student_22)
+coord_3.students.add(student_23)
+coord_3.students.add(student_24)
+coord_3.students.add(student_25)
+coord_3.students.add(student_26)
+coord_3.students.add(student_27)
+coord_3.students.add(student_28)
+coord_3.students.add(student_29)
+coord_3.students.add(student_30)
 
-coord_4.training_students.add(student_31)
-coord_4.training_students.add(student_32)
-coord_4.training_students.add(student_33)
-coord_4.training_students.add(student_34)
-coord_4.training_students.add(student_35)
-coord_4.training_students.add(student_36)
-coord_4.training_students.add(student_37)
-coord_4.training_students.add(student_38)
-coord_4.training_students.add(student_39)
-coord_4.training_students.add(student_40)
+coord_4.students.add(student_31)
+coord_4.students.add(student_32)
+coord_4.students.add(student_33)
+coord_4.students.add(student_34)
+coord_4.students.add(student_35)
+coord_4.students.add(student_36)
+coord_4.students.add(student_37)
+coord_4.students.add(student_38)
+coord_4.students.add(student_39)
+coord_4.students.add(student_40)
 
-coord_5.training_students.add(student_41)
-coord_5.training_students.add(student_42)
-coord_5.training_students.add(student_43)
-coord_5.training_students.add(student_44)
-coord_5.training_students.add(student_45)
-coord_5.training_students.add(student_46)
-coord_5.training_students.add(student_47)
-coord_5.training_students.add(student_48)
-coord_5.training_students.add(student_49)
-coord_5.training_students.add(student_50)
+coord_5.students.add(student_41)
+coord_5.students.add(student_42)
+coord_5.students.add(student_43)
+coord_5.students.add(student_44)
+coord_5.students.add(student_45)
+coord_5.students.add(student_46)
+coord_5.students.add(student_47)
+coord_5.students.add(student_48)
+coord_5.students.add(student_49)
+coord_5.students.add(student_50)
 
-coord_6.training_students.add(student_51)
-coord_6.training_students.add(student_52)
-coord_6.training_students.add(student_53)
-coord_6.training_students.add(student_54)
-coord_6.training_students.add(student_55)
-coord_6.training_students.add(student_56)
-coord_6.training_students.add(student_57)
-coord_6.training_students.add(student_58)
-coord_6.training_students.add(student_59)
-coord_6.training_students.add(student_60)
+coord_6.students.add(student_51)
+coord_6.students.add(student_52)
+coord_6.students.add(student_53)
+coord_6.students.add(student_54)
+coord_6.students.add(student_55)
+coord_6.students.add(student_56)
+coord_6.students.add(student_57)
+coord_6.students.add(student_58)
+coord_6.students.add(student_59)
+coord_6.students.add(student_60)
 
-coord_7.training_students.add(student_61)
-coord_7.training_students.add(student_62)
-coord_7.training_students.add(student_63)
-coord_7.training_students.add(student_64)
-coord_7.training_students.add(student_65)
-coord_7.training_students.add(student_66)
-coord_7.training_students.add(student_67)
-coord_7.training_students.add(student_68)
-coord_7.training_students.add(student_69)
-coord_7.training_students.add(student_70)
+coord_7.students.add(student_61)
+coord_7.students.add(student_62)
+coord_7.students.add(student_63)
+coord_7.students.add(student_64)
+coord_7.students.add(student_65)
+coord_7.students.add(student_66)
+coord_7.students.add(student_67)
+coord_7.students.add(student_68)
+coord_7.students.add(student_69)
+coord_7.students.add(student_70)
 
-coord_8.training_students.add(student_71)
-coord_8.training_students.add(student_72)
-coord_8.training_students.add(student_73)
-coord_8.training_students.add(student_74)
-coord_8.training_students.add(student_75)
-coord_8.training_students.add(student_76)
-coord_8.training_students.add(student_77)
-coord_8.training_students.add(student_78)
-coord_8.training_students.add(student_79)
-coord_8.training_students.add(student_80)
+coord_8.students.add(student_71)
+coord_8.students.add(student_72)
+coord_8.students.add(student_73)
+coord_8.students.add(student_74)
+coord_8.students.add(student_75)
+coord_8.students.add(student_76)
+coord_8.students.add(student_77)
+coord_8.students.add(student_78)
+coord_8.students.add(student_79)
+coord_8.students.add(student_80)
 
-coord_9.training_students.add(student_81)
-coord_9.training_students.add(student_82)
-coord_9.training_students.add(student_83)
-coord_9.training_students.add(student_84)
-coord_9.training_students.add(student_85)
-coord_9.training_students.add(student_86)
-coord_9.training_students.add(student_87)
-coord_9.training_students.add(student_88)
-coord_9.training_students.add(student_89)
-coord_9.training_students.add(student_90)
+coord_9.students.add(student_81)
+coord_9.students.add(student_82)
+coord_9.students.add(student_83)
+coord_9.students.add(student_84)
+coord_9.students.add(student_85)
+coord_9.students.add(student_86)
+coord_9.students.add(student_87)
+coord_9.students.add(student_88)
+coord_9.students.add(student_89)
+coord_9.students.add(student_90)
 
-coord_10.training_students.add(student_91)
-coord_10.training_students.add(student_92)
-coord_10.training_students.add(student_93)
-coord_10.training_students.add(student_94)
-coord_10.training_students.add(student_95)
-coord_10.training_students.add(student_96)
-coord_10.training_students.add(student_97)
-coord_10.training_students.add(student_98)
-coord_10.training_students.add(student_99)
-coord_10.training_students.add(student_100)
+coord_10.students.add(student_91)
+coord_10.students.add(student_92)
+coord_10.students.add(student_93)
+coord_10.students.add(student_94)
+coord_10.students.add(student_95)
+coord_10.students.add(student_96)
+coord_10.students.add(student_97)
+coord_10.students.add(student_98)
+coord_10.students.add(student_99)
+coord_10.students.add(student_100)
 
-coord_11.training_students.add(student_101)
-coord_11.training_students.add(student_102)
-coord_11.training_students.add(student_103)
-coord_11.training_students.add(student_104)
-coord_11.training_students.add(student_105)
-coord_11.training_students.add(student_106)
-coord_11.training_students.add(student_107)
-coord_11.training_students.add(student_108)
-coord_11.training_students.add(student_109)
-coord_11.training_students.add(student_110)
+coord_11.students.add(student_101)
+coord_11.students.add(student_102)
+coord_11.students.add(student_103)
+coord_11.students.add(student_104)
+coord_11.students.add(student_105)
+coord_11.students.add(student_106)
+coord_11.students.add(student_107)
+coord_11.students.add(student_108)
+coord_11.students.add(student_109)
+coord_11.students.add(student_110)
 
-coord_12.training_students.add(student_111)
-coord_12.training_students.add(student_112)
-coord_12.training_students.add(student_113)
-coord_12.training_students.add(student_114)
-coord_12.training_students.add(student_115)
-coord_12.training_students.add(student_116)
-coord_12.training_students.add(student_117)
-coord_12.training_students.add(student_118)
-coord_12.training_students.add(student_119)
-coord_12.training_students.add(student_120)
+coord_12.students.add(student_111)
+coord_12.students.add(student_112)
+coord_12.students.add(student_113)
+coord_12.students.add(student_114)
+coord_12.students.add(student_115)
+coord_12.students.add(student_116)
+coord_12.students.add(student_117)
+coord_12.students.add(student_118)
+coord_12.students.add(student_119)
+coord_12.students.add(student_120)
 
-coord_13.training_students.add(student_121)
-coord_13.training_students.add(student_122)
-coord_13.training_students.add(student_123)
-coord_13.training_students.add(student_124)
-coord_13.training_students.add(student_125)
-coord_13.training_students.add(student_126)
-coord_13.training_students.add(student_127)
-coord_13.training_students.add(student_128)
-coord_13.training_students.add(student_129)
-coord_13.training_students.add(student_130)
+coord_13.students.add(student_121)
+coord_13.students.add(student_122)
+coord_13.students.add(student_123)
+coord_13.students.add(student_124)
+coord_13.students.add(student_125)
+coord_13.students.add(student_126)
+coord_13.students.add(student_127)
+coord_13.students.add(student_128)
+coord_13.students.add(student_129)
+coord_13.students.add(student_130)
 
-coord_14.training_students.add(student_131)
-coord_14.training_students.add(student_132)
-coord_14.training_students.add(student_133)
-coord_14.training_students.add(student_134)
-coord_14.training_students.add(student_135)
-coord_14.training_students.add(student_136)
-coord_14.training_students.add(student_137)
-coord_14.training_students.add(student_138)
-coord_14.training_students.add(student_139)
-coord_14.training_students.add(student_140)
+coord_14.students.add(student_131)
+coord_14.students.add(student_132)
+coord_14.students.add(student_133)
+coord_14.students.add(student_134)
+coord_14.students.add(student_135)
+coord_14.students.add(student_136)
+coord_14.students.add(student_137)
+coord_14.students.add(student_138)
+coord_14.students.add(student_139)
+coord_14.students.add(student_140)
 
-coord_15.training_students.add(student_141)
-coord_15.training_students.add(student_142)
-coord_15.training_students.add(student_143)
-coord_15.training_students.add(student_144)
-coord_15.training_students.add(student_145)
-coord_15.training_students.add(student_146)
-coord_15.training_students.add(student_147)
-coord_15.training_students.add(student_148)
-coord_15.training_students.add(student_149)
-coord_15.training_students.add(student_150)
+coord_15.students.add(student_141)
+coord_15.students.add(student_142)
+coord_15.students.add(student_143)
+coord_15.students.add(student_144)
+coord_15.students.add(student_145)
+coord_15.students.add(student_146)
+coord_15.students.add(student_147)
+coord_15.students.add(student_148)
+coord_15.students.add(student_149)
+coord_15.students.add(student_150)
 
-coord_16.training_students.add(student_151)
-coord_16.training_students.add(student_152)
-coord_16.training_students.add(student_153)
-coord_16.training_students.add(student_154)
-coord_16.training_students.add(student_155)
-coord_16.training_students.add(student_156)
-coord_16.training_students.add(student_157)
-coord_16.training_students.add(student_158)
-coord_16.training_students.add(student_159)
-coord_16.training_students.add(student_160)
+coord_16.students.add(student_151)
+coord_16.students.add(student_152)
+coord_16.students.add(student_153)
+coord_16.students.add(student_154)
+coord_16.students.add(student_155)
+coord_16.students.add(student_156)
+coord_16.students.add(student_157)
+coord_16.students.add(student_158)
+coord_16.students.add(student_159)
+coord_16.students.add(student_160)
 
-coord_17.training_students.add(student_161)
-coord_17.training_students.add(student_162)
-coord_17.training_students.add(student_163)
-coord_17.training_students.add(student_164)
-coord_17.training_students.add(student_165)
-coord_17.training_students.add(student_166)
-coord_17.training_students.add(student_167)
-coord_17.training_students.add(student_168)
-coord_17.training_students.add(student_169)
-coord_17.training_students.add(student_170)
+coord_17.students.add(student_161)
+coord_17.students.add(student_162)
+coord_17.students.add(student_163)
+coord_17.students.add(student_164)
+coord_17.students.add(student_165)
+coord_17.students.add(student_166)
+coord_17.students.add(student_167)
+coord_17.students.add(student_168)
+coord_17.students.add(student_169)
+coord_17.students.add(student_170)
 
-coord_18.training_students.add(student_171)
-coord_18.training_students.add(student_172)
-coord_18.training_students.add(student_173)
-coord_18.training_students.add(student_174)
-coord_18.training_students.add(student_175)
-coord_18.training_students.add(student_176)
-coord_18.training_students.add(student_177)
-coord_18.training_students.add(student_178)
-coord_18.training_students.add(student_179)
-coord_18.training_students.add(student_180)
+coord_18.students.add(student_171)
+coord_18.students.add(student_172)
+coord_18.students.add(student_173)
+coord_18.students.add(student_174)
+coord_18.students.add(student_175)
+coord_18.students.add(student_176)
+coord_18.students.add(student_177)
+coord_18.students.add(student_178)
+coord_18.students.add(student_179)
+coord_18.students.add(student_180)
 
-coord_19.training_students.add(student_181)
-coord_19.training_students.add(student_182)
-coord_19.training_students.add(student_183)
-coord_19.training_students.add(student_184)
-coord_19.training_students.add(student_185)
-coord_19.training_students.add(student_186)
-coord_19.training_students.add(student_187)
-coord_19.training_students.add(student_188)
-coord_19.training_students.add(student_189)
-coord_19.training_students.add(student_190)
+coord_19.students.add(student_181)
+coord_19.students.add(student_182)
+coord_19.students.add(student_183)
+coord_19.students.add(student_184)
+coord_19.students.add(student_185)
+coord_19.students.add(student_186)
+coord_19.students.add(student_187)
+coord_19.students.add(student_188)
+coord_19.students.add(student_189)
+coord_19.students.add(student_190)
 
-coord_20.training_students.add(student_191)
-coord_20.training_students.add(student_192)
-coord_20.training_students.add(student_193)
-coord_20.training_students.add(student_194)
-coord_20.training_students.add(student_195)
-coord_20.training_students.add(student_196)
-coord_20.training_students.add(student_197)
-coord_20.training_students.add(student_198)
-coord_20.training_students.add(student_199)
-coord_20.training_students.add(student_200)
+coord_20.students.add(student_191)
+coord_20.students.add(student_192)
+coord_20.students.add(student_193)
+coord_20.students.add(student_194)
+coord_20.students.add(student_195)
+coord_20.students.add(student_196)
+coord_20.students.add(student_197)
+coord_20.students.add(student_198)
+coord_20.students.add(student_199)
+coord_20.students.add(student_200)
 
-coord_21.training_students.add(student_201)
-coord_21.training_students.add(student_202)
-coord_21.training_students.add(student_203)
-coord_21.training_students.add(student_204)
-coord_21.training_students.add(student_205)
-coord_21.training_students.add(student_206)
-coord_21.training_students.add(student_207)
-coord_21.training_students.add(student_208)
-coord_21.training_students.add(student_209)
-coord_21.training_students.add(student_210)
+coord_21.students.add(student_201)
+coord_21.students.add(student_202)
+coord_21.students.add(student_203)
+coord_21.students.add(student_204)
+coord_21.students.add(student_205)
+coord_21.students.add(student_206)
+coord_21.students.add(student_207)
+coord_21.students.add(student_208)
+coord_21.students.add(student_209)
+coord_21.students.add(student_210)
 
-coord_22.training_students.add(student_211)
-coord_22.training_students.add(student_212)
-coord_22.training_students.add(student_213)
-coord_22.training_students.add(student_214)
-coord_22.training_students.add(student_215)
-coord_22.training_students.add(student_216)
-coord_22.training_students.add(student_217)
-coord_22.training_students.add(student_218)
-coord_22.training_students.add(student_219)
-coord_22.training_students.add(student_220)
+coord_22.students.add(student_211)
+coord_22.students.add(student_212)
+coord_22.students.add(student_213)
+coord_22.students.add(student_214)
+coord_22.students.add(student_215)
+coord_22.students.add(student_216)
+coord_22.students.add(student_217)
+coord_22.students.add(student_218)
+coord_22.students.add(student_219)
+coord_22.students.add(student_220)
 
-coord_23.training_students.add(student_221)
-coord_23.training_students.add(student_222)
-coord_23.training_students.add(student_223)
-coord_23.training_students.add(student_224)
-coord_23.training_students.add(student_225)
-coord_23.training_students.add(student_226)
-coord_23.training_students.add(student_227)
-coord_23.training_students.add(student_228)
-coord_23.training_students.add(student_229)
-coord_23.training_students.add(student_230)
+coord_23.students.add(student_221)
+coord_23.students.add(student_222)
+coord_23.students.add(student_223)
+coord_23.students.add(student_224)
+coord_23.students.add(student_225)
+coord_23.students.add(student_226)
+coord_23.students.add(student_227)
+coord_23.students.add(student_228)
+coord_23.students.add(student_229)
+coord_23.students.add(student_230)
 
-coord_24.training_students.add(student_231)
-coord_24.training_students.add(student_232)
-coord_24.training_students.add(student_233)
-coord_24.training_students.add(student_234)
-coord_24.training_students.add(student_235)
-coord_24.training_students.add(student_236)
-coord_24.training_students.add(student_237)
-coord_24.training_students.add(student_238)
-coord_24.training_students.add(student_239)
-coord_24.training_students.add(student_240)
+coord_24.students.add(student_231)
+coord_24.students.add(student_232)
+coord_24.students.add(student_233)
+coord_24.students.add(student_234)
+coord_24.students.add(student_235)
+coord_24.students.add(student_236)
+coord_24.students.add(student_237)
+coord_24.students.add(student_238)
+coord_24.students.add(student_239)
+coord_24.students.add(student_240)
 
-coord_25.training_students.add(student_241)
-coord_25.training_students.add(student_242)
-coord_25.training_students.add(student_243)
-coord_25.training_students.add(student_244)
-coord_25.training_students.add(student_245)
-coord_25.training_students.add(student_246)
-coord_25.training_students.add(student_247)
-coord_25.training_students.add(student_248)
-coord_25.training_students.add(student_249)
-coord_25.training_students.add(student_250)
+coord_25.students.add(student_241)
+coord_25.students.add(student_242)
+coord_25.students.add(student_243)
+coord_25.students.add(student_244)
+coord_25.students.add(student_245)
+coord_25.students.add(student_246)
+coord_25.students.add(student_247)
+coord_25.students.add(student_248)
+coord_25.students.add(student_249)
+coord_25.students.add(student_250)
 
-coord_26.training_students.add(student_251)
-coord_26.training_students.add(student_252)
-coord_26.training_students.add(student_253)
-coord_26.training_students.add(student_254)
-coord_26.training_students.add(student_255)
-coord_26.training_students.add(student_256)
-coord_26.training_students.add(student_257)
-coord_26.training_students.add(student_258)
-coord_26.training_students.add(student_259)
-coord_26.training_students.add(student_260)
+coord_26.students.add(student_251)
+coord_26.students.add(student_252)
+coord_26.students.add(student_253)
+coord_26.students.add(student_254)
+coord_26.students.add(student_255)
+coord_26.students.add(student_256)
+coord_26.students.add(student_257)
+coord_26.students.add(student_258)
+coord_26.students.add(student_259)
+coord_26.students.add(student_260)
 
-coord_27.training_students.add(student_261)
-coord_27.training_students.add(student_262)
-coord_27.training_students.add(student_263)
-coord_27.training_students.add(student_264)
-coord_27.training_students.add(student_265)
-coord_27.training_students.add(student_266)
-coord_27.training_students.add(student_267)
-coord_27.training_students.add(student_268)
-coord_27.training_students.add(student_269)
-coord_27.training_students.add(student_270)
+coord_27.students.add(student_261)
+coord_27.students.add(student_262)
+coord_27.students.add(student_263)
+coord_27.students.add(student_264)
+coord_27.students.add(student_265)
+coord_27.students.add(student_266)
+coord_27.students.add(student_267)
+coord_27.students.add(student_268)
+coord_27.students.add(student_269)
+coord_27.students.add(student_270)
 
-coord_28.training_students.add(student_271)
-coord_28.training_students.add(student_272)
-coord_28.training_students.add(student_273)
-coord_28.training_students.add(student_274)
-coord_28.training_students.add(student_275)
-coord_28.training_students.add(student_276)
-coord_28.training_students.add(student_277)
-coord_28.training_students.add(student_278)
-coord_28.training_students.add(student_279)
-coord_28.training_students.add(student_280)
+coord_28.students.add(student_271)
+coord_28.students.add(student_272)
+coord_28.students.add(student_273)
+coord_28.students.add(student_274)
+coord_28.students.add(student_275)
+coord_28.students.add(student_276)
+coord_28.students.add(student_277)
+coord_28.students.add(student_278)
+coord_28.students.add(student_279)
+coord_28.students.add(student_280)
 
-coord_29.training_students.add(student_281)
-coord_29.training_students.add(student_282)
-coord_29.training_students.add(student_283)
-coord_29.training_students.add(student_284)
-coord_29.training_students.add(student_285)
-coord_29.training_students.add(student_286)
-coord_29.training_students.add(student_287)
-coord_29.training_students.add(student_288)
-coord_29.training_students.add(student_289)
-coord_29.training_students.add(student_290)
+coord_29.students.add(student_281)
+coord_29.students.add(student_282)
+coord_29.students.add(student_283)
+coord_29.students.add(student_284)
+coord_29.students.add(student_285)
+coord_29.students.add(student_286)
+coord_29.students.add(student_287)
+coord_29.students.add(student_288)
+coord_29.students.add(student_289)
+coord_29.students.add(student_290)
 
-coord_30.training_students.add(student_291)
-coord_30.training_students.add(student_292)
-coord_30.training_students.add(student_293)
-coord_30.training_students.add(student_294)
-coord_30.training_students.add(student_295)
-coord_30.training_students.add(student_296)
-coord_30.training_students.add(student_297)
-coord_30.training_students.add(student_298)
-coord_30.training_students.add(student_299)
-coord_30.training_students.add(student_300)
+coord_30.students.add(student_291)
+coord_30.students.add(student_292)
+coord_30.students.add(student_293)
+coord_30.students.add(student_294)
+coord_30.students.add(student_295)
+coord_30.students.add(student_296)
+coord_30.students.add(student_297)
+coord_30.students.add(student_298)
+coord_30.students.add(student_299)
+coord_30.students.add(student_300)
 
-coord_31.training_students.add(student_301)
-coord_31.training_students.add(student_302)
-coord_31.training_students.add(student_303)
-coord_31.training_students.add(student_304)
-coord_31.training_students.add(student_305)
-coord_31.training_students.add(student_306)
-coord_31.training_students.add(student_307)
-coord_31.training_students.add(student_308)
-coord_31.training_students.add(student_309)
-coord_31.training_students.add(student_310)
+coord_31.students.add(student_301)
+coord_31.students.add(student_302)
+coord_31.students.add(student_303)
+coord_31.students.add(student_304)
+coord_31.students.add(student_305)
+coord_31.students.add(student_306)
+coord_31.students.add(student_307)
+coord_31.students.add(student_308)
+coord_31.students.add(student_309)
+coord_31.students.add(student_310)
 
-coord_32.training_students.add(student_311)
-coord_32.training_students.add(student_312)
-coord_32.training_students.add(student_313)
-coord_32.training_students.add(student_314)
-coord_32.training_students.add(student_315)
-coord_32.training_students.add(student_316)
-coord_32.training_students.add(student_317)
-coord_32.training_students.add(student_318)
-coord_32.training_students.add(student_319)
-coord_32.training_students.add(student_320)
+coord_32.students.add(student_311)
+coord_32.students.add(student_312)
+coord_32.students.add(student_313)
+coord_32.students.add(student_314)
+coord_32.students.add(student_315)
+coord_32.students.add(student_316)
+coord_32.students.add(student_317)
+coord_32.students.add(student_318)
+coord_32.students.add(student_319)
+coord_32.students.add(student_320)
 
 exit()
 rm dump.json

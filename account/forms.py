@@ -2,8 +2,11 @@ from django import forms
 from django.contrib.auth.forms import PasswordChangeForm, UserCreationForm
 from django.contrib.auth import get_user_model
 from account.models import Profile
-from administrator.all_models import(
-    Faculty, Department
+# from administrator.all_models import(
+#     Faculty, Department
+# )
+from administrator.tables import (
+    Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
 )
 
 
@@ -52,14 +55,14 @@ class VcDeanHodSignupForm(UserCreationForm):
         fields = ['first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'identification_num', 'email', 'phone_number', 'country', 'password1', 'password2', 'ranks', 'level_rank_title_1', 'level_rank_title_2']
 
 
-class DepartmentCoordinatorSignupForm(UserCreationForm):
+class CoordinatorSignupForm(UserCreationForm):
     """student training coordinator signup form class"""
     class Meta:
         model = User
         fields = ['first_name', 'middle_name', 'last_name', 'gender', 'date_of_birth', 'identification_num', 'email', 'phone_number', 'country', 'password1', 'password2']
 
 
-class StudentSupervisorSignupForm(UserCreationForm):
+class SupervisorSignupForm(UserCreationForm):
     """student supervisor signup form class"""
     small_desc = forms.CharField(required=True)  # it is not part of User model fields
 

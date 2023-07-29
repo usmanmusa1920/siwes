@@ -8,8 +8,11 @@ from toolkit.decorators import (
     block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
 )
 from administrator.models import Administrator
-from administrator.all_models import(
-    Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+# from administrator.all_models import(
+#     Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+# )
+from administrator.tables import (
+    Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
 )
 
 
@@ -18,7 +21,7 @@ User = get_user_model()
 
 def supervisor_student(request):
     """this view query supervisor`s student assign to him"""
-    supervisor = StudentSupervisor.objects.filter(supervisor=request.user).first()
+    supervisor = Supervisor.objects.filter(supervisor=request.user).first()
 
     # paginator = Paginator(supervisor.training_students, 10)  # paginating by 10
     # page = request.GET.get('page')
@@ -34,30 +37,31 @@ def supervisor_student(request):
 @supervisor_required
 def submit_student_logbook(request, matrix_no):
     """this is view that create student result"""
-    student_user = TrainingStudent.objects.filter(matrix_no=matrix_no).first()
-    student_coord = student_user.student_training_coordinator
-    if student_coord.is_active == False:
-        return False
-    student_supervisor = student_user.student_training_coordinator
 
-    is_result = StudentResult.objects.filter(
-        student=student_user, level=student_user.level).first()
+    student = Student.objects.filter(matrix_no=matrix_no).first()
+    coordinator = Coordinator.objects.filter(coordinator=student.student_coordinator).first()
+    supervisor = request.user
+    acceptance = Acceptance.objects.filter(
+        sender=student, receiver=coordinator, level=str(student.level)).last()
+
+    is_result = Result.objects.filter(
+        student=student, level=student.level, acceptance=acceptance).first()
     # checking result
     if is_result:
         messages.warning(
-            request, f'You already released out this student ({student_user.first_name}) result of {student_user.level} level')
+            request, f'You already released out this student ({student.first_name}) result of {student.level} level')
         return redirect('department:supervisor_student')
     def train_calc():
-        if student_user.level == 200:
-            WKSL = WeekScannedLogbook.objects.filter(
-                student_lg=student_user, session=student_user.session_200)
+        if student.level == 200:
+            WKSL = WeekEntry.objects.filter(
+                student=student, session=student.session_200)
         else:
-            WKSL = WeekScannedLogbook.objects.filter(
-                student_lg=student_user, session=student_user.session_300)
+            WKSL = WeekEntry.objects.filter(
+                student=student, session=student.session_300)
         total_comment_score = 0
         for scanned in WKSL:
-            comment_grade = CommentOnLogbook.objects.filter(logbook=scanned).first()
-            total_comment_score += int(comment_grade.grade)
+            # comment_grade = WeekEntry.objects.filter(logbook=scanned).first()
+            total_comment_score += int(scanned.grade)
         
         # total score for student in a training
         student_total_mark = total_comment_score
@@ -123,23 +127,21 @@ def submit_student_logbook(request, matrix_no):
     
     # student training result
     grade_and_status = train_calc()
-    new_result = StudentResult(
-        student=student_user, c_first_name=student_coord.first_name, c_middle_name=student_coord.middle_name, c_last_name=student_coord.last_name, c_id_no=student_coord.identification_num, c_email=student_coord.email, c_phone_number=student_coord.phone_number, s_first_name=student_supervisor.first_name, s_middle_name=student_supervisor.middle_name, s_last_name=student_supervisor.last_name, s_id_no=student_supervisor.identification_num, s_email=student_supervisor.email, s_phone_number=student_supervisor.phone_number, level=student_user.level, session=student_user.session, status=grade_and_status['Status'], grade=grade_and_status['Grade']
-        )
+    if student.level == 200 or student.level == '200':
+        new_result = Result(
+            student=student, acceptance=acceptance, c_first_name=coordinator.first_name, c_middle_name=coordinator.middle_name, c_last_name=coordinator.last_name, c_id_no=coordinator.id_no, c_email=coordinator.email, c_phone_number=coordinator.phone_number, s_first_name=supervisor.first_name, s_middle_name=supervisor.middle_name, s_last_name=supervisor.last_name, s_id_no=supervisor.identification_num, s_email=supervisor.email, s_phone_number=supervisor.phone_number, level=student.level, session=student.session_200, status=grade_and_status['Status'], grade=grade_and_status['Grade']
+            )
+    else:
+        new_result = Result(
+            student=student, acceptance=acceptance, c_first_name=coordinator.first_name, c_middle_name=coordinator.middle_name, c_last_name=coordinator.last_name, c_id_no=coordinator.id_no, c_email=coordinator.email, c_phone_number=coordinator.phone_number, s_first_name=supervisor.first_name, s_middle_name=supervisor.middle_name, s_last_name=supervisor.last_name, s_id_no=supervisor.identification_num, s_email=supervisor.email, s_phone_number=supervisor.phone_number, level=student.level, session=student.session_300, status=grade_and_status['Status'], grade=grade_and_status['Grade']
+            )
     new_result.save()
 
     # once coordinator submit student logbook, that student will be remove from the list of that supervisor student `training_students`, so that in the next session he will be assign with different student
-    StudentSupervisor.objects.filter(
-        supervisor=request.user).first().training_students.remove(student_user)
-
-    # incrementing student level by 100, if he is 200 level
-    if student_user.level == 200:
-        # finish 200 level training
-        student_user.is_finish_200 = True
-        student_user.level += 100
-        student_user.save()
+    Supervisor.objects.filter(
+        supervisor=request.user).first().students.remove(student)
 
     messages.success(
-        request, f'You just released ({student_user}) result for {student_user.level})')
+        request, f'You just released ({student}) result for {student.level})')
     return redirect('department:supervisor_student')
 

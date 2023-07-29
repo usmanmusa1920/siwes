@@ -1,38 +1,34 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from administrator.all_models import (
-    AcceptanceLetter, WeekScannedLogbook, WeekScannedImage, CommentOnLogbook
+# from administrator.all_models import (
+#     AcceptanceLetter, WeekScannedLogbook, WeekScannedImage, WeekEntry
+# )
+from administrator.tables import (
+    Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
 )
 
 
 User = get_user_model()
 
 
-class UploadAcceptanceLetter(forms.ModelForm):
+class UploadAcceptance(forms.ModelForm):
     """upload acceptance letter form"""
     class Meta:
-        model = AcceptanceLetter
+        model = Acceptance
         fields = ['image']
         
 
-class UploadLogbookEntry(forms.ModelForm):
+class WeekEntryForm(forms.ModelForm):
     """upload weekly logbook entry"""
     class Meta:
-        model = WeekScannedLogbook
-        fields = ['title', 'text']
+        model = WeekEntry
+        fields = ['grade', 'comment']
         
 
-class UploadLogbookImage(forms.ModelForm):
+class WeekEntryImageForm(forms.ModelForm):
     """
     upload weekly logbook entry (first scanned image and the second optional i.e for drawing page)
     """
     class Meta:
-        model = WeekScannedImage
+        model = WeekEntryImage
         fields = ['image']
-        
-
-class LogbookEntryComment(forms.ModelForm):
-    """comment form for student supervisor"""
-    class Meta:
-        model = CommentOnLogbook
-        fields = ['grade', 'comment']

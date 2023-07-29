@@ -37,9 +37,6 @@ urlpatterns = [
     # register new vc
     path(
         'register/school/vc/', Register.school_vc, name='register_school_vc'),
-    # register new dean
-    path(
-        'register/faculty/dean/', Register.faculty_dean, name='register_faculty_dean'),
     # register new hod
     path(
         'register/department/hod/', Register.department_hod, name='register_department_hod'),

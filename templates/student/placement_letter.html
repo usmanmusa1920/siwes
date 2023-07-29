@@ -76,43 +76,43 @@
           <div class="wrapp_in_column">
             <div class="wrapp_div">
               <h4>
-                {% if letter.dept_hod.level_rank_title_1 != None %}
-                  {{letter.dept_hod.level_rank_title_1|upper}}.
+                {% if letter.hod.level_rank_title_1 != None %}
+                  {{letter.hod.level_rank_title_1|upper}}.
                 {% endif %}
 
-                {{letter.dept_hod.first_name|upper}}
-                {% if letter.dept_hod.middle_name %}
-                  {{letter.dept_hod.middle_name|upper}}
+                {{letter.hod.first_name|upper}}
+                {% if letter.hod.middle_name %}
+                  {{letter.hod.middle_name|upper}}
                 {% endif %}
-                {{letter.dept_hod.last_name|upper}}
+                {{letter.hod.last_name|upper}}
 
-                {% if letter.dept_hod.level_rank_title_2 != None %}
-                  , <i>{{letter.dept_hod.level_rank_title_2|upper}}</i>
+                {% if letter.hod.level_rank_title_2 != None %}
+                  , <i>{{letter.hod.level_rank_title_2|upper}}</i>
                 {% endif %}
               </h4>
 
-              {% if letter.dept_hod.ranks %}
+              {% if letter.hod.ranks %}
                 <span>
-                  <small class="danger">{{letter.dept_hod.ranks}}</small>
+                  <small class="danger">{{letter.hod.ranks}}</small>
                 </span>
               {% endif %}
             </div>
             <h4 class="danger">HEAD OF DEPARTMENT</h4>
-            {% if letter.dept_hod.email %}
+            {% if letter.hod.email %}
               <p>
                 <span class="danger">Email:</span>
-                {{letter.dept_hod.email}},
-                {% if letter.dept_hod.email_other %}
-                  <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{letter.dept_hod.email_other}}
+                {{letter.hod.email}},
+                {% if letter.hod.email_other %}
+                  <br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{letter.hod.email_other}}
                 {% endif %}
               </p>
             {% endif %}
-            {% if letter.dept_hod.phone_number %}
+            {% if letter.hod.phone_number %}
               <p>
                 <span class="danger">Tel: </span>
-                {{letter.dept_hod.phone_number}}
-                {% if letter.dept_hod.phone_number_other %}
-                  {{letter.dept_hod.phone_number_other}}
+                {{letter.hod.phone_number}}
+                {% if letter.hod.phone_number_other %}
+                  {{letter.hod.phone_number_other}}
                 {% endif %}
               </p>
             {% endif %}
@@ -164,7 +164,7 @@
               {{student.department.name}}
             {% endif %}
           </span>
-          <span>{{letter.duration}} months</span>
+          <span>{{letter.duration}} weeks</span>
         </div>
         <br>
         <p class="letter_p">
@@ -181,11 +181,11 @@
       <p class="letter_p">Thank you.</p>
 
       <h3 class="sign_1">
-        {{student.student_training_coordinator.first_name|upper}}
-        {% if student.student_training_coordinator.middle_name %}
-          {{student.student_training_coordinator.middle_name|upper}}
+        {{student.student_coordinator.first_name|upper}}
+        {% if student.student_coordinator.middle_name %}
+          {{student.student_coordinator.middle_name|upper}}
         {% endif %}
-        {{student.student_training_coordinator.last_name|upper}}
+        {{student.student_coordinator.last_name|upper}}
       </h3>
       <p class="sign_2">Departmental {{student.faculty.training|upper}} Coordinator</p>
     </div>

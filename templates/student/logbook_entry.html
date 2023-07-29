@@ -30,14 +30,14 @@
           <div class="wrapp_form">
             <h1>Week {{entry.week_no}}</h1>
             {% for img in log_images %}
-              {% if img.logbook == entry  %}
+              {% if img.week_entry == entry  %}
                 <div class="accept_let_img">
                   <img src="{{img.image.url}}" alt="" srcset="">
                 </div>
                 <br>
               {% endif  %}
             {% endfor %}
-            {% if entry.commentonlogbook %}
+            {% if entry.comment != None and  entry.grade != None and entry.comment != '' and  entry.grade != '' %}
               <i>
                 <a>Supervisor commented</a>
               </i>
@@ -59,22 +59,34 @@
             <h1>Week {{week}}</h1>
             <!-- The next week -->
             {% if week == week_no %}
-              <div class="wrapp_info">
-                <p>When uploading your week ({{week}}) logbook entry make sure it has an extension of PGN, JPG, or JPEG</p>
-              </div>
-              <input type="file" name="image" accept="image/*" required>
-              {% if form.errors %}
-                <div class="wrapp_warn">
-                  {{form.errors}}
+              {% if request.user.is_student %}
+                <div class="wrapp_info">
+                  <p>When uploading your week ({{week}}) logbook entry make sure it has an extension of PGN, JPG, or JPEG</p>
+                </div>
+                <input type="file" name="image" accept="image/*" required>
+                {% if form.errors %}
+                  <div class="wrapp_warn">
+                    {{form.errors}}
+                  </div>
+                {% endif %}
+                {% if pic_form.errors %}
+                  <div class="wrapp_warn">
+                    {{pic_form.errors}}
+                  </div>
+                {% endif %}
+                <br>
+                <button type="submit">Submit</button>
+              {% else %}
+                <div class="wrapp_body">
+                  <div class="wrapp_null">
+                    <div class="wrapp_in_null">
+                      <div class="main_wrapp_null">
+                        <p>On process</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               {% endif %}
-              {% if pic_form.errors %}
-                <div class="wrapp_warn">
-                  {{pic_form.errors}}
-                </div>
-              {% endif %}
-              <br>
-              <button type="submit">Submit</button>
             <!-- The upcoming weeks (after the next week, i.e remaining weeks) -->
             {% else %}
               <div class="wrapp_body">

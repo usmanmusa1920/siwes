@@ -25,8 +25,11 @@ from toolkit.decorators import (
     block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
 )
 from administrator.models import Administrator
-from administrator.all_models import(
-    Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+# from administrator.all_models import(
+#     Session, Faculty, Department, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
+# )
+from administrator.tables import (
+    Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
 )
 
 """
@@ -66,7 +69,7 @@ def index(request):
 
         # checking and comparing if both are equal to one
         if int(fun_1) - int(curr_1) == 1 and int(fun_2) - int(curr_2) == 1:
-            messages.success(request, f'It seems new school session have to be created')
+            messages.success(request, f'It seems new school session have to be created, but make sure all previous activities are compiled (complate)')
     context = {
         'faculties': faculties,
     }

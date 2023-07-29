@@ -29,59 +29,71 @@ Datetime format:
     The issue might result due to going into python interpretter with `python` instead of the recommended way that django gave us `python manage.py shell`
 ```
 
-# Tables
+The first thing in this application is to create an admin user via terminal, where he/she will be in charge of creating other users (vc, hod, coordinator, supervisor, and student) he can also create an admin user just like him. Also he is in charge of creating scool session for each year, new faculty in the site, department. Also he is in charge of deactivating or activating users position.
+
+The VC and HOD they did nothing in the site, they are registered in other to display their name in student placement letter and result, so that to be in history who is the HOD and VC when that student is doing his training program.
+
+The other set of users that do some activities apart from that of admin user are:
+
+- coordinator
+
+- supervisor
+
+- student
+
+The `coordinator` duty is to release student letter for each session, just like the naoraml way they did where they handle placement and acceptance letter to student course rep visually, then he/she will share it to his/her department member, but in this case it is digitally, in which each student of that department ones he login and apply for that session program he will be able to see it. Among coordinator duty is to assign a set of student to a supervisor. Again viewing student uploaded acceptance letter is his duty, which will notify a student if his coordinator view his uploaded acceptance letter or not. The approval of student training programm is his duty after the student supervisor grade, comment and submit the student logbook. Lastly a coordinator can exchange message between him and his student, or him and his student supervisor given to him.
+
+The `supervisor` duty is to review, comment, and grade each student weekly logbook entry base on the student performance. After marking all the 12 weeks of student training program, then he can submit the student logbook to the student coordinator for approval. One more thing is that a supervisor can exchange message with his student and coordinator of his student about some issue.
+
+The `student` in his own side when, is onces login he will be directed to complate (update) his profile information (if not updated), ones that finish then he should apply for for his level training, after that he should print both (placement letter and acceptance letter) of that session, then take it to organisation/company he want to do his tarining, once the organisation/company give him acceptance leter, next thing is to scann it (acceptance) and upload it, once that finish he can be able to upload his weekly logbook entry when he start going for th program (12 weeks). Assuming the student started and finish uploading for the 12 weeks program, his duty finish. The next thing is to wait and see his result. One more thing is that a student can exchange message with his supervisor and his coordinator about some issue.
+
+# Database tables
 
 In this system, we have 20 different database table, which each have it own specific function within the system, below are the list of the tables:
 
-`User`
+- User
 
-`Profile`
+- Profile
 
-`Session`
+- Session
 
-`Administrator`
+- Administrator
 
-`Faculty`
+- Faculty
 
-`Department`
+- Department
 
-`VC`
+- VC
 
-`Dean`
+- HOD
 
-`HOD`
+- Coordinator
 
-`Coordinator`
+- Supervisor
 
-`Supervisor`
+- Student
 
-`Student`
+- Letter
 
-`Letter`
+- Acceptance
 
-`Acceptance`
+- WeekReader
 
-`WeekReader`
+- WeeekEntry
 
-`WeeekEntry`
+- WeekEntryImage
 
-`WeekEntryImage`
+- Result
 
-`WeekEntryComment`
-
-`Result`
-
-`Message`
+- Message
 
 First school `Session` must be registered for every year, so that to know in history when a so so year a student did his training.
 
 `Administrator` is the one who is incharge and control of anything within the site, also have grant access to the admin page of the site.
 
-`Faculty` indicate which faculty a `Department`, `Student`, and others `(HOD, Dean, Coordinator)` user category belongs to with the exception of `Administrator` and `Supervisor`. These last two (`Administrator` and `Supervisor`) have no any relation to faculty.
+`Faculty` indicate which faculty a `Department`, `Student`, and others `(HOD, Coordinator)` user category belongs to with the exception of `Administrator` and `Supervisor`. These last two (`Administrator` and `Supervisor`) have no any relation to faculty.
 
-`Department` indicate which department a `Student`, and others `(HOD, Dean, Coordinator)` user category belongs to with the exception of `Administrator` and `Supervisor`. These last two (`Administrator` and `Supervisor`) have no any relation to department.
-
-`Dean` this register a user as a dean of a faculty, it have to be registered first before any department HOD, also he/she will be the active dean ones he is created by administrator.
+`Department` indicate which department a `Student`, and others `(HOD, Coordinator)` user category belongs to with the exception of `Administrator` and `Supervisor`. These last two (`Administrator` and `Supervisor`) have no any relation to department.
 
 `HOD` this register a user as a HOD of a department, it have to be registered first before any department training coordinator, also he/she will be the active HOD ones he is created by administrator.
 
@@ -117,14 +129,89 @@ The above can be called simple logic not complicated, now let explain the other 
 
 # Life cycle
 
-- Administrator
-- Coordinator
-- Student
-- etc
+- Administrator:
+
+  - login
+
+  - release new session
+
+  - register new divisoins:
+
+    - faculty
+
+    - department
+
+  - register new users:
+
+    - administrator
+
+    - VC
+
+    - HOD
+
+    - coordinator
+
+    - supervisor
+
+    - student
+
+  - activate/deactivate:
+
+    - vc
+
+    - hod
+
+    - coordinator
+
+  - logout
+
+- Coordinator:
+
+  - login
+
+  - release student letter
+
+  - assign supervisor to student
+
+  - view student acceptance letter
+
+  - approve student result
+
+  - exchange message with student/student supervisor
+
+  - logout
+
+- supervisor:
+
+  - login
+
+  - comment and grade student weekly loogbook
+
+  - submit student logbook to coordinator for approval
+
+  - exchange message with student/student coordinator
+
+  - logout
+
+- Student:
+
+  - login
+
+  - apply for training
+
+  - print letter (acceptance and placement)
+
+  - upload acceptance letter
+
+  - upload weekly logbook entry
+
+  - exchange message with supervisor/coordinator
+
+  - logout
 
 # Cautions!
 
-Is coming soon!
+Don't try changing any media files such as `profile image` `student acceptance` `student weekly entry` and so on via admin page, because the route won't be thesame.
 
 ## Landing page
 

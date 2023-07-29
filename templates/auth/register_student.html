@@ -49,8 +49,8 @@
     <div class="selection">
       <select name="all_department" class="wrapp_select" required>
         <option value="" selected="">Select student department</option>
-        {% for dept in all_dept %}
-          <option value="{{dept.dept_hod.department.name}}">{{dept.dept_hod.department}}</option>
+        {% for dept in departments %}
+          <option value="{{dept.name}}">{{dept}}</option>
         {% endfor %}
       </select>
     </div>

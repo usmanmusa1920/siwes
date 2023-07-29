@@ -33,7 +33,7 @@
           {% csrf_token %}
           <!-- if user profile image is the default one this field will be display in other to change it -->
           {% if request.user.profile.image.url == '/media/default_pic.png' %}
-            Please upload your profile image:
+            Please update your profile image:
             <div class="wrapp_form">
               <input type="file" name="image" accept="image/*" required>
               <div class="wrapp_info">
@@ -61,21 +61,29 @@
         <p>
           <b>Level:</b> {{student.level}}
         </p>
-        {% if student.supervisor_id_200 %}
-          <p>
-            <b>Supervisor 200L: {{student.supervisor_id_200}}</b>
-          </p>
-          <a href="{% url 'chat:send_message' student.supervisor_id_200 %}" class="me_good">Message 300L supervisor</a>
+
+        <!-- 200 level -->
+        {% if student.is_finish_200 == False %}
+          {% if student.supervisor_id_200 %}
+            <p>
+              <b>Supervisor 200L: {{student.supervisor_id_200}}</b>
+            </p>
+            <a href="{% url 'chat:send_message' student.supervisor_id_200 %}" class="me_good">Message 200L supervisor</a>
+          {% endif %}
         {% endif %}
-        {% if student.supervisor_id_300 %}
-          <p>
-            <b>Supervisor 300L: {{student.supervisor_id_300}}</b>
-          </p>
-          <a href="{% url 'chat:send_message' student.supervisor_id_300 %}" class="me_good">Message 300L supervisor</a>
+
+        <!-- 300 level -->
+        {% if student.is_finish_300 == False %}
+          {% if student.supervisor_id_300 %}
+            <p>
+              <b>Supervisor 300L: {{student.supervisor_id_300}}</b>
+            </p>
+            <a href="{% url 'chat:send_message' student.supervisor_id_300 %}" class="me_good">Message 300L supervisor</a>
+          {% endif %}
         {% endif %}
         <!-- <p>
           <b>Supervisor:</b>
-          {% for supervisor in coord.training_supervisors.all %}
+          {% for supervisor in coordinator.supervisors.all %}
             {% if student in supervisor.training_students.all %}
               {% if student.level == 300 or student.level == '300' %}
                 {% if student.is_assign_supervisor_300 %}
@@ -116,7 +124,7 @@
         <a href="{% url 'auth:student_profile_update' %}" class="good_me">Edit profile</a>
         <br>
         <br>
-        <a href="{% url 'chat:send_message' coord.id_no %}" class="me_good">Message coordinator</a>
+        <a href="{% url 'chat:send_message' coordinator.id_no %}" class="me_good">Message coordinator</a>
       </div>
 
       {% if student.matrix_no == request.user.identification_num %}
@@ -135,16 +143,17 @@
               <br>
               <br>
             {% endif %}
-            {% if letter_a_200 or letter_p_200 %}
-              <a href="{% url 'student:placement_letter' 200 %}" class="good_me">Placement letter for 200</a>
+
+            {% if letter_200 %}
+              <a href="{% url 'student:department_student_letter' 'placement' 200 %}" class="good_me">Placement letter for 200</a>
               <br>
               <br>
-              <a href="{% url 'student:acceptance_letter' 200 %}" class="good_me">Acceptance letter for 200</a>
+              <a href="{% url 'student:department_student_letter' 'acceptance' 200 %}" class="good_me">Acceptance letter for 200</a>
               <br>
               <br>
             {% endif %}
           {% else %}
-            <a href="{% url 'student:apply_training' 200 %}" class="good_me">Apply training for 200</a>
+            <a href="{% url 'student:apply_training' %}" class="good_me">Apply training for 200</a>
             <br>
             <br>
           {% endif %}
@@ -163,17 +172,20 @@
                 <br>
               {% else %}
                 <a href="{% url 'student:upload_acceptance_letter_page' 300 %}" class="me_good">Upload acceptance letter for 300</a>
+                <br>
+                <br>
               {% endif %}
-              {% if letter_a_300 or letter_p_300 %}
-                <a href="{% url 'student:placement_letter' 300 %}" class="me_good">Placement letter for 300</a>
+
+              {% if letter_300 %}
+                <a href="{% url 'student:department_student_letter' 'placement' 300 %}" class="me_good">Placement letter for 300</a>
                 <br>
                 <br>
-                <a href="{% url 'student:acceptance_letter' 300 %}" class="me_good">Acceptance letter for 300</a>
+                <a href="{% url 'student:department_student_letter' 'acceptance' 300 %}" class="me_good">Acceptance letter for 300</a>
                 <br>
                 <br>
               {% endif %}
             {% else %}
-              <a href="{% url 'student:apply_training' 300 %}" class="me_good">Apply training for 300</a>
+              <a href="{% url 'student:apply_training' %}" class="me_good">Apply training for 300</a>
               <br>
               <br>
             {% endif %}

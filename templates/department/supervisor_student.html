@@ -20,12 +20,12 @@
     </div>
   </div>
 
-  {% if supervisor.training_students.all %}
+  {% if supervisor.students.all %}
     <div class="main_wrapp">
       <div class="wrapp_form">
-        <small>Having ({{supervisor.training_students.all.count}}) to supervise</small>
+        <small>Having ({{supervisor.students.all.count}}) to supervise</small>
       </div>
-      {% for student in supervisor.training_students.all %}
+      {% for student in supervisor.students.all %}
         <div class="wrapp_form">
           <div class="wrapp_list">
             <a href="{% url 'auth:general_profile' student.matrix_no %}">

@@ -9,7 +9,7 @@
 
 <!-- page title -->
 {% block title %}
-  <title>New {{usr.faculty.training}} letter (accptance and placement) for {{usr.department.name}} student</title>
+  <title>New {{coordinator.faculty.training}} letter (accptance and placement) for {{coordinator.department.name}} student</title>
 {% endblock title %}
 
 <!-- content of the page -->
@@ -20,13 +20,24 @@
     </div>
     <div class="wrapp_main">
       <div class="wrapp_top_greynish">
-        <small>This is new letter for {{usr.department.name}} student</small>
+        <small>This is new letter for {{coordinator.department.name}} student</small>
       </div>
       <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="wrapp_form">
           <p><b>About to release new letter for the below session:</b></p>
+          <small>Even if the below field is edited, the session is apply logically in the backend</small>
           <input type="text" name="session" class="wrapp_input" placeholder="Session of {{school_session}}" value="{{school_session}}" required>
+          <small>Default duration is 12 weeks, make sure it correspond with the range of the starting and finishing date of the program</small>
+          <input type="text" name="duration" class="wrapp_input" placeholder="Duration of training (weeks)" value="12" required>
+          <p>Start date of the training for student:</p>
+          <div class="calender">
+            <input type="date" name="start_of_training" class="wrapp_input" required>
+          </div>
+          <p>End date of the training for student:</p>
+          <div class="calender">
+            <input type="date" name="end_of_training" class="wrapp_input" required>
+          </div>
           <button type="submit">Release</button>
         </div>
         &nbsp; <input type="checkbox" name="agree" required> Do you agree to release new letter of this session?
