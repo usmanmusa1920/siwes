@@ -183,6 +183,8 @@ def coordinator_or_supervisor_or_student_required(view):
 
     @login_required
     def wrapper(request, *args, **kwargs):
+        # if not request.user.is_coordinator or not request.user.is_supervisor or not request.user.is_student:
+        #     return False
         if request.user.is_admin or request.user.is_vc or request.user.is_hod:
             return False
         return view(request, *args, **kwargs)

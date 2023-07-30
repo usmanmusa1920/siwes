@@ -30,15 +30,15 @@
             {{student.last_name}}
           </a>
           <small>{{student.level}} level student</small>
-          {% if student in training_tutor.training_students.all %}
+          {% if student in coordinator.students.all %}
             <form method="post">
               {% csrf_token %}
               <button type="button">Acknowledged</button>
             </form>
           {% else %}
-            <form action="{% url 'department:coordinator_acknowledge_student' student.student.id %}" method="post">
+            <form method="post">
               {% csrf_token %}
-              <button type="submit">ADD</button>
+              <button type="button">ADD</button>
             </form>
           {% endif %}
         </div>
@@ -67,6 +67,20 @@
           </div>
         </div>
       {% endif %}
+    {% else %}
+      <div class="main_wrapp">
+        <div class="wrapp_form">
+          <div class="wrapp_body">
+            <div class="wrapp_null">
+              <div class="wrapp_in_null">
+                <div class="main_wrapp_null">
+                  <p>You have no student in this session!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     {% endif %}
   </div>
 {% endblock main %}

@@ -38,6 +38,9 @@
                 Hold down “Control”, or “Command” on a Mac, to select more than one.
               </i>
             </small>
+            <div class="wrapp_warn">
+              <small>Atmost select a maximum of 10 student in a go:</small>
+            </div>
             <select name="raw_students" class="wrapp_select_multiple" multiple required>
               <!-- this do a loop on the departmental coordinator, and check if a student is assign a supervisor for 200 or 300 level, if it is true it will not show him/her, but else it will show his/her name in other to be assign to a supervisor -->
               {% for student in coordinator.students.all %}
@@ -56,6 +59,20 @@
                 {% endif %}
               {% endfor %}
             </select>
+          </div>
+        {% else %}
+          <div class="main_wrapp">
+            <div class="wrapp_form">
+              <div class="wrapp_body">
+                <div class="wrapp_null">
+                  <div class="wrapp_in_null">
+                    <div class="main_wrapp_null">
+                      <p>You have no student in your list!</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         {% endif %}
 
@@ -97,10 +114,27 @@
               <br>
             {% endfor %}
           </div>
+        {% else %}
+          <div class="main_wrapp">
+            <div class="wrapp_form">
+              <div class="wrapp_body">
+                <div class="wrapp_null">
+                  <div class="wrapp_in_null">
+                    <div class="main_wrapp_null">
+                      <p>You have no supervisor in your list! report to ICT</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         {% endif %}
-        <div class="wrapp_form">
-          <button type="submit">Assign</button>
-        </div>
+        
+        {% if coordinator.supervisors.all.count > 0 and coordinator.students.all.count > 0 %}
+          <div class="wrapp_form">
+            <button type="submit">Assign</button>
+          </div>
+        {% endif %}
       </form>
     </div>
   </div>

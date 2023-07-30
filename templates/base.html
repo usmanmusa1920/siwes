@@ -114,7 +114,7 @@
 
           <span class="link_ref">Student</span>
           <a href="{% url 'department:training_coordinator_session_student' %}" class="dash_link">{{training_tutor.faculty.training|upper}} student</a>
-          <a href="{% url 'department:training_coordinator_student_acceptance_letter' %}" class="dash_link">student acceptance letter</a>
+          <a href="{% url 'department:coordinator_student_acceptance_letter' %}" class="dash_link">student acceptance letter</a>
 
           <span class="link_ref">Assignsupervisor</span>
           <a href="{% url 'department:assign_supervisor' request.user.identification_num %}" class="dash_link">Assign student supervisor</a>

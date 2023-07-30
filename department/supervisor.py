@@ -1,16 +1,10 @@
 from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from toolkit import (picture_name, y_session)
 from toolkit.decorators import (
     block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
 )
-from administrator.models import Administrator
-# from administrator.all_models import(
-#     Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
-# )
 from administrator.tables import (
     Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
 )
@@ -23,7 +17,7 @@ def supervisor_student(request):
     """this view query supervisor`s student assign to him"""
     supervisor = Supervisor.objects.filter(supervisor=request.user).first()
 
-    # paginator = Paginator(supervisor.training_students, 10)  # paginating by 10
+    # paginator = Paginator(supervisor.students, 10)  # paginating by 10
     # page = request.GET.get('page')
     # student_list = paginator.get_page(page)
 

@@ -47,6 +47,14 @@
     {% endif %}
     
     <div class="selection">
+      <small>Student level:</small>
+      <select name="student_level" class="wrapp_select" required>
+        <option value="200" selected>200 level</option>
+        <option value="300">300 level</option>
+      </select>
+    </div>
+    
+    <div class="selection">
       <select name="all_department" class="wrapp_select" required>
         <option value="" selected="">Select student department</option>
         {% for dept in departments %}

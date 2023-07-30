@@ -22,15 +22,15 @@
     <div class="section">
       <a href="{% url 'department:training_coordinator_profile' coordinator.id_no %}" class="sec_current">Your profile</a>
       <a href="{% url 'department:training_coordinator_session_student' %}" class="sec_link">{{coordinator.faculty.training|upper}} student</a>
-      <a href="{% url 'department:training_coordinator_student_acceptance_letter' %}" class="sec_link">student acceptance letter</a>
+      <a href="{% url 'department:coordinator_student_acceptance_letter' %}" class="sec_link">student acceptance letter</a>
       <a href="{% url 'department:assign_supervisor' coordinator.id_no %}" class="sec_link">Assign student supervisor</a>
     </div>
 
     <!-- departmental training supervisors -->
+    <div class="main_wrapp_head">
+      <p>Your current department supervisors ({{coordinator.supervisors.all.count}})</p>
+    </div>
     {% if coordinator.supervisors.all.count > 0 %}
-      <div class="main_wrapp_head">
-        <p>Your current department supervisors ({{coordinator.supervisors.all.count}})</p>
-      </div>
       {%  for supp in coordinator.supervisors.all %}
         <div class="wrapp_list">
           <a href="{% url 'auth:general_profile' supp.id_no %}">
@@ -47,13 +47,27 @@
           </form>
         </div>
       {% endfor %}
+    {% else %}
+      <div class="main_wrapp">
+        <div class="wrapp_form">
+          <div class="wrapp_body">
+            <div class="wrapp_null">
+              <div class="wrapp_in_null">
+                <div class="main_wrapp_null">
+                  <p>You have no supervisor in your list! report to ICT</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     {% endif %}
 
     <!-- filtering coordinator training student -->
+    <div class="main_wrapp_head">
+      <p>Student that will do IT this year ({{coordinator_students.all.count}})</p>
+    </div>
     {% if coordinator_students %}
-      <div class="main_wrapp_head">
-        <p>Student that will do IT this year ({{student_session.all.count}})</p>
-      </div>
       {%  for student in coordinator_students|slice:":3" %}
         <div class="wrapp_list">
           <a href="{% url 'auth:general_profile' student.matrix_no %}">
@@ -71,7 +85,7 @@
               <button type="button">Acknowledged</button>
             </form>
           {% else %}
-            <form action="{% url 'department:coordinator_acknowledge_student' student.matrix_no %}" method="post">
+            <form action="{% url 'landing' %}" method="post">
               <button type="button">ADD</button>
             </form>
           {% endif %}
@@ -84,28 +98,27 @@
           </div>
         </div>
       {% endif %}
+    {% else %}
+      <div class="main_wrapp">
+        <div class="wrapp_form">
+          <div class="wrapp_body">
+            <div class="wrapp_null">
+              <div class="wrapp_in_null">
+                <div class="main_wrapp_null">
+                  <p>You have no student in your list!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     {% endif %}
 
-    <!-- Student request for IT letter -->
-    <!-- <div class="main_wrapp_head">
-      <p>Student request for IT letter</p>
-    </div>
-    <div class="request">
-      <a href="#">Usman Musa</a>
-      <small>25, March 2019</small>
-      <form action="#" method="post" class="form_peace">
-        <button type="submit">Accept</button>
-      </form>
-      <form action="#" method="post" class="form_danger">
-        <button type="submit">Decline</button>
-      </form>
-    </div> -->
-
     <!-- filtering coordinator training student that upload acceptance letter -->
+    <div class="main_wrapp_head">
+      <p>Student that upload acceptance letter</p>
+    </div>
     {% if students_acceptances %}
-      <div class="main_wrapp_head">
-        <p>Student that upload acceptance letter</p>
-      </div>
       {% for student in students_acceptances %}
         <div class="wrapp_list">
           <a href="{% url 'auth:general_profile' student.sender.matrix_no %}">
@@ -126,16 +139,35 @@
       {% if students_acceptances.all.count > 0 %}
         <div class="wrapp_pages">
           <div class="wrapp_pages_column">
-            <a href="{% url 'department:training_coordinator_student_acceptance_letter' %}" class="page_link">View all new upload student acceptance letter</a>
+            <a href="{% url 'department:coordinator_student_acceptance_letter' %}" class="page_link">View all new upload student acceptance letter</a>
           </div>
         </div>
       {% endif %}
 
+      <!-- result -->
+      <div class="main_wrapp_head">
+        <p>Student that result is not approved</p>
+      </div>
       {% if student_result %}
-        <div class="main_wrapp_head">
-          <p>Student that result is not approved</p>
-        </div>
         {% for result in student_result %}
+          <div class="request">
+            <a href="{% url 'department:student_result_page' result.student.matrix_no result.student.level %}">
+              {{result.student.first_name}}
+              {% if usr.middle_name %}
+                {{result.student.middle_name}}
+              {% endif %}
+              {{result.student.last_name}}
+            </a>
+            <small>{{result.timestamp|date:'d, F Y'}}</small>
+            <form action="{% url 'department:approve_result' result.student.matrix_no %}" method="post" class="form_peace">
+              {% csrf_token %}
+              <button type="submit">Approve result</button>
+            </form>
+            <form action="{% url 'department:student_result_page' result.student.matrix_no result.student.level %}" method="post" class="form_danger">
+              {% csrf_token %}
+              <button type="submit">View result</button>
+            </form>
+          </div>
           <div class="wrapp_list">
             <a href="{% url 'department:student_result_page' result.student.matrix_no result.student.level %}">
               {{result.student.first_name}}
@@ -144,7 +176,7 @@
               {% endif %}
               {{result.student.last_name}}
             </a>
-            <small>{{result..level}} level</small>
+            <small>{{result.level}} level</small>
             <a href="{% url 'department:student_result_page' result.student.matrix_no result.student.level %}">View result</a>
           </div>
           &nbsp; <small>You can approve student result before viewing it, approve?</small>
@@ -152,6 +184,20 @@
           &nbsp; <a href="{% url 'department:approve_result' result.student.matrix_no %}" class="me_good">YES</a>
           <hr>
         {% endfor %}
+      {% else %}
+        <div class="main_wrapp">
+          <div class="wrapp_form">
+            <div class="wrapp_body">
+              <div class="wrapp_null">
+                <div class="wrapp_in_null">
+                  <div class="main_wrapp_null">
+                    <p>No student result submitted by his supervisor yet!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       {% endif %}
       {% if student_result.all.count > 0 %}
         <div class="wrapp_pages">
@@ -160,6 +206,20 @@
           </div>
         </div>
       {% endif %}
+    {% else %}
+      <div class="main_wrapp">
+        <div class="wrapp_form">
+          <div class="wrapp_body">
+            <div class="wrapp_null">
+              <div class="wrapp_in_null">
+                <div class="main_wrapp_null">
+                  <p>You have no student that upload acceptance letter this session</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     {% endif %}
 
     <!-- Coordinator information -->
