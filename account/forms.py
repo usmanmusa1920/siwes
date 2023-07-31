@@ -39,8 +39,7 @@ class DepartmentSignupForm(forms.ModelForm):
     """department signup form class"""
     class Meta:
         model = Department
-        # note we didn`t include `faculty` in the field below
-        # because we want to assign it in the view
+        # note we didn`t include `faculty` in the field below because we want to assign it in the view
         fields = ['name', 'email', 'website', 'phone_number', 'description']
 
 

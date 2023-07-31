@@ -22,7 +22,7 @@
     {% if coordinator_students %}
       {%  for student in coordinator_students %}
         <div class="wrapp_list">
-          <a href="#">
+          <a href="{% url 'student:profile' student.matrix_no %}">
             {{student.first_name}}
             {% if usr.middle_name %}
               {{student.middle_name}}

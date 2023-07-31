@@ -54,8 +54,8 @@
             {% if user.middle_name %}
               {{user.middle_name}}
             {% endif %}
-            {{user.last_name}} is student of faculty of <span class="req_new_dodger">{{user.student_training_coordinator.dept_hod.department.faculty.name}}</span> department of
-            <span class="req_new_dodger">{{user.student_training_coordinator.dept_hod.department.name}}</span>
+            {{user.last_name}} is student of faculty of <span class="req_new_dodger">{{user.student_coordinator.dept_hod.department.faculty.name}}</span> department of
+            <span class="req_new_dodger">{{user.student_coordinator.dept_hod.department.name}}</span>
           </small>
         </div>
       {% endfor %}

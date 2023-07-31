@@ -13,18 +13,15 @@ from .forms import (
 )
 from toolkit import (picture_name, y_session)
 from toolkit.decorators import (
-    block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
+    block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number,staff_required, admin_required, vc_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, coordinator_or_student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
 )
 from chat.models import Message
 from administrator.models import Administrator
 from toolkit import (picture_name, y_session)
-# from administrator.all_models import(
-#     Session, Faculty, Department, SchoolVC, FacultyDean, DepartmentHOD, TrainingStudent, StudentSupervisor, DepartmentTrainingCoordinator, Letter, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook, StudentResult
-# )
 from administrator.tables import (
     Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
 )
-from student.views import Student as student_cls
+# from student.views import StudentCls
 
 
 User = get_user_model()
@@ -89,19 +86,20 @@ class Register:
     def session(request):
         """register new session"""
         
-        # Querying if there is a session  that the `is_current_session=True` is marked as current sesson, also the last one, which with the previous session data it will be able to create new session data.
+        # Querying a session that the `is_current_session=True` is marked as current sesson, also the last one, which with the previous session data it will be able to create new session data.
         last_prev_sess = Session.objects.filter(is_current_session=True).last()
         if last_prev_sess:
-            # grabing data from `last_prev_sess`
+            # grabing session data from `last_prev_sess`
             a_sess = last_prev_sess.session
             b_sess = a_sess.split('/') # making it a list
             c_sess = int(b_sess[0])+1 # taking index 0 of the list and plus it with one
             d_sess = int(b_sess[1])+1 # taking index 1 of the list and plus it with one
-            e_sess = '/'.join([str(c_sess), str(d_sess)]) # new session
-            date_sess = e_sess
+
+            # new session, by joining `c_sess` and `d_sess` in between them with forward slash `/`
+            new_session = '/'.join([str(c_sess), str(d_sess)])
         else:
-            # if there is no any marked `is_current_session=True` of session it will create one using the current year we are and the next year we will enter using `y_session` function
-            date_sess = y_session()
+            # if there is no any marked `is_current_session=True` of session it will create one using the current year we are and the next year we will enter using `y_session` function.
+            new_session = y_session()
         if request.method == 'POST':
             # deactivating any `is_current_session` which is True to False
             prev_sess = Session.objects.filter(is_current_session=True)
@@ -109,19 +107,18 @@ class Register:
                 sess.is_current_session = False
                 sess.save()
 
-            # if we find the query `last_prev_sess`, we will use it for the following tricks
-            # else if we don`t find the query we, will create new one using `y_session` function
+            # if we find the query `last_prev_sess`, we will use it for the following tricks, else if we don`t find the query, it will create new one using `y_session` function which was been given as default in the Session table.
             if last_prev_sess:
-                new_sess = Session(session=date_sess, is_current_session=True)
+                new_sess = Session(session=new_session, is_current_session=True)
             else:
                 new_sess = Session(is_current_session=True)
             new_sess.save()
 
             messages.success(
-                request, f'New session ({date_sess}) for the school training (siwes/TP) programm created')
+                request, f'New session ({new_session}) for the school training (siwes/TP) programm created')
             return redirect('landing')
         context = {
-            'date_sess': date_sess,
+            'new_session': new_session,
         }
         return render(request, 'auth/new_session.html', context)
 
@@ -176,7 +173,6 @@ class Register:
             form = FacultySignupForm(request.POST)
             if form.is_valid():
                 form.save()
-
                 # grabbing user raw datas (from html form)
                 raw_name = form.cleaned_data['name']
                 messages.success(
@@ -394,7 +390,7 @@ class Register:
     def student_training_supervisor(request):
         """register department student training supervisor"""
         
-        # quering departments active coordinator, which we will be rendering in templates
+        # quering all departments active coordinator, which we will be rendering in templates
         all_coord = Coordinator.objects.filter(is_active=True)
 
         if request.method == 'POST':
@@ -409,7 +405,7 @@ class Register:
                 coord_id = request.POST['all_coord']
                 raw_small_desc = form.cleaned_data['small_desc']
 
-                # quering department, using the `all_department` variable above
+                # filtering department coordinator, using the `coord_id` variable above. In other to append the new register supervisor, in the active coordinator of the department. This will let it to display when coordinator is about to assign supervisor to student.
                 coord = Coordinator.objects.filter(id_no=coord_id, is_active=True).first()
 
                 # registering user to department training coordinator table
@@ -418,8 +414,7 @@ class Register:
                 )
                 new_student_supervisor.save()
 
-                # appending new supervisor into selected departmental active
-                # coordinator list of supervisors
+                # appending new supervisor into selected departmental active coordinator `list of supervisors`
                 coord.training_supervisors.add(new_student_supervisor)
                 coord.save()
 
@@ -440,15 +435,8 @@ class Register:
     def student(request):
         """register student"""
         
-        # # querying all active departmental training coordinator
-        # all_dept = Coordinator.objects.filter(is_active=True)
         # quering departments, which we will be rendering in templates
         departments = Department.objects.all()
-        
-        """
-        We use `Coordinator` table to grab departments name instead of using the `Department` table direct, because we want to display only departments that have an active training coordinator. Reason, at some cases, some department they might not register their siwes/tp coordinator on time (or they won`t have an active training coordinator), if so happen and if an administrator is about to register (students`) from a specific department (had it been we use the `Department` table direct), he will get an error even though his department name will show up in the drop down menu of the register page. One more thing is that for each student in the `Student` table has a relation with a foreignkey of `Coordinator` table.
-        """
-
         if request.method == 'POST':
             form = StudentSignupForm(request.POST)
             if form.is_valid():
@@ -456,6 +444,7 @@ class Register:
                 # grabbing user raw datas (from html form)
                 all_department = request.POST['all_department']
                 raw_identification_num = form.cleaned_data['identification_num']
+                # raw_student_level = form.cleaned_data['student_level']
 
                 # validate id number
                 val_usr_id = val_id_num(request, raw_identification_num)
@@ -472,10 +461,7 @@ class Register:
                 faculty_name = dept.faculty.name
                 faculty = Faculty.objects.filter(name=faculty_name).first()
                 
-                # # quering an active department HOD, using the `dept` variable above
-                # dept_hod = Hod.objects.filter(department=dept, is_active=True).first()
-
-                # # quering an active department training coordinator, using the `dept_hod` variable above. So that we can assign the new register student to the active training coordinator of his department
+                # quering an active department training coordinator, using the `dept` variable above. So that we can assign the new register student to the active training coordinator of his department
                 dept_training_coord_usr = Coordinator.objects.filter(
                     department=dept, is_active=True).first()
                 dept_training_coord = User.objects.filter(
@@ -518,26 +504,22 @@ class Update:
             # user profile image instance
             instance = form.save(commit=False)
 
-            # removing user previous profile image if it is not the default one `default_pic.png`
-            if user_previous_img != '/home/usman/Desktop/acode/fugus/media/default_pic.png':
+            # removing user previous profile image if it is not the default one `default.png`
+            if user_previous_img != '/home/usman/Desktop/acode/fugus/media/default.png':
                 if os.path.exists(user_previous_img):
                     os.remove(user_previous_img)
             pic_name = picture_name(instance.image.name)
 
-            # this is the current logged in user
+            # this is the current logged in user, filtered using his id
             user_from_base_table = User.objects.get(id=request.user.id)
 
-            # making a user profile image route base on their ranks, instead of all putting them in one directory
+            # making a user profile image route base on their ranks, instead of putting all of them in one directory.
             if request.user.is_admin:
                 route = f'{current_school_sess.session}/admin/'
             elif request.user.is_vc:
                 vc = Vc.objects.filter(
                     id_no=user_from_base_table.identification_num).first()
                 route = f'{current_school_sess.session}/vc/{vc.faculty.name}/{vc.department.name}/'
-            # elif request.user.is_dean:
-            #     dean = Dean.objects.filter(
-            #         id_no=user_from_base_table.identification_num).first()
-            #     route = f'{current_school_sess.session}/dean/{dean.faculty.name}/{dean.department.name}/'
             elif request.user.is_hod:
                 hod = Hod.objects.filter(
                     id_no=user_from_base_table.identification_num).first()
@@ -568,11 +550,10 @@ class Update:
         """student update profile information"""
 
         r_user = request.user
-
         # querying student from student models
         student = Student.objects.filter(student=r_user).first()
 
-        # blocking student from updating his/her profile
+        # blocking student from updating his/her profile, if it is up to date
         block_stu = block_student_update_profile(request, r_user)
         if block_stu:
             return block_stu

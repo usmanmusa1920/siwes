@@ -7,9 +7,9 @@ from django.contrib.auth import get_user_model
 from .models import Message
 from .forms import MessageForm
 from administrator.tables import Student
-# from administrator.tables import (
-#     Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
-# )
+from administrator.tables import (
+    Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
+)
 
 
 User = get_user_model()
@@ -21,7 +21,7 @@ def request_to_change_acceptance_letter(request):
     if request.user.is_student:
         student = Student.objects.filter(student=request.user).first()
         train_coord = User.objects.filter(
-            identification_num=student.student_training_coordinator.identification_num
+            identification_num=student.student_coordinator.identification_num
         ).first()
 
         # blocking from sending another request if already sent one

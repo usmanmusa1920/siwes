@@ -9,7 +9,7 @@
 
 <!-- page title -->
 {% block title %}
-  <title>Active department HOD</title>
+  <title>Student assign to a supervisor</title>
 {% endblock title %}
 
 <!-- content of the page -->
@@ -28,7 +28,7 @@
       {% for student in supervisor.students.all %}
         <div class="wrapp_form">
           <div class="wrapp_list">
-            <a href="{% url 'auth:general_profile' student.matrix_no %}">
+            <a href="{% url 'student:profile' student.matrix_no %}">
               {{student.first_name}}
               {% if student.middle_name %}
                 {{student.middle_name}}
@@ -63,28 +63,6 @@
       </div>
     </div>
   {% endif %}
-  
-  <!-- {% if users.paginator.count > 10 %}
-    <div class="wrapp_pages">
-      <div class="wrapp_pages_column">
-        {% if users.has_previous %}
-          <a href="?page={{users.previous_page_number}}" class="surf">previous</a>
-          <a>...</a>
-        {% endif %}
-        {% for num in users.paginator.page_range %}
-          {% if users.number == num %}
-            <a href="?page={{num}}" class="current">{{num}}</a>
-          {% elif num > users.number|add:'-3' and num < users.number|add:'3' %}
-            <a href="?page={{num}}" class="page_link">{{num}}</a>
-          {% endif %}
-        {% endfor %}
-        {% if users.has_next %}
-          <a>...</a>
-          <a href="?page={{users.next_page_number}}" class="surf">next</a>
-        {% endif %}
-      </div>
-    </div>
-  {% endif %} -->
   <div class="main_wrapp_what">
     <p>Student to supervise</p>
   </div>

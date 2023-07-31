@@ -21,7 +21,7 @@
     <div class="wrapp_form">
       <p><b>Filter faculty dean:</b></p>
       <small>Search faculty dean by identification number (staff ID)</small>
-      <form action="{% url 'administrator:filter_faculty_dean' %}" method="get" class="search">
+      <form action="{% url 'administrator:filter_vc' %}" method="get" class="search">
         {% csrf_token %}
         <input type="search" name="search_q" placeholder="Filter ID" required>
         <button type="submit">search</button>

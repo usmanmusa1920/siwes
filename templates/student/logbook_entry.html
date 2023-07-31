@@ -46,7 +46,7 @@
                 <a>No comment</a>
               </i>
             {% endif %}
-            <a href="{% url 'student:logbook_comment' entry.id %}" class="good_me">View week remark</a>
+            <a href="{% url 'student:week_entry_comment' entry.id %}" class="good_me">View week remark</a>
           </div>
         </form>
       {% endfor %}
@@ -108,7 +108,7 @@
         <div class="wrapp_form">
           <h1>Student training result</h1>
           {% if request.user.identification_num == student.matrix_no %}
-            {% if  WR.week_no == 12 %}
+            {% if  WR.week_no == training_duration %}
               <div class="wrapp_info">
                 <p>Check your result if it is out</p>
               </div>
@@ -122,7 +122,7 @@
               <a class="good_me">Once you finish, your result will be out</a>
             {% endif %}
           {% elif request.user.is_coordinator %}
-            {% if WR.week_no == 12 %}
+            {% if WR.week_no == training_duration %}
               <div class="wrapp_info">
                 <p>You can release your student result, now!</p>
               </div>

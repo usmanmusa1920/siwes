@@ -70,7 +70,7 @@
     {% if coordinator_students %}
       {%  for student in coordinator_students|slice:":3" %}
         <div class="wrapp_list">
-          <a href="{% url 'auth:general_profile' student.matrix_no %}">
+          <a href="{% url 'student:profile' student.matrix_no %}">
             {{student.first_name}}
             {% if usr.middle_name %}
               {{student.middle_name}}
@@ -121,7 +121,7 @@
     {% if students_acceptances %}
       {% for student in students_acceptances %}
         <div class="wrapp_list">
-          <a href="{% url 'auth:general_profile' student.sender.matrix_no %}">
+          <a href="{% url 'student:profile' student.sender.matrix_no %}">
             {{student.sender.first_name}}
             {% if usr.middle_name %}
               {{student.sender.middle_name}}
@@ -151,7 +151,7 @@
       {% if student_result %}
         {% for result in student_result %}
           <div class="request">
-            <a href="{% url 'department:student_result_page' result.student.matrix_no result.student.level %}">
+            <a href="{% url 'student:profile' result.student.matrix_no %}">
               {{result.student.first_name}}
               {% if usr.middle_name %}
                 {{result.student.middle_name}}
@@ -169,7 +169,7 @@
             </form>
           </div>
           <div class="wrapp_list">
-            <a href="{% url 'department:student_result_page' result.student.matrix_no result.student.level %}">
+            <a href="{% url 'student:profile' result.student.matrix_no %}">
               {{result.student.first_name}}
               {% if usr.middle_name %}
                 {{result.student.middle_name}}

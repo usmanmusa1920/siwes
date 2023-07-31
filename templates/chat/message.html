@@ -185,7 +185,7 @@
 
         <!-- notify student if his/her request is approve, by displaying a file field -->
         {% if is_approved_student_request %}
-          <form method="POST" action="{% url 'student:update_acceptance_letter' student.level is_approved_student_request.id %}" enctype="multipart/form-data">
+          <form method="POST" action="{% url 'student:update_acceptance_letter' is_approved_student_request.id %}" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="wrapp_form">
               <div class="wrapp_info">

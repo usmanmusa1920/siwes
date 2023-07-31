@@ -9,23 +9,23 @@
 
 <!-- page title -->
 {% block title %}
-  <title>Week {{logbook.week_no}} logbook entry</title>
+  <title>Week {{instance.week_no}} logbook entry</title>
 {% endblock title %}
 
 <!-- content of the page -->
 {% block main %}
   <div class="wrapper">
     <div class="wrapp_head">
-      <h1>Logbook of Week {{logbook.week_no}}</h1>
+      <h1>Logbook of Week {{instance.week_no}}</h1>
     </div>
     <div class="wrapp_main">
       <div class="wrapp_top_greynish">
-        <small>This is your {{logbook.week_no}} week logbook entry</small>
+        <small>This is your {{instance.week_no}} week logbook entry</small>
       </div>
-      <form method="POST" action="{% url 'student:additional_logbook_image' logbook.id  %}" enctype="multipart/form-data">
+      <form method="POST" action="{% url 'student:additional_logbook_image' instance.id  %}" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="wrapp_form">
-          {% for img in log_images %}
+          {% for img in week_images %}
             <div class="accept_let_img">
               <img src="{{img.image.url}}" alt="" srcset="">
             </div>
@@ -34,7 +34,7 @@
             <br>
           {% endfor %}
           {% if request.user.is_student %}
-            {% if log_images.all.count == 1 or log_images.all.count == '1' %}
+            {% if week_images.all.count == 1 or week_images.all.count == '1' %}
               <div class="wrapp_info">
                 <p>You can upload another (one more) scanned page of this week logbook (optional), when uploading make sure it has an extension of PGN, JPG, or JPEG</p>
               </div>
@@ -52,11 +52,11 @@
         </b>
         <hr>
         <br>
-        {% if logbook.comment != None and logbook.comment != '' and logbook.grade != None and logbook.grade != '' %}
-          <p><b>Supervisor</b>: {{logbook.commentator.first_name}} {{logbook.commentator.last_name}}</p>
-          <p><b>Grade</b>: {{logbook.grade}}/5</p>
-          <p><b>Date</b>: {{logbook.timestamp|date:'d F, Y'}}</p>
-          <p><b>Comment</b>: {{logbook.comment}}</p>
+        {% if instance.comment != None and instance.comment != '' and instance.grade != None and instance.grade != '' %}
+          <p><b>Supervisor</b>: {{instance.commentator.first_name}} {{instance.commentator.last_name}}</p>
+          <p><b>Grade</b>: {{instance.grade}}/5</p>
+          <p><b>Date</b>: {{instance.timestamp|date:'d F, Y'}}</p>
+          <p><b>Comment</b>: {{instance.comment}}</p>
           <hr>
           <br>
         {% else %}
@@ -72,7 +72,7 @@
         {% endif %}
       </div>
 
-      {% if logbook.comment == None or logbook.comment == '' or logbook.grade == None or logbook.grade == '' %}
+      {% if instance.comment == None or instance.comment == '' or instance.grade == None or instance.grade == '' %}
         {% if request.user.is_supervisor %}
           <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}

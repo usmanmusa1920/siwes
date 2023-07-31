@@ -1,8 +1,5 @@
 from django import forms
 from django.contrib.auth import get_user_model
-# from administrator.all_models import (
-#     AcceptanceLetter, WeekScannedLogbook, WeekScannedImage, WeekEntry
-# )
 from administrator.tables import (
     Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
 )

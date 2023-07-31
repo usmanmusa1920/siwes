@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from toolkit import (picture_name, y_session)
 from toolkit.decorators import (
-    block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
+    block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number,staff_required, admin_required, vc_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, coordinator_or_student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
 )
 from .models import Administrator
 from .tables import (
@@ -24,10 +24,10 @@ class Active:
     @admin_required
     @staticmethod
     def vc(request):
-        """active faculty deans"""
+        """active vc"""
         
-        active_department_hod = Vc.objects.filter(is_active=True).all().order_by('-date_joined')
-        paginator = Paginator(active_department_hod, 10)
+        active_vc = Vc.objects.filter(is_active=True).all().order_by('-date_joined')
+        paginator = Paginator(active_vc, 10)
         page = request.GET.get('page')
         users = paginator.get_page(page)
         context = {
@@ -70,21 +70,21 @@ class Activate:
     @admin_required
     @staticmethod
     def vc(request, staff_user_id):
-        """activate (and also deactivate previous) new faculty dean"""
+        """activate (and also deactivate previous) new vc"""
         
-        new_active_dean = Vc.objects.filter(id_no=staff_user_id).first()
-        if new_active_dean.is_active:
-            messages.success(request, f'This ({new_active_dean.id_no}) is already the dean of faculty of {new_active_dean.faculty.name}')
+        new_active_vc = Vc.objects.filter(id_no=staff_user_id).first()
+        if new_active_vc.is_active:
+            messages.success(request, f'This ({new_active_vc.id_no}) is already the active VC of the school')
             return redirect('auth:general_profile', id_no=staff_user_id)
-        # deactivating previous deans
-        for dean in Vc.objects.filter(is_active=True, faculty=new_active_dean.faculty):
-            dean.is_active = False
-            dean.save()
-        # activating new dean
-        new_active_dean.is_active = True
-        new_active_dean.save()
+        # deactivating previous vcs
+        for vc in Vc.objects.filter(is_active=True, faculty=new_active_vc.faculty):
+            vc.is_active = False
+            vc.save()
+        # activating new vc
+        new_active_vc.is_active = True
+        new_active_vc.save()
         messages.success(
-            request, f'You just activate {new_active_dean.id_no} as faculty of {new_active_dean.faculty.name} new dean')
+            request, f'You just activate {new_active_vc.id_no} as new vc of the school')
         return redirect('administrator:filter_vc')
 
     @admin_required
@@ -177,10 +177,10 @@ class Filter:
     @admin_required
     @staticmethod
     def vc(request):
-        """filter faculty dean by ID number"""
+        """filter vc by ID number"""
         
         search_panel = request.GET.get('search_q')
-        # quering all registered faculty dean
+        # quering all registered vc
         try:
             deans_search = Vc.objects.filter(Q(id_no__istartswith=search_panel) | Q(id_no__contains=search_panel)).order_by('-date_joined')
         except:

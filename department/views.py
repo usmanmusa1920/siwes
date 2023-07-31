@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth import get_user_model
+from toolkit import (y_session)
 from toolkit.decorators import (
-    block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
+    block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number,staff_required, admin_required, vc_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, coordinator_or_student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
 )
 from administrator.tables import (
     Session, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, Result
@@ -173,6 +174,7 @@ class CoordinatorCls:
         else:
             # finish 300 level training
             student.is_finish_300 = True
+            student.is_in_school = False
             student.save()
         messages.success(
             request, f'You just approve student ({student.matrix_no}) result for {school_session.session} session')
@@ -213,6 +215,14 @@ class CoordinatorCls:
             return False
         # current school session
         current_sch_sess = Session.objects.filter(is_current_session=True).last()
+
+        # last department letter, blocking coordinator from releasing new letter if there is his department letter that match this session.
+        last_letter = Letter.objects.filter(coordinator=coordinator, session=current_sch_sess.session).last()
+        if last_letter:
+            messages.success(
+                request, f'Letter for this session ({current_sch_sess.session}) was already released!')
+            return redirect(reverse(
+                'department:training_coordinator_profile', kwargs={'id_no': coordinator.id_no}))
         # getting active department hod
         hod = Hod.objects.filter(department=coordinator.department, is_active=True).last()
         # getting active school vc

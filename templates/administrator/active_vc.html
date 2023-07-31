@@ -9,19 +9,19 @@
 
 <!-- page title -->
 {% block title %}
-  <title>Active faculty dean</title>
+  <title>Active VC</title>
 {% endblock title %}
 
 <!-- content of the page -->
 {% block main %}
   <div class="main_wrapp_head">
-    <p>Active faculty dean</p>
+    <p>Active VC</p>
   </div>
   <div class="main_wrapp">
     <div class="wrapp_form">
-      <p><b>Filter faculty dean:</b></p>
-      <small>Filter faculty dean by identification number (staff ID)</small>
-      <form action="{% url 'administrator:filter_faculty_dean' %}" method="get" class="search">
+      <p><b>Filter VC:</b></p>
+      <small>Filter VC by identification number (staff ID)</small>
+      <form action="{% url 'administrator:filter_vc' %}" method="get" class="search">
         {% csrf_token %}
         <input type="search" name="search_q" placeholder="Filter ID" required>
         <button type="submit">search</button>
@@ -32,8 +32,8 @@
   {% if users %}
     <div class="main_wrapp">
       <div class="wrapp_form">
-        <h2>{{users.paginator.count}} active faculty dean</h2>
-        <small>These are current active faculty dean</small>
+        <h2>{{users.paginator.count}} active VC</h2>
+        <small>These are current active VC</small>
       </div>
       {% for user in users %}
         <div class="wrapp_form">
@@ -65,7 +65,7 @@
         <div class="wrapp_null">
           <div class="wrapp_in_null">
             <div class="main_wrapp_null">
-              <p>There is no any active faculty dean</p>
+              <p>There is no any active VC</p>
             </div>
           </div>
         </div>
@@ -95,7 +95,7 @@
     </div>
   {% endif %}
   <div class="main_wrapp_what">
-    <p>Active faculty dean</p>
+    <p>Active VC</p>
   </div>
   </div>
 {% endblock main %}

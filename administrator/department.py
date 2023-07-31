@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from toolkit import (picture_name, y_session)
 from toolkit.decorators import (
-    block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number, admin_required, dean_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
+    block_student_update_profile, restrict_access_student_profile, val_id_num, check_phone_number,staff_required, admin_required, vc_required, hod_required, coordinator_required, supervisor_required, schoolstaff_required, student_required, coordinator_or_student_required, supervisor_or_student_required, coordinator_or_supervisor_or_student_required
 )
 from administrator.models import Administrator
 from administrator.tables import (
@@ -40,9 +40,8 @@ class DepartmentCls:
     @admin_required
     @staticmethod
     def students_level(request, level):
-        """department list of students base on level"""
-        depart_coord = Coordinator.objects.filter(coordinator=request.user).first()
-        all_students = Student.objects.filter(student_training_coordinator=depart_coord, level=level).order_by('-date_joined')
+        """list of students base on level"""
+        all_students = Student.objects.filter(level=str(level)).order_by('-date_joined')
 
         # for student
         paginator_student = Paginator(all_students, 10)

@@ -31,10 +31,6 @@
       <!-- pass -->
     {% endif %}
 
-    {% if request.user.is_dean %}
-      <!-- pass -->
-    {% endif %}
-
     {% if request.user.is_hod %}
       <!-- pass -->
     {% endif %}
@@ -66,17 +62,17 @@
         <p><b>Identification no:</b> {{user.identification_num}}</p>
         <p><b>Email:</b> {{user.email}}</p>
         <p><b>Phone number:</b> {{user.phone_number}}</p>
-        <p><b>Country:</b> {{user.country}}</p>
+        <p><b>Country:</b> {{user.country.name}}</p>
         <p><b>Date joined:</b> {{user.date_joined}}</p>
 
-        {% if request.user.is_staff %}
+        {% if request.user.is_admin %}
           <br>
-          <!-- dean -->
-          {% if request.user.is_admin and user.is_dean %}
+          <!-- vc -->
+          {% if request.user.is_admin and user.is_vc %}
             {% if uuu.is_active %}
-              <span class="delete_me">{{user.first_name}} is the active dean faculty of {{uuu.faculty.name}}</span>
+              <span class="delete_me">{{user.first_name}} is the active vc faculty of {{uuu.faculty.name}}</span>
             {% else %}
-              <span class="delete_me"><a href="{% url 'administrator:activate_faculty_dean' user.identification_num %}">Activate</a> {{user.first_name}} as new dean faculty of {{uuu.faculty.name}}</span>
+              <span class="delete_me"><a href="{% url 'administrator:activate_vc' user.identification_num %}">Activate</a> {{user.first_name}} as new vc of the school</span>
             {% endif %}
           {% endif %}
 
@@ -116,25 +112,27 @@
         {% endif %}
       </div>
 
-      <div class="wrapp_info_right">
-        <!-- permission -->
-        <p><b>Is active:</b> {{user.is_active}}</p>
-        <p><b>Is staff:</b> {{user.is_staff}}</p>
-        <p><b>Is admin:</b> {{user.is_admin}}</p>
-        <p><b>Is superuser:</b> {{user.is_superuser}}</p>
-        <!-- others -->
-        <p><b>Is school staff:</b> {{user.is_schoolstaff}}</p>
-        <p><b>Is school VC:</b> {{user.is_vc}}</p>
-        <p><b>Is faculty dean:</b> {{user.is_dean}}</p>
-        <p><b>Is department HOD:</b> {{user.is_hod}}</p>
-        <p><b>Is training coordinator:</b> {{user.is_coordinator}}</p>
-        <p><b>Is training supervisor:</b> {{user.is_supervisor}}</p>
-        <p><b>Is student:</b> {{user.is_student}}</p>
-      </div>
+      <!-- only admin user can see this -->
+      {% if request.user.is_staff %}
+        <div class="wrapp_info_right">
+          <!-- permission -->
+          <p><b>Is active:</b> {{user.is_active}}</p>
+          <p><b>Is staff:</b> {{user.is_staff}}</p>
+          <p><b>Is admin:</b> {{user.is_admin}}</p>
+          <p><b>Is superuser:</b> {{user.is_superuser}}</p>
+          <!-- others -->
+          <p><b>Is school staff:</b> {{user.is_schoolstaff}}</p>
+          <p><b>Is VC:</b> {{user.is_vc}}</p>
+          <p><b>Is HOD:</b> {{user.is_hod}}</p>
+          <p><b>Is coordinator:</b> {{user.is_coordinator}}</p>
+          <p><b>Is supervisor:</b> {{user.is_supervisor}}</p>
+          <p><b>Is student:</b> {{user.is_student}}</p>
+        </div>
+      {% endif %}
     </div>
 
     <div class="main_wrapp_what">
-      <p>This is general profile page of ({{user.first_name}})</p>
+      <p>This is profile page of ({{user.first_name}})</p>
     </div>
   </div>
 {% endblock main %}

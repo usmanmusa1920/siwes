@@ -70,17 +70,13 @@
     </div>
 
     <div class="wrapp_form">
-      <p><b>Select student level:</b></p>
-      <small>Filter student base on level</small>
-      <form method="post" action="{% url 'administrator:department_students_level' 200 %}" class="form_peace">
-        {% csrf_token %}
-        <select name="filter_level" class="wrapp_select" required>
-          <option value="" selected="">Query list of level of students</option>
-            <option value="200">200 level</option>
-            <option value="300">300 level</option>
-        </select>
-        <button type="submit">Query</button>
-      </form>
+      <p><b>Query list of student base on level:</b></p>
+      <li>
+        <a href="{% url 'administrator:students_level' 200 %}" target="_blank" class="good_me">200 level</a>
+      </li>
+      <li>
+        <a href="{% url 'administrator:students_level' 300 %}" target="_blank" class="good_me">300 level</a>
+      </li>
     </div>
 
     <div class="wrapp_info">
@@ -99,16 +95,16 @@
           <small>This is number of cureent student in the school</small>
         </p>
         <br>
-        <a href="/admin" target="_blank">Admin page</a>
+        <a href="/admin" target="_blank" class="good_me">Admin page</a>
         <br>
         <br>
-        <a href="{% url 'administrator:active_faculty_dean' %}">Active Deans</a>
+        <a href="{% url 'administrator:active_vc' %}" class="good_me">Active Deans</a>
         <br>
         <br>
-        <a href="{% url 'administrator:active_department_hod' %}">Active H O Ds</a>
+        <a href="{% url 'administrator:active_department_hod' %}" class="good_me">Active H O Ds</a>
         <br>
         <br>
-        <a href="{% url 'administrator:active_department_training_coord' %}">Active Training coordinators</a>
+        <a href="{% url 'administrator:active_department_training_coord' %}" class="good_me">Active Training coordinators</a>
       </div>
     </div>
 

@@ -57,12 +57,10 @@ class UserAccountManager(BaseUserManager):
 
 class UserAccount(AbstractBaseUser):
     first_name = models.CharField(max_length=100, unique=False)
-    middle_name = models.CharField(
-        max_length=100, unique=False, blank=True, null=True)
+    middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
     last_name = models.CharField(max_length=100, unique=False)
     gender_choices = [('female', 'Female'), ('male', 'Male'),]
-    gender = models.CharField(
-        max_length=100, default='male', choices=gender_choices)
+    gender = models.CharField(max_length=100, default='male', choices=gender_choices)
     date_of_birth = models.DateField(max_length=100, blank=True, null=True)
     identification_num = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=255, unique=False)
@@ -127,15 +125,15 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     session = models.CharField(max_length=255, default=y_session())
     image = models.ImageField(
-        default='default_pic.png', upload_to=f'profile_pics')
+        default='default.png', upload_to=f'profile_pics')
     
     def save(self, *args, **kwargs):
         """resizing image size"""
         super().save(*args, **kwargs)
         img = Image.open(self.image.path)
         
-        if img.height > 200 or img.width > 200:
-            output_size = (200, 200)
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
             img.thumbnail(output_size)
             img.save(self.image.path)
 

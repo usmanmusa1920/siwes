@@ -2,7 +2,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-# from django.conf import settings
+from django.conf import settings
 from toolkit import y_session
 
 
@@ -17,8 +17,7 @@ NOTE: arrangement of the below models matter to avoid circular import (one block
 
 class Session(models.Model):
     """school training session"""
-    session = models.CharField(
-        max_length=255, blank=False, null=False, default=y_session())
+    session = models.CharField(max_length=255, blank=False, null=False, default=y_session())
     # is current school session
     is_current_session = models.BooleanField(default=False)
     timestamp = models.DateTimeField(default=timezone.now)
@@ -158,31 +157,26 @@ class Student(models.Model):
     account_number = models.CharField(max_length=100, unique=False, blank=False, null=False)
     bank_sort_code = models.CharField(max_length=100, unique=False, blank=False, null=False)
 
-    # sessions
-    # session = models.CharField(max_length=255, blank=False, null=False, default=y_session())
-    # sessions student did his 200 level training
-    session_200 = models.CharField(max_length=255, blank=False, null=False, default=y_session())
-    # sessions student did his 300 level training
-    session_300 = models.CharField(max_length=255, blank=False, null=False, default=y_session())
+    # sessions student did his 200 and 300 level training
+    session_200 = models.CharField(max_length=255, blank=False, null=False)
+    session_300 = models.CharField(max_length=255, blank=False, null=False)
 
-    # student supervisor id at 200 level training program
+    # student supervisor id at 200 and 300 level training program
     supervisor_id_200 = models.CharField(max_length=255, blank=False, null=False)
-    # student supervisor id at 300 level training program
     supervisor_id_300 = models.CharField(max_length=255, blank=False, null=False)
 
-    # apply indicators
+    # apply indicators for 200 and 300 level
     is_apply_training_200 = models.BooleanField(default=False)
     is_apply_training_300 = models.BooleanField(default=False)
 
-    # did student finish his 200 level training program?
+    # did student finish his 200 or 300 level training program?
     is_finish_200 = models.BooleanField(default=False)
-    # did student finish his 200 level training program?
     is_finish_300 = models.BooleanField(default=False)
 
-    # is the student in the school currently
+    # is the student in the school currently, it will be false as soon as student 300 level training result is approved
     is_in_school = models.BooleanField(default=False)
-
-    # to avoid assigning the student if already have a supervisor (when assigning in html page) for each level
+    
+    # it will be true base on student level, to avoid displaying student name when coordinator assigning student to a supervisor (when assigning in html page)
     is_assign_supervisor_200 = models.BooleanField(default=False)
     is_assign_supervisor_300 = models.BooleanField(default=False)
 
@@ -219,7 +213,7 @@ class Coordinator(models.Model):
     coordinator = models.ForeignKey(User, on_delete=models.CASCADE)
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    # dept_hod = models.ForeignKey(Hod, on_delete=models.CASCADE)
+    
     supervisors = models.ManyToManyField(Supervisor, blank=True)
     students = models.ManyToManyField(Student, blank=True)
     first_name = models.CharField(max_length=100, unique=False)
@@ -244,17 +238,17 @@ class Letter(models.Model):
     coordinator = models.ForeignKey(Coordinator, on_delete=models.CASCADE)
     hod = models.ForeignKey(Hod, on_delete=models.CASCADE)
     vc = models.ForeignKey(Vc, on_delete=models.CASCADE)
-    # student that apply for this letter (those who view)
+
+    # student that apply for this letter (those who view it)
     approvals = models.ManyToManyField(Student, blank=True)
     release_date = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
-    # in weeks
+    
+    # duration in weeks
     duration = models.CharField(max_length=100, default='12', blank=False, null=False)
-    # start date of the programm
     start_of_training = models.DateField(max_length=100, blank=True, null=True)
-    # end date of the programm
     end_of_training = models.DateField(max_length=100, blank=True, null=True)
-    session = models.CharField(max_length=255, blank=False, null=False, default=y_session())
+    session = models.CharField(max_length=255, blank=False, null=False)
     def __str__(self):
         return f'{self.hod.department} student letter of {self.session} session'
     
@@ -267,18 +261,12 @@ class Acceptance(models.Model):
     receiver = models.ForeignKey(Coordinator, on_delete=models.CASCADE)
     letter = models.ForeignKey(Letter, on_delete=models.CASCADE)
 
-    timestamp = models.DateTimeField(default=timezone.now)
-    title = models.CharField(max_length=255, blank=True, null=True)
-    level = models.CharField(max_length=255, blank=False, null=False)
-    # avoid updating student acceptance letter on admin page (because of the image file route won`t save correctly`)
+    # NOTE avoid updating student acceptance letter on admin page (because of the image file route won`t save correctly`)
     image = models.ImageField(blank=True, null=True, upload_to=f'acceptance-letters')
-    text = models.TextField(blank=True, null=True,)
     is_reviewed = models.BooleanField(default=False)
     can_change = models.BooleanField(default=False)
-
-    session = models.CharField(max_length=255, blank=False, null=False, default=y_session())
-    # is_200 = models.BooleanField(default=False)
-    # is_300 = models.BooleanField(default=False)
+    session = models.CharField(max_length=255, blank=False, null=False)
+    timestamp = models.DateTimeField(default=timezone.now)
     level_choices = [('200', '200 level'), ('300', '300 level'),]
     level = models.CharField(max_length=100, default='200', choices=level_choices)
 
@@ -290,10 +278,10 @@ class WeekReader(models.Model):
     """This is student week reader table of database"""
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     acceptance = models.ForeignKey(Acceptance, on_delete=models.CASCADE)
-    week_no = models.IntegerField(default=0)  # later max_length will be set
-    session = models.CharField(max_length=255, blank=False, null=False, default=y_session())
-    # is_200 = models.BooleanField(default=False)
-    # is_300 = models.BooleanField(default=False)
+
+    # NOTE max_length will be set later
+    week_no = models.IntegerField(default=0)
+    session = models.CharField(max_length=255, blank=False, null=False)
     level_choices = [('200', '200 level'), ('300', '300 level'),]
     level = models.CharField(max_length=100, default='200', choices=level_choices)
 
@@ -303,18 +291,16 @@ class WeekReader(models.Model):
 
 class WeekEntry(models.Model):
     """This is student weekly logbook entry table of database"""
-    # reader = models.ForeignKey(WeekReader, on_delete=models.CASCADE)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     week_reader = models.ForeignKey(WeekReader, on_delete=models.CASCADE)
-    commentator = models.ForeignKey(Supervisor, on_delete=models.CASCADE) # supervisor
-
+    commentator = models.ForeignKey(Supervisor, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(default=timezone.now)
     week_no = models.IntegerField(blank=True, null=True)
 
     # for supervisor
     grade = models.IntegerField(blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
-    session = models.CharField(max_length=255, blank=False, null=False, default=y_session())
+    session = models.CharField(max_length=255, blank=False, null=False)
     level_choices = [('200', '200 level'), ('300', '300 level'),]
     level = models.CharField(max_length=100, default='200', choices=level_choices)
     is_reviewed = models.BooleanField(default=False)
@@ -327,9 +313,10 @@ class WeekEntryImage(models.Model):
     """This is student weekly logbook (image) entry table of database"""
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     week_entry = models.ForeignKey(WeekEntry, on_delete=models.CASCADE)
-    timestamp = models.DateTimeField(default=timezone.now)
-    # avoid updating student scanned logbook on admin page (because of the image file route won`t save correctly`)
+
+    # NOTE avoid updating student scanned week entry on admin page (because of the image file route won`t save correctly`)
     image = models.ImageField(blank=True, null=True, upload_to=f'weekly-scanned-logbook')
+    timestamp = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f'{self.week_entry} (image)'
@@ -340,8 +327,7 @@ class Result(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     acceptance = models.ForeignKey(Acceptance, on_delete=models.CASCADE)
     
-    # cordinator info when he was doing the programme, all in text form no
-    # any foreign key or many-to-many, or other table relations, except for th student
+    # student coordinator info, when he was doing the programme, all in text form no any foreign key or many-to-many, or other table relations, except for the student, reason is to make it unchangable when that coordinator change something in his profile
     c_first_name = models.CharField(max_length=100, unique=False, blank=False, null=False)
     c_middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
     c_last_name = models.CharField(max_length=100, unique=False, blank=False, null=False)
@@ -349,8 +335,7 @@ class Result(models.Model):
     c_email = models.EmailField(max_length=255, unique=False, blank=False, null=False)
     c_phone_number = models.CharField(max_length=100, unique=False, blank=False, null=False)
 
-    # supervisor info when he was doing the programme, all in text form no
-    # any foreign key or many-to-many, or other table relations, except for th student
+    # student supervisor info, when he was doing the programme, all in text form no any foreign key or many-to-many, or other table relations, except for the student, reason is to make it unchangable when that supervisor change something in his profile
     s_first_name = models.CharField(max_length=100, unique=False, blank=False, null=False)
     s_middle_name = models.CharField(max_length=100, unique=False, blank=True, null=True)
     s_last_name = models.CharField(max_length=100, unique=False, blank=False, null=False)
@@ -360,16 +345,14 @@ class Result(models.Model):
 
     # result status
     status = models.CharField(max_length=100, unique=False, blank=False, null=False)
-    # result grade
     grade = models.CharField(max_length=100, unique=False, blank=False, null=False)
-    
-    session = models.CharField(
-        max_length=255, blank=False, null=False, default=y_session())
-    level = models.CharField(max_length=100, unique=False, blank=False, null=False)
+    session = models.CharField(max_length=255, blank=False, null=False)
+    level_choices = [('200', '200 level'), ('300', '300 level'),]
+    level = models.CharField(max_length=100, default='200', choices=level_choices)
     timestamp = models.DateTimeField(default=timezone.now)
 
     # coordinator will approve student result
     is_approve = models.BooleanField(default=False)
-
+    
     def __str__(self):
         return f'{self.student} training result for {self.level}'

@@ -32,7 +32,7 @@
         <form method="POST" action="{% url 'auth:update_profile_img' %}" enctype="multipart/form-data">
           {% csrf_token %}
           <!-- if user profile image is the default one this field will be display in other to change it -->
-          {% if request.user.profile.image.url == '/media/default_pic.png' %}
+          {% if request.user.profile.image.url == '/media/default.png' %}
             Please update your profile image:
             <div class="wrapp_form">
               <input type="file" name="image" accept="image/*" required>

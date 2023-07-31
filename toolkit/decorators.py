@@ -9,29 +9,26 @@ def block_student_update_profile(request, r_user):
     """
     blocking student from updating his/her profile, if it is up to date
     """
-
     if r_user.first_name != '' and r_user.first_name != None and r_user.last_name != '' and r_user.last_name != None and r_user.is_student == True:
         messages.success(request, f'Your profile is already updated {r_user.first_name}!')
         return redirect(reverse('student:profile', kwargs={'matrix_no': r_user.identification_num}))
-
+    
 
 def restrict_access_student_profile(request, id_no):
     """
     restricting any student from getting access to other students` profile
     but allowing himself and staff user to get access to it
     """
-
     if request.user.is_schoolstaff == False and request.user.identification_num != id_no:
         messages.warning(request, f'Can\'t get access to ({id_no}) profile')
         return redirect('student:profile', matrix_no=request.user.identification_num)
-
+    
 
 def val_id_num(request, raw_identification_num):
     """
     restricting accepting identification number which type is any, apart from integer
     for students
     """
-
     try:
         if type(eval(raw_identification_num)) == int:
             # trying to see if the identification number type is `int` it will pass
@@ -50,7 +47,6 @@ def check_phone_number(*args_1, **kwargs_1):
     This decorator (validate phone number decorator) for checking user
     phone number if it is in international format (start with +)
     """
-    
     def decorator(view):
         def wrapper(request, *args_2, **kwargs_2):
             if request.POST != {}:
@@ -61,14 +57,26 @@ def check_phone_number(*args_1, **kwargs_1):
             return view(request, *args_2, **kwargs_2)
         return wrapper
     return decorator
-    
+
+
+def staff_required(view):
+    """
+    decorator that block anyone from getting access to some routes (pages) which is
+    only administrator who is staff will grant access to
+    """
+    @login_required
+    def wrapper(request, *args, **kwargs):
+        if request.user.is_staff == False:
+            return False
+        return view(request, *args, **kwargs)
+    return wrapper
+
 
 def admin_required(view):
     """
     decorator that block anyone from getting access to some routes (pages) which is
     only administrator will grant access to
     """
-
     @login_required
     def wrapper(request, *args, **kwargs):
         if request.user.is_admin == False:
@@ -77,12 +85,11 @@ def admin_required(view):
     return wrapper
 
 
-def dean_required(view):
+def vc_required(view):
     """
     decorator that block anyone from getting access to some routes (pages) which is
-    only faculty dean will grant access to
+    only school vc will grant access to
     """
-
     @login_required
     def wrapper(request, *args, **kwargs):
         if request.user.is_vc == False:
@@ -96,7 +103,6 @@ def hod_required(view):
     decorator that block anyone from getting access to some routes (pages) which is
     only HOD will grant access to
     """
-
     @login_required
     def wrapper(request, *args, **kwargs):
         if request.user.is_hod == False:
@@ -124,7 +130,6 @@ def supervisor_required(view):
     decorator that block anyone from getting access to some routes (pages) which is
     only student supervisor will grant access to
     """
-
     @login_required
     def wrapper(request, *args, **kwargs):
         if request.user.is_supervisor == False:
@@ -138,7 +143,6 @@ def schoolstaff_required(view):
     decorator that block anyone from getting access to some routes (pages) which is
     only school staff will grant access to
     """
-
     @login_required
     def wrapper(request, *args, **kwargs):
         if request.user.is_schoolstaff == False:
@@ -152,7 +156,6 @@ def student_required(view):
     decorator that block anyone from getting access to some routes (pages) which is
     only student will grant access to
     """
-
     @login_required
     def wrapper(request, *args, **kwargs):
         if request.user.is_student == False:
@@ -161,12 +164,24 @@ def student_required(view):
     return wrapper
 
 
+def coordinator_or_student_required(view):
+    """
+    decorator that block anyone from getting access to some routes (pages) which is
+    only student coordinator, and the student will grant access to
+    """
+    @login_required
+    def wrapper(request, *args, **kwargs):
+        if request.user.is_admin or request.user.is_vc or request.user.is_hod or request.user.is_supervisor:
+            return False
+        return view(request, *args, **kwargs)
+    return wrapper
+
+
 def supervisor_or_student_required(view):
     """
     decorator that block anyone from getting access to some routes (pages) which is
-    only student supervisor, and th student will grant access to
+    only student supervisor, and the student will grant access to
     """
-
     @login_required
     def wrapper(request, *args, **kwargs):
         if request.user.is_admin or request.user.is_vc or request.user.is_hod or request.user.is_coordinator:
@@ -178,13 +193,10 @@ def supervisor_or_student_required(view):
 def coordinator_or_supervisor_or_student_required(view):
     """
     decorator that block anyone from getting access to some routes (pages) which is
-    only training coordinator, student supervisor, and th student will grant access to
+    only coordinator, supervisor, and the student will grant access to
     """
-
     @login_required
     def wrapper(request, *args, **kwargs):
-        # if not request.user.is_coordinator or not request.user.is_supervisor or not request.user.is_student:
-        #     return False
         if request.user.is_admin or request.user.is_vc or request.user.is_hod:
             return False
         return view(request, *args, **kwargs)

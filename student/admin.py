@@ -1,8 +1,5 @@
 from django.contrib import admin
 from administrator.models import Administrator
-# from administrator.all_models import(
-#     TrainingStudent, AcceptanceLetter, WeekReader, WeekScannedLogbook, CommentOnLogbook
-# )
 from administrator.tables import (
     Session, Faculty, Department, Vc, Hod, Coordinator, Supervisor, Student, Letter, Acceptance, WeekReader, WeekEntry, WeekEntryImage, Result
 )

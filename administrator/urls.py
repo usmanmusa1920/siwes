@@ -10,19 +10,19 @@ urlpatterns = [
     path(
         'department/<str:dept_name>/students', DepartmentCls.students, name='department_students'),
     path(
-        'department/<int:level>/students/level', DepartmentCls.students_level, name='department_students_level'),
+        'department/<int:level>/students/level', DepartmentCls.students_level, name='students_level'),
 
     # active (incumbent) staff base on ranks
-    # path(
-    #     'active/faculty/dean', Active.faculty_dean, name='active_faculty_dean'),
+    path(
+        'active/faculty/dean', Active.vc, name='active_vc'),
     path(
         'active/department/hod', Active.department_hod, name='active_department_hod'),
     path(
         'active/department/training/coordinator', Active.department_training_coordinator, name='active_department_training_coord'),
 
     # activate (new staff to take position)
-    # path(
-    #     'activate/faculty/dean/<int:staff_user_id>/', Activate.faculty_dean, name='activate_faculty_dean'),
+    path(
+        'activate/faculty/dean/<int:staff_user_id>/', Activate.vc, name='activate_vc'),
     path(
         'activate/department/hod/<int:staff_user_id>/', Activate.department_hod, name='activate_department_hod'),
     path(
@@ -33,8 +33,8 @@ urlpatterns = [
         'filter/staff', Filter.staff, name='filter_staff'),
     path(
         'filter/administrator', Filter.administrator, name='filter_administrator'),
-    # path(
-    #     'filter/faculty/dean', Filter.faculty_dean, name='filter_faculty_dean'),
+    path(
+        'filter/faculty/dean', Filter.vc, name='filter_vc'),
     path(
         'filter/department/hod', Filter.department_hod, name='filter_department_hod'),
     path(

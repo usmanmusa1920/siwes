@@ -223,11 +223,11 @@
       <p class="letter_p">Thank you.</p>
 
       <h3 class="sign_1">
-        {{student.student_training_coordinator.first_name|upper}}
-        {% if student.student_training_coordinator.middle_name %}
-          {{student.student_training_coordinator.middle_name|upper}}
+        {{student.student_coordinator.first_name|upper}}
+        {% if student.student_coordinator.middle_name %}
+          {{student.student_coordinatorame|upper}}
         {% endif %}
-        {{student.student_training_coordinator.last_name|upper}}
+        {{student.student_coordinator.last_name|upper}}
       </h3>
       <p class="sign_2">Departmental {{student.faculty.training|upper}} Coordinator</p>
     </div>
