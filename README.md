@@ -3,7 +3,7 @@
 A web based platform for `Student Industrial Work Experience Scheme` (SIWES).
 
 > **Note**
-> This project (source code) has been totally moved to dedicated secure private place. This mean there is no any code in here! meaning it is not an open-source unlike what it was before, in the early 2023.
+> This project (source code) has been totally moved to different place, it is no longer open-source unlike what it was before, in the early 2023.
 
 ```sh
                   ,--,                                       
@@ -55,9 +55,6 @@ Activities in this e-SIWES port may be independent or inter-related for the user
 
 With this work, e-SIWES portal is now a tangible platform for efficient web based administration of SIWES tasks (activities) either the students are undergoing the program within or outside Nigeria.
 
-This is actually a very good development both for the country and for the students. The newly developed e-SIWES portal is a timely, adequate and host of other administrative based challenges that have bedeviled the SIWES program over the years. This will help to undertake a comparative evaluation of the existing manual approach to the electronic approach for SIWES activities using the e-SIWES portal.
+This is actually a very good development both for the country and for the students. The newly developed e-SIWES portal is a timely, adequate and host of other administrative based challenges that have bedeviled the SIWES program over the years. This will help to undertake a comparative evaluation of the existing manual approach to the electronic approach for SIWES activities using the e-SIWES portal. <a href="https://siwesportal.onrender.com">Reach SIWES Portal</a> or <a href="https://medium.com/@usmanmusa1920/development-of-e-siwes-portal-048e141c15ab">Read More</a>
 
 ![homepage](homepage.png)
-
--   Reach <a href="https://siwesportal.onrender.com">SIWES Portal</a>
--   View <a href="https://youtu.be/4xw--DTsGi4">SIWES Portal Showcase</a>
